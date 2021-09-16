@@ -32,10 +32,12 @@ class Queue extends DefaultQueue {
 	}
 
 	private onQueueEnd(): void {
+		if (this.destroyed) return;
 		if (this.lastPlayed && this.autoplay && this.songs.length === 0) this.autoPlay();
 	}
 
 	private onSongStart(song: Song): void {
+		if (this.destroyed) return;
 		this.lastPlayed = song;
 		this.channel.send({
 			content: "🎶 **Now Playing**",

@@ -2,6 +2,7 @@ import { Command, MessageEmbed } from "discord.js";
 
 const command: Command = {
 	name: "queue",
+	aliases: ["q"],
 	description: "Show current queue",
 	async execute(message, args) {
 		const queue = message.guild?.queue;

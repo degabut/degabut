@@ -20,7 +20,10 @@ const command: Command = {
 			if (url.hostname === "www.youtube.com" && url.pathname === "/playlist") {
 				const playlist = await queue
 					.playlist(query, { requestedBy: message.author })
-					.catch(() => queue.stop());
+					.catch((err) => {
+						message.channel.send("Something went wrong: " + err);
+						queue.stop();
+					});
 				if (playlist) {
 					await message.reply(`🎶 **Added ${playlist.songs.length} songs from ${playlist.name}**`);
 				}
@@ -28,9 +31,10 @@ const command: Command = {
 				throw new Error();
 			}
 		} catch (e) {
-			const song = await queue
-				.play(query, { requestedBy: message.author })
-				.catch(() => queue.stop());
+			const song = await queue.play(query, { requestedBy: message.author }).catch((err) => {
+				message.channel.send("Something went wrong: " + err);
+				queue.stop();
+			});
 
 			if (song && queue.songs.length > 1) {
 				await message.reply({

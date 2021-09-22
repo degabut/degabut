@@ -5,7 +5,7 @@ import { getEmbedFromSong } from "../utils/Utils";
 
 class Queue extends DefaultQueue {
 	autoplay = false;
-	lastPlayed: Song | undefined;
+	lastPlayedSongs: Song[] = [];
 	youtube: Youtube;
 	channel: TextBasedChannels;
 
@@ -19,6 +19,10 @@ class Queue extends DefaultQueue {
 
 	setAutoPlay(value: boolean): void {
 		this.autoplay = value;
+	}
+
+	get lastPlayed(): Song {
+		return this.lastPlayedSongs[this.lastPlayedSongs.length - 1];
 	}
 
 	private initializeEventListener(): void {
@@ -42,7 +46,9 @@ class Queue extends DefaultQueue {
 
 	private onSongStart(song: Song): void {
 		if (this.destroyed) return;
-		this.lastPlayed = song;
+		this.lastPlayedSongs.push(song);
+		if (this.lastPlayedSongs.length > 5) this.lastPlayedSongs.shift();
+
 		this.channel.send({
 			content: "🎶 **Now Playing**",
 			embeds: [getEmbedFromSong(song, this.createProgressBar().prettier)],
@@ -62,9 +68,12 @@ class Queue extends DefaultQueue {
 		const video = await this.youtube.getVideo(videoId);
 		if (!video) throw new Error("Video not found");
 
-		const relatedVideo = video.related.find((r) => r instanceof VideoCompact) as
-			| VideoCompact
-			| undefined;
+		const lastPlayedIds = this.lastPlayedSongs.map((s) => new URL(s.url).searchParams.get("v"));
+		const relatedVideos = video.related.filter(
+			(r) => r instanceof VideoCompact && !lastPlayedIds.includes(r.id)
+		) as VideoCompact[];
+
+		const relatedVideo = relatedVideos.shift();
 		if (!relatedVideo) throw new Error("No related video found");
 
 		const song = new Song(

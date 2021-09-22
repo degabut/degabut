@@ -29,6 +29,10 @@ class Queue extends DefaultQueue {
 		this.player.on("songFirst", (_, song) => {
 			this.onSongStart(song);
 		});
+		this.player.on("error", (err, queue) => {
+			if (queue.guild.id !== this.guild.id) return;
+			this.channel.send("Something went wrong: " + err);
+		});
 	}
 
 	private onQueueEnd(): void {

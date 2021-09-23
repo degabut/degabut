@@ -1,4 +1,6 @@
+import { RawSong, Song, Utils } from "discord-music-player";
 import { Command } from "discord.js";
+import { Client } from "youtubei";
 import { getEmbedFromSong } from "../../utils/Utils";
 
 const command: Command = {
@@ -31,7 +33,25 @@ const command: Command = {
 				throw new Error();
 			}
 		} catch (e) {
-			const song = await queue.play(query, { requestedBy: message.author }).catch((err) => {
+			const youtube = new Client();
+
+			const item = await youtube.findOne(query, { type: "video" });
+			if (!item) throw new Error("❌ **Not Found**");
+
+			const addedSong = new Song(
+				{
+					name: item.title,
+					url: "http://www.youtube.com/watch?v=" + item.id,
+					duration: Utils.msToTime((item.duration || 0) * 1000),
+					author: item.channel?.name,
+					isLive: item.isLive,
+					thumbnail: item.thumbnails.best,
+				} as RawSong,
+				queue,
+				message.author
+			);
+
+			const song = await queue.play(addedSong, { requestedBy: message.author }).catch((err) => {
 				message.channel.send("Something went wrong: " + err);
 				queue.stop();
 			});

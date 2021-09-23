@@ -5,9 +5,13 @@ export const getEmbedFromSong = (song: Song, progressBar?: string): MessageEmbed
 	const fields = [{ name: "Duration", value: song.duration }];
 	if (progressBar) fields.unshift({ name: "Length", value: progressBar });
 
+	const descriptions: string[] = [];
+	if (song.author) descriptions.push(`**${song.author}**`);
+	if (song.requestedBy) descriptions.push(`Requested by <@!${song.requestedBy.id}>`);
+
 	return new MessageEmbed({
 		title: song.name,
-		description: song.author,
+		description: descriptions.join("\r\n"),
 		url: song.url,
 		image: { url: song.thumbnail },
 		fields,

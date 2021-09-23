@@ -31,7 +31,7 @@ class Queue extends DefaultQueue {
 			this.onQueueEnd();
 		});
 		this.player.on("songFirst", (_, song) => {
-			this.onSongStart(song);
+			this.onSongChanged(song);
 		});
 		this.player.on("error", (err, queue) => {
 			if (queue.guild?.id !== this.guild?.id) return;
@@ -44,10 +44,12 @@ class Queue extends DefaultQueue {
 		if (this.lastPlayed && this.autoplay && this.songs.length === 0) this.autoPlay();
 	}
 
-	private onSongStart(song: Song): void {
-		if (this.destroyed) return;
-		this.lastPlayedSongs.push(song);
-		if (this.lastPlayedSongs.length > 5) this.lastPlayedSongs.shift();
+	onSongChanged(song: Song): void {
+		if (this.destroyed || !song) return;
+		if (!this.lastPlayedSongs.find((s) => s.url === song.url)) {
+			this.lastPlayedSongs.push(song);
+			if (this.lastPlayedSongs.length > 5) this.lastPlayedSongs.shift();
+		}
 
 		this.channel.send({
 			content: "🎶 **Now Playing**",
@@ -57,19 +59,19 @@ class Queue extends DefaultQueue {
 
 	private async autoPlay(): Promise<Song> {
 		if (!this.lastPlayed) throw new Error("Last played song is undefined");
-		let videoId: string | null;
+		let lastVideoId: string | null;
 		try {
-			videoId = new URL(this.lastPlayed.url).searchParams.get("v");
-			if (!videoId) throw new Error();
+			lastVideoId = new URL(this.lastPlayed.url).searchParams.get("v");
+			if (!lastVideoId) throw new Error();
 		} catch (err) {
 			throw new Error("Not a Youtube Video");
 		}
 
-		const video = await this.youtube.getVideo(videoId);
+		const video = await this.youtube.getVideo(lastVideoId);
 		if (!video) throw new Error("Video not found");
 
 		const lastPlayedIds = this.lastPlayedSongs.map((s) => new URL(s.url).searchParams.get("v"));
-		const relatedVideos = video.related.filter(
+		const relatedVideos = [video.upNext, ...video.related].filter(
 			(r) => r instanceof VideoCompact && !lastPlayedIds.includes(r.id)
 		) as VideoCompact[];
 
@@ -83,7 +85,6 @@ class Queue extends DefaultQueue {
 				isLive: relatedVideo.isLive,
 				name: relatedVideo.title,
 				thumbnail: relatedVideo.thumbnails.best || "_",
-
 				url: `http://youtube.com/watch?v=${relatedVideo.id}`,
 			},
 			this,

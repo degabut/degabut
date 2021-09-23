@@ -9,8 +9,10 @@ const command: Command = {
 
 		if (!queue.nowPlaying) return message.reply("🤷‍♂ **Nothing to skip**");
 
+		const song = queue.songs[1];
 		queue.skip();
 		message.reply("⏭ **Song skipped**");
+		queue.onSongChanged(song);
 	},
 };
 

@@ -29,8 +29,11 @@ const command: Command = {
 				if (playlist) {
 					await message.reply(`🎶 **Added ${playlist.songs.length} songs from ${playlist.name}**`);
 				}
-			} else {
-				throw new Error();
+			} else if (url.hostname === "open.spotify.com") {
+				if (url.pathname.startsWith("/track"))
+					await queue.play(query, { requestedBy: message.author });
+				else if (url.pathname.startsWith("/playlist"))
+					await queue.playlist(query, { requestedBy: message.author });
 			}
 		} catch (e) {
 			const youtube = new Client();

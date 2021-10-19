@@ -1,6 +1,6 @@
 import { RawSong, Song, Utils } from "discord-music-player";
 import { Command } from "discord.js";
-import { Client } from "youtubei";
+import { Client, LiveVideo } from "youtubei";
 import { getEmbedFromSong } from "../../utils/Utils";
 
 const command: Command = {
@@ -15,11 +15,14 @@ const command: Command = {
 		await queue.join(message.member.voice.channel);
 
 		const query = args.join(" ");
+		queue.channel = message.channel;
+
+		const youtube = new Client();
 
 		try {
-			// check if args is a youtube playlist
 			const url = new URL(query);
-			if (url.hostname === "www.youtube.com" && url.pathname === "/playlist") {
+			if (url.hostname.endsWith("youtube.com") && url.pathname === "/playlist") {
+				// Youtube Playlist
 				const playlist = await queue
 					.playlist(query, { requestedBy: message.author })
 					.catch((err) => {
@@ -29,15 +32,49 @@ const command: Command = {
 				if (playlist) {
 					await message.reply(`🎶 **Added ${playlist.songs.length} songs from ${playlist.name}**`);
 				}
+			} else if (url.hostname.endsWith("youtu.be") || url.hostname.endsWith("youtube.com")) {
+				// Youtube Video
+				let id: string | null;
+				if (url.hostname.endsWith("youtu.be")) id = url.pathname.split("/")[1];
+				else id = url.searchParams.get("v");
+				if (!id) throw null;
+
+				const video = await youtube.getVideo(id);
+				if (!video) throw new Error("❌ **Not Found**");
+
+				const addedSong = new Song(
+					{
+						name: video.title,
+						url: "http://www.youtube.com/watch?v=" + video.id,
+						duration: Utils.msToTime(("duration" in video ? video.duration : 0) * 1000),
+						author: video.channel?.name,
+						isLive: video instanceof LiveVideo,
+						thumbnail: video.thumbnails.best,
+					} as RawSong,
+					queue,
+					message.author
+				);
+
+				const song = await queue.play(addedSong, { requestedBy: message.author }).catch((err) => {
+					message.channel.send("Something went wrong: " + err);
+					queue.stop();
+				});
+
+				if (song && queue.songs.length > 1) {
+					await message.reply({
+						content: `🎵 **Added To Queue** (${queue.songs.length})`,
+						embeds: [getEmbedFromSong(song)],
+					});
+				}
 			} else if (url.hostname === "open.spotify.com") {
+				// Spotify
 				if (url.pathname.startsWith("/track"))
 					await queue.play(query, { requestedBy: message.author });
 				else if (url.pathname.startsWith("/playlist"))
 					await queue.playlist(query, { requestedBy: message.author });
 			}
 		} catch (e) {
-			const youtube = new Client();
-
+			// Search by args
 			const item = await youtube.findOne(query, { type: "video" });
 			if (!item) throw new Error("❌ **Not Found**");
 
@@ -66,7 +103,6 @@ const command: Command = {
 				});
 			}
 		}
-		queue.channel = message.channel;
 	},
 };
 

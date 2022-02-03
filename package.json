@@ -1,0 +1,31 @@
+{
+	"name": "degabut.js",
+	"version": "0.0.1",
+	"description": "",
+	"engines": {
+		"node": ">=16.6.0"
+	},
+	"main": "dist/main.js",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc-watch --onSuccess \"node .\"",
+		"start": "node .",
+		"create-command": "node ./scripts/create-command.js",
+		"compose:up": "npm run build && docker-compose up --build -d"
+	},
+	"author": "SuspiciousLookingOwl",
+	"license": "MIT",
+	"dependencies": {
+		"discord.js": "13.6.0",
+		"dotenv": "16.0.0",
+		"youtubei": "0.0.1-rc.27"
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "4.31.1",
+		"@typescript-eslint/parser": "4.31.1",
+		"eslint": "7.32.0",
+		"prettier": "2.4.0",
+		"tsc-watch": "4.5.0",
+		"typescript": "4.5.5"
+	}
+}

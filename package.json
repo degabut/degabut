@@ -18,7 +18,7 @@
 	"dependencies": {
 		"discord.js": "13.6.0",
 		"dotenv": "16.0.0",
-		"youtubei": "0.0.1-rc.27"
+		"youtubei": "0.0.1-rc.28"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "4.31.1",

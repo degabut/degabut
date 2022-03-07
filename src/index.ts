@@ -16,21 +16,22 @@ const client = new Discord.Client({
 	],
 });
 client.commands = [];
+client.prefix = PREFIX;
 
 const run = async () => {
-	client.prefix = PREFIX;
-
-	const commandFolders = await fs.readdir("./dist/commands");
 	// Register all commands to the client
+	const commandFolders = await fs.readdir("./dist/commands");
 	for (const folder of commandFolders) {
-		const command = await import(`./commands/${folder}/index.js`);
-		client.commands.push(command.name, command);
+		const { default: command } = await import(`./commands/${folder}`);
+		client.commands.push(command);
 	}
 
+	// Add event handler
 	client.once("ready", () => console.log("Ready!"));
 	client.on("messageCreate", onMessage);
 	client.on("interactionCreate", onInteract);
 
+	// Run the bot
 	client.login(TOKEN);
 };
 

@@ -3,9 +3,9 @@
 	"version": "0.0.1",
 	"description": "",
 	"engines": {
-		"node": ">=16.6.0"
+		"node": ">=16.14.0"
 	},
-	"main": "dist/main.js",
+	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc-watch --onSuccess \"node .\"",
@@ -16,9 +16,15 @@
 	"author": "SuspiciousLookingOwl",
 	"license": "MIT",
 	"dependencies": {
+		"@discordjs/opus": "0.7.0",
+		"@discordjs/voice": "0.8.0",
+		"discord-ytdl-core": "5.0.4",
 		"discord.js": "13.6.0",
 		"dotenv": "16.0.0",
-		"youtubei": "0.0.1-rc.28"
+		"ffmpeg-static": "5.0.0",
+		"libsodium-wrappers": "0.7.9",
+		"youtubei": "0.0.1-rc.29",
+		"ytdl-core": "4.11.0"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "4.31.1",

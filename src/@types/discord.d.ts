@@ -1,4 +1,5 @@
 import "discord.js";
+import { Queue } from "../modules";
 
 type CommandArgs = {
 	name: string;
@@ -9,6 +10,14 @@ declare module "discord.js" {
 	export interface Client {
 		commands: Command[];
 		prefix: string;
+	}
+
+	export interface Message {
+		queue?: Queue;
+	}
+
+	export interface Interaction {
+		queue?: Queue;
 	}
 
 	export interface Command<ButtonInteractionMeta = unknown> {
@@ -23,7 +32,7 @@ declare module "discord.js" {
 		buttonInteractionIdArgs?: string[];
 		buttonInteraction?: (
 			interaction: ButtonInteraction,
-			meta: ButtonInteractionMeta extends unknown ? unknown : ButtonInteractionMeta
+			meta: ButtonInteractionMeta
 		) => Promise<unknown>;
 	}
 }

@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import { queues } from "../shared";
 
 export const onMessage = async (message: Message): Promise<void> => {
 	const client = message.client;
@@ -13,6 +14,8 @@ export const onMessage = async (message: Message): Promise<void> => {
 	);
 
 	if (!command || command.enabled === false || !message.guild) return;
+
+	message.queue = queues.get(message.guild.id);
 
 	try {
 		await command.execute(message, args);

@@ -1,4 +1,5 @@
 import { Interaction } from "discord.js";
+import { queues } from "../shared";
 
 export const onInteract = async (interaction: Interaction): Promise<void> => {
 	if (!interaction.isButton()) return;
@@ -10,6 +11,8 @@ export const onInteract = async (interaction: Interaction): Promise<void> => {
 
 	const command = commands.find((command) => command.buttonInteractionIdPrefix === prefixId);
 	if (!command?.buttonInteraction) return;
+
+	interaction.queue = queues.get(interaction.guild?.id || "");
 
 	try {
 		const meta = command.buttonInteractionIdParser?.(customId) || {};

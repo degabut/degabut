@@ -19,8 +19,12 @@ export const videoToMessageButton = (
 
 export const videoToEmbedField = (video: Video | VideoCompact, index: number): EmbedField => {
 	return {
-		name: `${numbers[index]}. ${video.title}`,
-		value: "Duration: " + (video.duration ? secondToTime(video.duration) : "-"),
+		name: `${numbers[index]} ${video.title}`,
+		value: [
+			`**${video.channel?.name}**`,
+			`https://youtu.be/${video.id}`,
+			`Duration: ${video.duration ? secondToTime(video.duration) : "-"}`,
+		].join("\n"),
 		inline: false,
 	};
 };

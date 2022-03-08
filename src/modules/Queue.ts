@@ -33,7 +33,7 @@ export class Queue {
 	public readonly voiceConnection!: VoiceConnection;
 	private textChannel!: TextChannel;
 	public nowPlaying: Track | null = null;
-	private tracks: Track[] = [];
+	public tracks: Track[] = [];
 	private loopSong = false;
 	private loopQueue = false;
 	public readyLock = false;
@@ -112,6 +112,7 @@ export class Queue {
 			thumbnailUrl: video.thumbnails.best || "",
 			title: video.title,
 			requestedBy: author,
+			channel: video.channel,
 			duration: ("duration" in video ? video.duration : 0) || 0,
 		});
 
@@ -121,15 +122,32 @@ export class Queue {
 
 	private addTrack(track: Track): void {
 		this.tracks.push(track);
+		if (this.nowPlaying) {
+			this.textChannel.send({
+				content: `🎵 **Added To Queue** (${this.tracks.length})`,
+				embeds: [track.embed],
+			});
+		}
 		this.processQueue();
 	}
 
-	remove(index: number): void {
-		this.tracks.splice(index, 1);
+	remove(index: number): Track | null {
+		if (index === 0) {
+			const skipped = this.nowPlaying;
+			this.skip();
+			return skipped;
+		} else {
+			const [skipped] = this.tracks.splice(index, 1);
+			return skipped;
+		}
 	}
 
 	skip(): void {
 		if (!this.nowPlaying) return;
+		this.textChannel.send({
+			content: "⏭ **Skipping Song**",
+			embeds: [this.nowPlaying.embed],
+		});
 		// this will triggers `finish` event on nowPlaying
 		this.audioPlayer.stop(true);
 	}
@@ -155,18 +173,23 @@ export class Queue {
 
 		const nextTrack = this.tracks[0];
 		if (!nextTrack) return;
-		console.log("Next Track", nextTrack.title);
 
 		this.nowPlaying = nextTrack;
 
 		nextTrack.on("finish", () => {
-			this.textChannel.send("Finished Playing: " + nextTrack.title);
 			this.nowPlaying = null;
 			this.processQueue();
 		});
 
 		nextTrack.on("start", () => {
-			this.textChannel.send("Start Playing: " + nextTrack.title);
+			this.textChannel.send({
+				content: "🎶 **Now Playing**",
+				embeds: [nextTrack.embed],
+			});
+		});
+
+		nextTrack.on("error", (err) => {
+			console.log("Ada error nich", err);
 		});
 
 		if (!this.loopSong) this.tracks.shift();

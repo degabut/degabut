@@ -1,11 +1,14 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
 import ytdl from "discord-ytdl-core";
-import { GuildMember } from "discord.js";
+import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";
+import { ChannelCompact } from "youtubei";
+import { secondToTime } from "../utils";
 
 interface ConstructorProps {
 	id: string;
 	title: string;
+	channel?: ChannelCompact;
 	thumbnailUrl: string;
 	duration: number;
 	requestedBy: GuildMember;
@@ -14,6 +17,7 @@ interface ConstructorProps {
 export class Track extends EventEmitter {
 	public readonly id!: string;
 	public readonly title!: string;
+	public readonly channel?: ChannelCompact;
 	public readonly thumbnailUrl!: string;
 	public readonly duration!: number;
 	public readonly requestedBy!: GuildMember;
@@ -40,5 +44,20 @@ export class Track extends EventEmitter {
 
 	get url(): string {
 		return `https://youtu.be/${this.id}`;
+	}
+
+	get embed(): MessageEmbed {
+		const fields = [{ name: "Duration", value: secondToTime(this.duration) }];
+		const descriptions: string[] = [];
+		if (this.channel) descriptions.push(`**${this.channel.name}**`);
+		if (this.requestedBy) descriptions.push(`Requested by <@!${this.requestedBy.id}>`);
+
+		return new MessageEmbed({
+			title: this.title,
+			description: descriptions.join("\r\n"),
+			url: this.url,
+			image: { url: this.thumbnailUrl },
+			fields,
+		});
 	}
 }

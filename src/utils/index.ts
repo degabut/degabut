@@ -3,6 +3,10 @@ import { GuildMember, TextChannel } from "discord.js";
 import { Queue } from "../modules";
 import { queues } from "../shared";
 
+export const secondToTime = (seconds: number): string => {
+	return new Date(seconds * 1000).toISOString().substring(11, 8).replace("-", ":");
+};
+
 export const getQueue = async (
 	member: GuildMember,
 	textChannel: TextChannel

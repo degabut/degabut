@@ -9,6 +9,7 @@ const command: Command = {
 		if (!queue) return;
 		queue.stop();
 		queues.delete(message.guild?.id || "");
+		message.react("👋🏻");
 	},
 };
 

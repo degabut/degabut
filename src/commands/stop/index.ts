@@ -3,6 +3,7 @@ import { queues } from "../../shared";
 
 const command: Command = {
 	name: "stop",
+	aliases: ["disconnect", "dc"],
 	description: "Disconnects the bot from voice channel",
 	async execute(message) {
 		const queue = message.queue;

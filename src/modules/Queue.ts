@@ -98,14 +98,14 @@ export class Queue {
 		props.voiceConnection.subscribe(this.audioPlayer);
 	}
 
-	async add({ id, keyword, author, textChannel }: AddProps): Promise<Track | undefined> {
+	async add({ id, keyword, author, textChannel }: AddProps): Promise<Track> {
 		if (!id && !keyword) throw new Error("No search term provided");
 
 		let video: Video | LiveVideo | VideoCompact | undefined;
 
 		if (id) video = await youtube.getVideo(id);
 		else if (keyword) video = (await youtube.search(keyword, { type: "video" })).shift();
-		if (!video) return;
+		if (!video) throw new Error("Video Not Found");
 
 		const track = new Track({
 			id: video.id,
@@ -118,6 +118,7 @@ export class Queue {
 
 		if (textChannel) this.textChannel = textChannel;
 		this.addTrack(track);
+		return track;
 	}
 
 	private addTrack(track: Track): void {
@@ -127,27 +128,25 @@ export class Queue {
 				content: `🎵 **Added To Queue** (${this.tracks.length})`,
 				embeds: [track.embed],
 			});
+		} else {
+			this.processQueue();
 		}
-		this.processQueue();
 	}
 
 	remove(index: number): Track | null {
 		if (index === 0) {
-			const skipped = this.nowPlaying;
+			const removed = this.nowPlaying;
 			this.skip();
-			return skipped;
+			return removed;
 		} else {
-			const [skipped] = this.tracks.splice(index, 1);
-			return skipped;
+			const [removed] = this.tracks.splice(index, 1);
+			return removed;
 		}
 	}
 
-	skip(): void {
+	async skip(): Promise<void> {
 		if (!this.nowPlaying) return;
-		this.textChannel.send({
-			content: "⏭ **Skipping Song**",
-			embeds: [this.nowPlaying.embed],
-		});
+		await this.textChannel.send(`⏭ **Skipping ${this.nowPlaying.title}**`);
 		// this will triggers `finish` event on nowPlaying
 		this.audioPlayer.stop(true);
 	}
@@ -169,41 +168,40 @@ export class Queue {
 	}
 
 	private async processQueue(): Promise<void> {
-		if (this.nowPlaying) return;
+		this.nowPlaying = this.tracks[0];
+		if (!this.nowPlaying) return;
 
-		const nextTrack = this.tracks[0];
-		if (!nextTrack) return;
+		this.nowPlaying.removeAllListeners();
+		this.nowPlaying.on("finish", () => {
+			if (this.loopSong) return this.play();
 
-		this.nowPlaying = nextTrack;
+			const previous = this.tracks.shift();
+			if (this.loopQueue && previous) this.tracks.push(previous);
 
-		nextTrack.on("finish", () => {
 			this.nowPlaying = null;
 			this.processQueue();
 		});
-
-		nextTrack.on("start", () => {
+		this.nowPlaying.on("start", () => {
+			if (!this.nowPlaying) return;
 			this.textChannel.send({
 				content: "🎶 **Now Playing**",
-				embeds: [nextTrack.embed],
+				embeds: [this.nowPlaying.embed],
 			});
 		});
-
-		nextTrack.on("error", (err) => {
-			console.log("Ada error nich", err);
+		this.nowPlaying.on("error", () => {
+			/* TODO handle error */
 		});
 
-		if (!this.loopSong) this.tracks.shift();
-		if (this.loopQueue) {
-			this.tracks.shift();
-			if (this.nowPlaying) this.tracks.push(this.nowPlaying);
-		}
+		this.play();
+	}
 
+	private async play(): Promise<void> {
+		if (!this.nowPlaying) return;
 		try {
-			const resource = await nextTrack.createAudioSource();
+			const resource = await this.nowPlaying.createAudioSource();
 			this.audioPlayer.play(resource);
 		} catch (error) {
-			console.log("error!");
-			nextTrack.emit("error", error);
+			this.nowPlaying.emit("error", error);
 			this.processQueue();
 		}
 	}

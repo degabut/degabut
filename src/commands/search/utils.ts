@@ -1,5 +1,6 @@
 import { EmbedField, MessageButton } from "discord.js";
 import { Video, VideoCompact } from "youtubei";
+import { secondToTime } from "../../utils";
 
 const numbers = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 
@@ -19,7 +20,7 @@ export const videoToMessageButton = (
 export const videoToEmbedField = (video: Video | VideoCompact, index: number): EmbedField => {
 	return {
 		name: `${numbers[index]}. ${video.title}`,
-		value: "Duration: " + video.duration,
+		value: "Duration: " + (video.duration ? secondToTime(video.duration) : "-"),
 		inline: false,
 	};
 };

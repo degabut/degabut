@@ -13,11 +13,7 @@ const command: Command = {
 		if (!queue) queue = await getQueue(message.member, message.channel);
 		if (!queue) return;
 
-		try {
-			await queue.add({ keyword, author: message.member });
-		} catch (error) {
-			console.warn(error);
-		}
+		await queue.add({ keyword, author: message.member });
 	},
 };
 

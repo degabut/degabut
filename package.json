@@ -18,13 +18,12 @@
 	"dependencies": {
 		"@discordjs/opus": "0.7.0",
 		"@discordjs/voice": "0.8.0",
-		"discord-ytdl-core": "5.0.4",
 		"discord.js": "13.6.0",
 		"dotenv": "16.0.0",
 		"ffmpeg-static": "5.0.0",
 		"libsodium-wrappers": "0.7.9",
-		"youtubei": "0.0.1-rc.29",
-		"ytdl-core": "4.11.0"
+		"play-dl": "1.8.9",
+		"youtubei": "0.0.1-rc.29"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "4.31.1",

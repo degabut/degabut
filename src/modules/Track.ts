@@ -1,7 +1,7 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
-import ytdl from "discord-ytdl-core";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";
+import play from "play-dl";
 import { ChannelCompact } from "youtubei";
 import { secondToTime } from "../utils";
 
@@ -27,13 +27,8 @@ export class Track extends EventEmitter {
 		Object.assign(this, props);
 	}
 
-	createAudioSource(): AudioResource<Track> {
-		const stream = ytdl(this.id, {
-			filter: "audioonly",
-			quality: "highestaudio",
-			opusEncoded: true,
-		});
-
+	async createAudioSource(): Promise<AudioResource<Track>> {
+		const { stream } = await play.stream(this.id);
 		const resource = createAudioResource<Track>(stream, {
 			inputType: StreamType.Opus,
 			metadata: this,

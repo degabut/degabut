@@ -168,7 +168,7 @@ export class Queue {
 		return this.loopQueue;
 	}
 
-	private processQueue(): void {
+	private async processQueue(): Promise<void> {
 		if (this.nowPlaying) return;
 
 		const nextTrack = this.tracks[0];
@@ -199,7 +199,7 @@ export class Queue {
 		}
 
 		try {
-			const resource = nextTrack.createAudioSource();
+			const resource = await nextTrack.createAudioSource();
 			this.audioPlayer.play(resource);
 		} catch (error) {
 			console.log("error!");

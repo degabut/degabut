@@ -1,7 +1,6 @@
 import { Command, GuildMember, MessageActionRow, MessageEmbed, TextChannel } from "discord.js";
 import { youtube } from "../../shared";
-import { getQueue } from "../../utils";
-import { videoToEmbedField, videoToMessageButton } from "./utils";
+import { getQueue, videoToEmbedField, videoToMessageButton } from "../../utils";
 
 const command: Command<string> = {
 	name: "search",

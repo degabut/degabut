@@ -34,8 +34,10 @@ export class Queue {
 	private textChannel!: TextChannel;
 	public nowPlaying: Track | null = null;
 	public tracks: Track[] = [];
+	public history: Track[] = [];
 	private loopSong = false;
 	private loopQueue = false;
+	private autoplay = false;
 	public readyLock = false;
 
 	constructor(props: ConstructorProps) {
@@ -85,7 +87,6 @@ export class Queue {
 				oldState.status !== AudioPlayerStatus.Idle
 			) {
 				(oldState.resource as AudioResource<Track>).metadata.emit("finish");
-				this.processQueue();
 			} else if (newState.status === AudioPlayerStatus.Playing) {
 				(newState.resource as AudioResource<Track>).metadata.emit("start");
 			}
@@ -152,6 +153,7 @@ export class Queue {
 	}
 
 	stop(): void {
+		this.readyLock = true;
 		this.tracks = [];
 		this.audioPlayer.stop(true);
 		this.voiceConnection.disconnect();
@@ -167,9 +169,41 @@ export class Queue {
 		return this.loopQueue;
 	}
 
+	toggleAutoplay(): boolean {
+		this.autoplay = !this.autoplay;
+		return this.autoplay;
+	}
+
 	private async processQueue(): Promise<void> {
+		if (this.readyLock) return;
+
 		this.nowPlaying = this.tracks[0];
-		if (!this.nowPlaying) return;
+		if (!this.nowPlaying) {
+			if (!this.autoplay) return;
+
+			// Autoplay
+			const lastSong = this.history[0];
+			if (!lastSong) return;
+
+			const video = await youtube.getVideo(lastSong.id);
+			if (!video) return;
+			const [upNext] = [video.upNext, ...video.related].filter((v) => v instanceof VideoCompact);
+			if (!upNext) return;
+
+			return this.addTrack(
+				new Track({
+					id: upNext.id,
+					thumbnailUrl: upNext.thumbnails.best || "",
+					title: upNext.title,
+					requestedBy: lastSong.requestedBy,
+					channel: upNext.channel,
+					duration: ("duration" in upNext ? upNext.duration : 0) || 0,
+				})
+			);
+		}
+
+		this.history.unshift(this.nowPlaying);
+		this.history.splice(10);
 
 		this.nowPlaying.removeAllListeners();
 		this.nowPlaying.on("finish", () => {

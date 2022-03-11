@@ -15,12 +15,19 @@ const command: Command = {
 		const lyric = await scrapeLyric(url);
 		if (!lyric) return message.reply("Can't find lyric");
 
+		let length = 4096;
+		length = length - url.length - 16;
+
 		const embed = new MessageEmbed({
 			title: `${lyric.title} ${lyric.subtitle}`,
-			description: lyric.content,
+			description: [
+				url,
+				"",
+				lyric.content.length > length ? lyric.content.slice(0, length) + "..." : lyric.content,
+			].join("\n"),
 		});
 
-		message.reply({ embeds: [embed] });
+		await message.reply({ embeds: [embed] });
 	},
 };
 

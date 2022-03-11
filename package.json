@@ -18,14 +18,17 @@
 	"dependencies": {
 		"@discordjs/opus": "0.7.0",
 		"@discordjs/voice": "0.8.0",
+		"cheerio": "1.0.0-rc.10",
 		"discord.js": "13.6.0",
 		"dotenv": "16.0.0",
 		"ffmpeg-static": "5.0.0",
 		"libsodium-wrappers": "0.7.9",
 		"play-dl": "1.8.9",
+		"qs": "6.10.3",
 		"youtubei": "0.0.1-rc.29"
 	},
 	"devDependencies": {
+		"@types/qs": "6.9.7",
 		"@typescript-eslint/eslint-plugin": "4.31.1",
 		"@typescript-eslint/parser": "4.31.1",
 		"eslint": "7.32.0",

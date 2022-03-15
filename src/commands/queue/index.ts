@@ -1,13 +1,13 @@
 import { Command, MessageEmbed } from "discord.js";
+import { inSameVoiceChannel } from "../../middlewares";
+import { hasQueue } from "../../middlewares/hasQueue";
 
-const command: Command = {
+const command: Command<{ hasQueue: true }> = {
 	name: "queue",
 	aliases: ["q"],
 	description: "Show current queue",
-	async execute(message, args) {
-		const queue = message.queue;
-		if (!queue) return;
-
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, args, queue) {
 		const page = +(args.shift() || 1) - 1;
 		const perPage = 10;
 
@@ -25,7 +25,7 @@ const command: Command = {
 			})),
 		});
 
-		message.reply({ embeds: [embed] });
+		await message.reply({ embeds: [embed] });
 	},
 };
 

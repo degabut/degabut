@@ -12,27 +12,32 @@ declare module "discord.js" {
 		prefix: string;
 	}
 
-	export interface Message {
-		queue?: Queue;
-	}
+	export type Middleware = (message: Message | Interaction) => Promise<void>;
 
-	export interface Interaction {
-		queue?: Queue;
-	}
+	export type CommandGeneric = {
+		buttonInteractionMeta?: any;
+		hasQueue?: boolean;
+	};
 
-	export interface Command<ButtonInteractionMeta = unknown> {
+	export interface Command<T extends CommandGeneric = any> {
 		name: string;
 		description: string;
 		aliases?: string[];
 		args?: CommandArgs[];
 		enabled?: boolean;
-		execute: (message: Message, args: string[]) => Promise<unknown>;
+		middlewares?: Middleware | Middleware[];
+		execute: (
+			message: Message,
+			args: string[],
+			queue: T["hasQueue"] extends true ? Queue : Queue | undefined
+		) => Promise<unknown>;
 		buttonInteractionIdPrefix?: string;
-		buttonInteractionIdParser?: (id: string) => ButtonInteractionMeta;
+		buttonInteractionIdParser?: (id: string) => T["buttonInteractionMeta"];
 		buttonInteractionIdArgs?: string[];
 		buttonInteraction?: (
 			interaction: ButtonInteraction,
-			meta: ButtonInteractionMeta
+			meta: T["buttonInteractionMeta"],
+			queue: T["hasQueue"] extends true ? Queue : Queue | undefined
 		) => Promise<unknown>;
 	}
 }

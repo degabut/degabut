@@ -5,8 +5,7 @@ import { scrapeSearchEngine } from "./scrapeSearchEngine";
 const command: Command = {
 	name: "lyric",
 	description: "Get lyric of current playing song or by keyword",
-	async execute(message, args) {
-		const queue = message.queue;
+	async execute(message, args, queue) {
 		const keyword = args.join(" ") || queue?.nowPlaying?.title;
 		if (!keyword) return;
 

@@ -15,13 +15,14 @@ export const getQueue = async (
 	let queue = queues.get(member.guild.id);
 
 	if (!queue && member.voice.channel) {
-		const channel = member.voice.channel;
+		const voiceChannel = member.voice.channel;
 		queue = new Queue({
 			voiceConnection: joinVoiceChannel({
-				channelId: channel.id,
-				guildId: channel.guild.id,
-				adapterCreator: channel.guild.voiceAdapterCreator,
+				channelId: voiceChannel.id,
+				guildId: voiceChannel.guild.id,
+				adapterCreator: voiceChannel.guild.voiceAdapterCreator,
 			}),
+			voiceChannel,
 			textChannel,
 		});
 		queue.voiceConnection.on("error", console.warn);

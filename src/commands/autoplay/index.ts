@@ -1,15 +1,14 @@
 import { Command } from "discord.js";
+import { hasQueue, inSameVoiceChannel } from "../../middlewares";
 
-const command: Command = {
+const command: Command<{ hasQueue: true }> = {
 	name: "autoplay",
 	aliases: ["ap"],
 	description: "Toggle autoplay",
-	async execute(message) {
-		const queue = message.queue;
-		if (!queue) return;
-
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, _, queue) {
 		const isAutoplaying = queue.toggleAutoplay();
-		message.reply(isAutoplaying ? "🎧 **Autoplay enabled**" : "▶ **Autoplay Disabled**");
+		await message.reply(isAutoplaying ? "🎧 **Autoplay enabled**" : "▶ **Autoplay Disabled**");
 	},
 };
 

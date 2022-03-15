@@ -8,7 +8,7 @@ import {
 	VoiceConnectionDisconnectReason,
 	VoiceConnectionStatus,
 } from "@discordjs/voice";
-import { GuildMember, TextChannel } from "discord.js";
+import { GuildMember, TextChannel, VoiceBasedChannel } from "discord.js";
 import { promisify } from "node:util";
 import { LiveVideo, Video, VideoCompact } from "youtubei";
 import { Track } from ".";
@@ -25,6 +25,7 @@ type AddProps = {
 
 interface ConstructorProps {
 	voiceConnection: VoiceConnection;
+	voiceChannel: VoiceBasedChannel;
 	textChannel: TextChannel;
 }
 
@@ -32,6 +33,7 @@ export class Queue {
 	private readonly audioPlayer: AudioPlayer;
 	public readonly voiceConnection!: VoiceConnection;
 	private textChannel!: TextChannel;
+	public voiceChannel!: VoiceBasedChannel;
 	public nowPlaying: Track | null = null;
 	public tracks: Track[] = [];
 	public history: Track[] = [];

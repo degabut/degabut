@@ -1,14 +1,14 @@
 import { Command } from "discord.js";
+import { inSameVoiceChannel } from "../../middlewares";
+import { hasQueue } from "../../middlewares/hasQueue";
 
-const command: Command = {
+const command: Command<{ hasQueue: true }> = {
 	name: "loop",
 	description: "Loop Queue",
-	async execute(message) {
-		const queue = message.queue;
-		if (!queue) return;
-
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, _, queue) {
 		const isLooped = queue.toggleLoopSong();
-		message.reply(isLooped ? "🔂 **Looping Song**" : "▶ **Loop Song Disabled**");
+		await message.reply(isLooped ? "🔂 **Looping Song**" : "▶ **Loop Song Disabled**");
 	},
 };
 

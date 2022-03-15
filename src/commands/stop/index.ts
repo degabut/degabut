@@ -1,16 +1,17 @@
 import { Command } from "discord.js";
+import { inSameVoiceChannel } from "../../middlewares";
+import { hasQueue } from "../../middlewares/hasQueue";
 import { queues } from "../../shared";
 
-const command: Command = {
+const command: Command<{ hasQueue: true }> = {
 	name: "stop",
 	aliases: ["disconnect", "dc"],
 	description: "Disconnects the bot from voice channel",
-	async execute(message) {
-		const queue = message.queue;
-		if (!queue) return;
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, _, queue) {
 		queue.stop();
 		queues.delete(message.guild?.id || "");
-		message.react("👋🏻");
+		await message.react("👋🏻");
 	},
 };
 

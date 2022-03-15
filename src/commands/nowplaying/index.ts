@@ -1,17 +1,17 @@
 import { Command } from "discord.js";
+import { inSameVoiceChannel } from "../../middlewares";
+import { hasQueue } from "../../middlewares/hasQueue";
 
-const command: Command = {
+const command: Command<{ hasQueue: true }> = {
 	name: "nowplaying",
 	aliases: ["np"],
 	description: "Show currently playing song",
-	async execute(message) {
-		const queue = message.queue;
-		if (!queue) return;
-
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, _, queue) {
 		const track = queue.nowPlaying;
 		if (!track) return;
 
-		message.reply({ embeds: [track.embed] });
+		await message.reply({ embeds: [track.embed] });
 	},
 };
 

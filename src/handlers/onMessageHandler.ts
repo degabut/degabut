@@ -15,10 +15,18 @@ export const onMessage = async (message: Message): Promise<void> => {
 
 	if (!command || command.enabled === false || !message.guild) return;
 
-	message.queue = queues.get(message.guild.id);
+	const queue = queues.get(message.guild.id);
 
 	try {
-		await command.execute(message, args);
+		if (command.middlewares) {
+			const middlewares = Array.isArray(command.middlewares)
+				? command.middlewares
+				: [command.middlewares];
+
+			for (const middleware of middlewares) await middleware(message);
+		}
+
+		await command.execute(message, args, queue);
 	} catch (error) {
 		await message.reply(`Failed to execute the command: ${(error as Error).message}`);
 	}

@@ -1,18 +1,17 @@
 import { Command } from "discord.js";
+import { hasQueue, inSameVoiceChannel } from "../../middlewares";
 
-const command: Command = {
+const command: Command<{ hasQueue: true }> = {
 	name: "remove",
 	description: "Remove a song from queue",
-	async execute(message, args) {
-		const queue = message.queue;
-		if (!queue) return;
-
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, args, queue) {
 		const index = +(args.shift() || queue.tracks.length) - 1;
 
 		const removed = queue.remove(index);
 
-		if (removed) message.channel.send(`🚮 **${removed.title} removed from queue**`);
-		else message.channel.send("Invalid index!");
+		if (removed) await message.reply(`🚮 **${removed.title} removed from queue**`);
+		else await message.reply("Invalid index!");
 	},
 };
 

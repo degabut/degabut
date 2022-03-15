@@ -12,11 +12,19 @@ export const onInteract = async (interaction: Interaction): Promise<void> => {
 	const command = commands.find((command) => command.buttonInteractionIdPrefix === prefixId);
 	if (!command?.buttonInteraction) return;
 
-	interaction.queue = queues.get(interaction.guild?.id || "");
+	const queue = queues.get(interaction.guild?.id || "");
 
 	try {
+		if (command.middlewares) {
+			const middlewares = Array.isArray(command.middlewares)
+				? command.middlewares
+				: [command.middlewares];
+
+			for (const middleware of middlewares) await middleware(interaction);
+		}
+
 		const meta = command.buttonInteractionIdParser?.(customId) || {};
-		await command.buttonInteraction(interaction, meta);
+		await command.buttonInteraction(interaction, meta, queue);
 	} catch (error) {
 		await interaction.channel?.send(`Failed to execute the command: ${(error as Error).message}`);
 	}

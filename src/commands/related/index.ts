@@ -1,9 +1,12 @@
 import { Command, GuildMember, MessageActionRow, MessageEmbed, TextChannel } from "discord.js";
 import { VideoCompact } from "youtubei";
+import { inSameVoiceChannel } from "../../middlewares";
+import { hasQueue } from "../../middlewares/hasQueue";
+import { Queue } from "../../modules";
 import { youtube } from "../../shared";
 import { getQueue, videoToEmbedField, videoToMessageButton } from "../../utils";
 
-const command: Command<string> = {
+const command: Command<{ hasQueue: true; buttonInteractionMeta: string }> = {
 	name: "related",
 	description: "Show songs related to the current song",
 	buttonInteractionIdPrefix: "related",
@@ -11,8 +14,8 @@ const command: Command<string> = {
 		const [, videoId] = customId.split("/");
 		return videoId;
 	},
-	async execute(message) {
-		const queue = message.queue;
+	middlewares: [hasQueue, inSameVoiceChannel],
+	async execute(message, _, queue) {
 		if (!queue) return;
 		if (!queue.nowPlaying) return await message.reply("No song is playing");
 
@@ -36,8 +39,9 @@ const command: Command<string> = {
 			],
 		});
 	},
-	async buttonInteraction(interaction, videoId) {
-		interaction.deferUpdate();
+	// TODO better way to handle this 3rd params typing
+	async buttonInteraction(interaction, videoId, queue: Queue | undefined) {
+		await interaction.deferUpdate();
 		if (
 			!(interaction.member instanceof GuildMember) ||
 			!(interaction.channel instanceof TextChannel) ||
@@ -45,7 +49,6 @@ const command: Command<string> = {
 		)
 			return;
 
-		let queue = interaction.queue;
 		if (!queue) queue = await getQueue(interaction.member, interaction.channel);
 		if (!queue) return;
 

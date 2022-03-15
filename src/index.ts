@@ -16,6 +16,7 @@ const client = new Discord.Client({
 	],
 });
 client.commands = [];
+client.interactions = [];
 client.prefix = PREFIX;
 
 const run = async () => {
@@ -24,6 +25,11 @@ const run = async () => {
 	for (const folder of commandFolders) {
 		const { default: command } = await import(`./commands/${folder}`);
 		client.commands.push(command);
+	}
+	const interactionFolders = await fs.readdir("./dist/interactions");
+	for (const folder of interactionFolders) {
+		const { default: command } = await import(`./interactions/${folder}`);
+		client.interactions.push(command);
 	}
 
 	// Add event handler

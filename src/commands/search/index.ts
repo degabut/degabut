@@ -1,27 +1,21 @@
-import { Command, GuildMember, MessageActionRow, MessageEmbed, TextChannel } from "discord.js";
+import { Command, MessageActionRow, MessageEmbed } from "discord.js";
+import searchInteraction from "../../interactions/search";
 import { inSameVoiceChannel } from "../../middlewares";
 import { youtube } from "../../shared";
-import { getQueue, videoToEmbedField, videoToMessageButton } from "../../utils";
+import { videoToEmbedField, videoToMessageButton } from "../../utils";
 
-const command: Command<{ buttonInteractionMeta: string }> = {
+const command: Command = {
 	name: "search",
 	aliases: ["s"],
 	description: "Search for a song",
-	buttonInteractionIdPrefix: "search",
 	middlewares: [inSameVoiceChannel],
-	buttonInteractionIdParser: (customId) => {
-		const [, videoId] = customId.split("/");
-		return videoId;
-	},
 	async execute(message, args) {
 		const keyword = args.join("");
 
 		const result = await youtube.search(keyword, { type: "video" });
 		const videos = result.slice(0, 10);
 
-		const buttons = videos.map((v, i) =>
-			videoToMessageButton(v, i, this.buttonInteractionIdPrefix)
-		);
+		const buttons = videos.map((v, i) => videoToMessageButton(v, i, searchInteraction.name));
 
 		await message.reply({
 			embeds: [new MessageEmbed({ fields: videos.map(videoToEmbedField) })],
@@ -30,20 +24,6 @@ const command: Command<{ buttonInteractionMeta: string }> = {
 				new MessageActionRow({ components: buttons.slice(5, 10) }),
 			],
 		});
-	},
-	async buttonInteraction(interaction, videoId, queue) {
-		await interaction.deferUpdate();
-		if (
-			!(interaction.member instanceof GuildMember) ||
-			!(interaction.channel instanceof TextChannel) ||
-			!videoId
-		)
-			return;
-
-		if (!queue) queue = await getQueue(interaction.member, interaction.channel);
-		if (!queue) return;
-
-		queue.add({ id: videoId, author: interaction.member });
 	},
 };
 

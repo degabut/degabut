@@ -1,19 +1,14 @@
-import { Command, GuildMember, MessageActionRow, MessageEmbed, TextChannel } from "discord.js";
+import { Command, MessageActionRow, MessageEmbed } from "discord.js";
 import { VideoCompact } from "youtubei";
+import relatedInteraction from "../../interactions/related";
 import { inSameVoiceChannel } from "../../middlewares";
 import { hasQueue } from "../../middlewares/hasQueue";
-import { Queue } from "../../modules";
 import { youtube } from "../../shared";
-import { getQueue, videoToEmbedField, videoToMessageButton } from "../../utils";
+import { videoToEmbedField, videoToMessageButton } from "../../utils";
 
-const command: Command<{ hasQueue: true; buttonInteractionMeta: string }> = {
+const command: Command<{ hasQueue: true }> = {
 	name: "related",
 	description: "Show songs related to the current song",
-	buttonInteractionIdPrefix: "related",
-	buttonInteractionIdParser: (customId) => {
-		const [, videoId] = customId.split("/");
-		return videoId;
-	},
 	middlewares: [hasQueue, inSameVoiceChannel],
 	async execute(message, _, queue) {
 		if (!queue) return;
@@ -27,7 +22,7 @@ const command: Command<{ hasQueue: true; buttonInteractionMeta: string }> = {
 			.slice(0, 10) as VideoCompact[];
 
 		const buttons = relatedVideos.map((v, i) =>
-			videoToMessageButton(v, i, this.buttonInteractionIdPrefix)
+			videoToMessageButton(v, i, relatedInteraction.name)
 		);
 
 		await message.reply({
@@ -38,21 +33,6 @@ const command: Command<{ hasQueue: true; buttonInteractionMeta: string }> = {
 				new MessageActionRow({ components: buttons.slice(5, 10) }),
 			],
 		});
-	},
-	// TODO better way to handle this 3rd params typing
-	async buttonInteraction(interaction, videoId, queue: Queue | undefined) {
-		await interaction.deferUpdate();
-		if (
-			!(interaction.member instanceof GuildMember) ||
-			!(interaction.channel instanceof TextChannel) ||
-			!videoId
-		)
-			return;
-
-		if (!queue) queue = await getQueue(interaction.member, interaction.channel);
-		if (!queue) return;
-
-		queue.add({ id: videoId, author: interaction.member });
 	},
 };
 

@@ -5,12 +5,12 @@ export const onInteract = async (interaction: Interaction): Promise<void> => {
 	if (!interaction.isButton()) return;
 	const client = interaction.client;
 
-	const commands = [...client.commands.values()];
+	const commands = [...client.interactions.values()];
 	const customId = interaction.customId;
-	const prefixId = customId.split("/").shift();
+	const name = customId.split("/").shift();
 
-	const command = commands.find((command) => command.buttonInteractionIdPrefix === prefixId);
-	if (!command?.buttonInteraction) return;
+	const command = commands.find((command) => command.name === name);
+	if (!command) return;
 
 	const queue = queues.get(interaction.guild?.id || "");
 
@@ -24,7 +24,7 @@ export const onInteract = async (interaction: Interaction): Promise<void> => {
 		}
 
 		const meta = command.buttonInteractionIdParser?.(customId) || {};
-		await command.buttonInteraction(interaction, meta, queue);
+		await command.execute(interaction, meta, queue);
 	} catch (error) {
 		await interaction.channel?.send(`Failed to execute the command: ${(error as Error).message}`);
 	}

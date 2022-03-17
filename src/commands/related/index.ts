@@ -11,10 +11,10 @@ const command: Command<{ hasQueue: true }> = {
 	description: "Show songs related to the current song",
 	middlewares: [hasQueue, inSameVoiceChannel],
 	async execute(message, _, queue) {
-		if (!queue) return;
-		if (!queue.nowPlaying) return await message.reply("No song is playing");
+		const target = queue.nowPlaying || queue.history[0];
+		if (!target) return await message.reply("No song is playing");
 
-		const video = await youtube.getVideo(queue.nowPlaying.id);
+		const video = await youtube.getVideo(target.id);
 		if (!video) return;
 
 		const relatedVideos = [video.upNext, ...video.related]
@@ -26,7 +26,7 @@ const command: Command<{ hasQueue: true }> = {
 		);
 
 		await message.reply({
-			content: `⭐ **Songs related with ${queue.nowPlaying.title}**`,
+			content: `⭐ **Songs related with ${target.title}**`,
 			embeds: [new MessageEmbed({ fields: relatedVideos.map(videoToEmbedField) })],
 			components: [
 				new MessageActionRow({ components: buttons.slice(0, 5) }),

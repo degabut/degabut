@@ -17,12 +17,11 @@ const command: Command = {
 
 		const appId = (args.shift() || "") as keyof typeof appsId;
 
-		if (!channel) return message.reply("You must be in a voice channel!");
-		if (!appsId[appId])
-			return message.reply("Invalid app name, valid app name: " + Object.keys(appsId).join(", "));
+		if (!channel) return await message.reply("You must be in a voice channel!");
+		if (!appId) return await message.reply("Invalid app id");
 
 		const invite = await channel.createInvite({
-			targetApplication: appsId[appId],
+			targetApplication: appsId[appId] || appId,
 			targetType: 2,
 			maxUses: 0,
 		});
@@ -37,7 +36,7 @@ const command: Command = {
 			],
 		});
 
-		message.channel.send({
+		await message.channel.send({
 			content: `**<@!${message.author.id}> has started an activity!** (${appId.toUpperCase()})`,
 			components: [row],
 		});

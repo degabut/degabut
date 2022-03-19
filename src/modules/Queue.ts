@@ -137,14 +137,9 @@ export class Queue {
 	}
 
 	remove(index: number): Track | null {
-		if (index === 0) {
-			const removed = this.nowPlaying;
-			this.skip();
-			return removed;
-		} else {
-			const [removed] = this.tracks.splice(index, 1);
-			return removed;
-		}
+		const [removed] = this.tracks.splice(index, 1);
+		if (index === 0) this.skip();
+		return removed;
 	}
 
 	async skip(): Promise<void> {

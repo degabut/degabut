@@ -1,6 +1,7 @@
 {
 	"singleQuote": false,
 	"printWidth": 100,
+	"endOfLine": "lf",
 	"semi": true,
 	"useTabs": true
 }

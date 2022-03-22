@@ -8,9 +8,11 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc && tsc-alias",
+		"check": "eslint && prettier --check src && tsc --noEmit",
 		"dev": "tsc-watch --onSuccess \"yarn start\"",
 		"lint": "eslint --fix && prettier --write src",
-		"start": "tsc-alias && node ."
+		"start": "tsc-alias && node .",
+		"prepare": "husky install"
 	},
 	"author": "SuspiciousLookingOwl",
 	"license": "MIT",
@@ -34,6 +36,7 @@
 		"@typescript-eslint/eslint-plugin": "4.31.1",
 		"@typescript-eslint/parser": "4.31.1",
 		"eslint": "7.32.0",
+		"husky": "7.0.4",
 		"prettier": "2.4.0",
 		"prettier-plugin-organize-imports": "2.3.4",
 		"tsc-alias": "1.6.4",

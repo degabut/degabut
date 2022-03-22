@@ -19,7 +19,7 @@ export class SearchCommand implements ICommand {
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const keyword = args.join("");
 
-		const videos = await this.searchVideo.execute({ keyword });
+		const videos = (await this.searchVideo.execute({ keyword })).slice(0, 10);
 
 		const buttons = videos.map((v, i) =>
 			videoToMessageButton(v, i, this.searchInteractionCommand.name)

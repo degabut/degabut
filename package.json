@@ -1,6 +1,6 @@
 {
 	"name": "degabut.js",
-	"version": "0.0.2",
+	"version": "1.0.0",
 	"description": "",
 	"engines": {
 		"node": ">=16.14.0"
@@ -10,7 +10,6 @@
 		"build": "tsc",
 		"dev": "tsc-watch --onSuccess \"node .\"",
 		"start": "node .",
-		"create-command": "node ./scripts/create-command.js",
 		"compose:up": "npm run build && docker-compose up --build -d"
 	},
 	"author": "SuspiciousLookingOwl",
@@ -22,9 +21,12 @@
 		"discord.js": "13.6.0",
 		"dotenv": "16.0.0",
 		"ffmpeg-static": "5.0.0",
+		"joi": "17.6.0",
 		"libsodium-wrappers": "0.7.9",
 		"play-dl": "1.8.9",
 		"qs": "6.10.3",
+		"reflect-metadata": "0.1.13",
+		"tsyringe": "4.6.0",
 		"youtubei": "0.0.1-rc.29"
 	},
 	"devDependencies": {

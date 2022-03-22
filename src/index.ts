@@ -1,44 +1,77 @@
-import Discord from "discord.js";
-import "dotenv/config";
-import { promises as fs } from "fs";
-import { onInteract, onMessage } from "./handlers/index";
+import dotenv from "dotenv";
+import "reflect-metadata";
+import { container } from "tsyringe";
+import { Client as YoutubeClient } from "youtubei";
+import { Bot } from "./bot";
+import * as commands from "./bot/commands";
+import { ICommand, IInteractionCommand } from "./bot/core";
+import { OnInteractHandler, OnMessageHandler } from "./bot/handlers";
+import * as interactions from "./bot/interactions";
+import { Config, ConfigProps, UseCase } from "./core";
+import { LyricProvider } from "./modules/lyric";
+import * as lyricUseCases from "./modules/lyric/useCases";
+import { QueueManager } from "./modules/queue";
+import * as queueUseCases from "./modules/queue/useCases";
+import { YoutubeProvider } from "./modules/youtube";
+import * as youtubeUseCases from "./modules/youtube/useCases";
 
-const PREFIX = process.env.PREFIX as string;
-const TOKEN = process.env.TOKEN as string;
+const run = () => {
+	//#region Config
+	dotenv.config();
 
-const client = new Discord.Client({
-	intents: [
-		Discord.Intents.FLAGS.GUILDS,
-		Discord.Intents.FLAGS.GUILD_MESSAGES,
-		Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-		Discord.Intents.FLAGS.GUILD_VOICE_STATES,
-		Discord.Intents.FLAGS.DIRECT_MESSAGES,
-	],
-});
-client.commands = [];
-client.interactions = [];
-client.prefix = PREFIX;
+	const config: ConfigProps = {
+		prefix: process.env.PREFIX as string,
+		token: process.env.TOKEN as string,
+		webSocketServer: process.env.WEBSOCKET_SERVER === "true",
+		jwtSecret: process.env.JWT_SECRET,
+	};
 
-const run = async () => {
-	// Register all commands to the client
-	const commandFolders = await fs.readdir("./dist/commands");
-	for (const folder of commandFolders) {
-		const { default: command } = await import(`./commands/${folder}`);
-		client.commands.push(command);
-	}
-	const interactionFolders = await fs.readdir("./dist/interactions");
-	for (const folder of interactionFolders) {
-		const { default: command } = await import(`./interactions/${folder}`);
-		client.interactions.push(command);
-	}
+	container.register(Config, { useValue: new Config(config) });
+	//#endregion
 
-	// Add event handler
-	client.once("ready", () => console.log("Ready!"));
-	client.on("messageCreate", onMessage);
-	client.on("interactionCreate", onInteract);
+	//#region States
+	// container.register(QueueManager, { useValue: new QueueManager() });
+	container.registerSingleton(QueueManager);
+	//#endregion
 
-	// Run the bot
-	client.login(TOKEN);
+	//#region Providers
+	container.registerSingleton(YoutubeClient);
+	container.registerSingleton(YoutubeProvider);
+	container.registerSingleton(LyricProvider);
+	//#endregion
+
+	//#region Use Cases
+	Object.values(queueUseCases)
+		.filter((U) => U.prototype instanceof UseCase)
+		.forEach((U) => container.registerSingleton<UseCase>(U));
+
+	Object.values(youtubeUseCases)
+		.filter((U) => U.prototype instanceof UseCase)
+		.forEach((U) => container.registerSingleton<UseCase>(U));
+
+	Object.values(lyricUseCases)
+		.filter((U) => U.prototype instanceof UseCase)
+		.forEach((U) => container.registerSingleton<UseCase>(U));
+	//#endregion
+
+	//#region Bot
+	Object.values(commands).forEach((C) => {
+		container.registerSingleton<ICommand>("commands", C);
+	});
+	Object.values(interactions).forEach((C) => {
+		container.registerSingleton<IInteractionCommand>("interactionCommands", C);
+	});
+
+	container.registerSingleton(OnMessageHandler);
+	container.registerSingleton(OnInteractHandler);
+
+	container.register(Bot, { useClass: Bot });
+	//#endregion
+
+	//#region start
+	const bot = container.resolve(Bot);
+	bot.login(config.token);
+	//#endregion
 };
 
 run();

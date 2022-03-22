@@ -9,9 +9,10 @@
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"check": "eslint && prettier --check src && tsc --noEmit",
-		"dev": "tsc-watch --onSuccess \"yarn start\"",
+		"dev": "tsc-watch --onSuccess \"yarn dev:start\"",
+		"dev:start": "tsc-alias && yarn start",
 		"lint": "eslint --fix && prettier --write src",
-		"start": "tsc-alias && node .",
+		"start": "node .",
 		"prepare": "husky install"
 	},
 	"author": "SuspiciousLookingOwl",

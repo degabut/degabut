@@ -20,6 +20,6 @@ export class Bot extends DiscordClient {
 
 		this.once("ready", () => console.log("Ready!"));
 		this.on("messageCreate", (message) => onMessageHandler.execute(message));
-		// this.on("interactionCreate", (interaction) => onInteractHandler.execute(interaction));
+		this.on("interactionCreate", (interaction) => onInteractHandler.execute(interaction));
 	}
 }

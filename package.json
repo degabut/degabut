@@ -7,10 +7,10 @@
 	},
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsc-watch --onSuccess \"node .\"",
-		"start": "node .",
-		"compose:up": "npm run build && docker-compose up --build -d"
+		"build": "tsc && tsc-alias",
+		"dev": "tsc-watch --onSuccess \"yarn start\"",
+		"lint": "eslint --fix && prettier --write src",
+		"start": "tsc-alias && node ."
 	},
 	"author": "SuspiciousLookingOwl",
 	"license": "MIT",
@@ -35,6 +35,8 @@
 		"@typescript-eslint/parser": "4.31.1",
 		"eslint": "7.32.0",
 		"prettier": "2.4.0",
+		"prettier-plugin-organize-imports": "2.3.4",
+		"tsc-alias": "1.6.4",
 		"tsc-watch": "4.5.0",
 		"typescript": "4.5.5"
 	}

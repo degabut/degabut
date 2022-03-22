@@ -1,9 +1,9 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
+import { secondToTime } from "@utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";
 import play from "play-dl";
 import { ChannelCompact } from "youtubei";
-import { secondToTime } from "../../../utils";
 
 interface ConstructorProps {
 	id: string;

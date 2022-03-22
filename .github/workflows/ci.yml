@@ -12,7 +12,7 @@ jobs:
       - name: Compile
         uses: actions/setup-node@v2
         with:
-          node-version: '16.14'
+          node-version: "16.14"
       - run: npm i
       - run: npm run build
       - name: Login to Docker Hub

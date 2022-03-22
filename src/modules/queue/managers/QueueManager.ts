@@ -36,10 +36,6 @@ export class QueueManager {
 			textChannel,
 		});
 
-		queue.on("autoplay", () => {
-			// if (queue) this.autoAddTrack.execute({ queue });
-		});
-
 		this.set(guildId, queue);
 		return queue;
 	}

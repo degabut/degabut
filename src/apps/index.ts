@@ -9,7 +9,7 @@ import "reflect-metadata";
 import { container } from "tsyringe";
 import { constructor } from "tsyringe/dist/typings/types";
 import { Client as YoutubeClient } from "youtubei";
-import { Config, ConfigProps, UseCase } from "../core";
+import { Config, ConfigProps, EventHandler, UseCase } from "../core";
 import { Bot } from "./bot";
 import * as commands from "./bot/commands";
 import { ICommand, IInteractionCommand } from "./bot/core";
@@ -19,6 +19,11 @@ import * as interactions from "./bot/interactions";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getUseCases = (modules: Record<string, any>): constructor<UseCase>[] => {
 	return Object.values(modules).filter((U) => U.prototype instanceof UseCase);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getEventHandlers = (modules: Record<string, any>): constructor<EventHandler>[] => {
+	return Object.values(modules).filter((E) => E.prototype instanceof EventHandler);
 };
 
 export const run = (): void => {
@@ -49,6 +54,10 @@ export const run = (): void => {
 	getUseCases(queueModules).forEach((U) => container.registerSingleton(U));
 	getUseCases(youtubeModules).forEach((U) => container.registerSingleton(U));
 	getUseCases(lyricModules).forEach((U) => container.registerSingleton(U));
+	//#endregion
+
+	//#region Event Handlers
+	getEventHandlers(queueModules).forEach((U) => container.registerSingleton(U));
 	//#endregion
 
 	//#region Bot

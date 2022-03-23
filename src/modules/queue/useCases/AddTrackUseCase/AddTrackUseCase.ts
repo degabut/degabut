@@ -1,11 +1,11 @@
 import { UseCase } from "@core";
-import { AutoAddTrackUseCase, IQueueRepository, Queue, Track } from "@modules/queue";
+import { AutoAddTrackUseCase, IQueueRepository, OnTrackAddEvent, Track } from "@modules/queue";
 import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, GuildMember } from "discord.js";
 import Joi from "joi";
 import { delay, inject, injectable } from "tsyringe";
 
-type Params = {
+export type AddTrackParams = {
 	keyword: string;
 	id: string;
 	guildId: string;
@@ -14,11 +14,11 @@ type Params = {
 	textChannel?: BaseGuildTextChannel;
 };
 
-type Response = Queue | undefined;
+export type AddTrackResponse = Track;
 
 @injectable()
-export class AddTrackUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
+export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
+	public paramsSchema = Joi.object<AddTrackParams>({
 		keyword: Joi.string(),
 		id: Joi.string(),
 		guildId: Joi.string().required(),
@@ -29,6 +29,8 @@ export class AddTrackUseCase extends UseCase<Params, Response> {
 		.required()
 		.xor("keyword", "id");
 
+	public emit = [OnTrackAddEvent];
+
 	constructor(
 		@inject(YoutubeProvider) private youtubeProvider: IYoutubeProvider,
 		@inject("QueueRepository") private queueRepository: IQueueRepository,
@@ -37,7 +39,7 @@ export class AddTrackUseCase extends UseCase<Params, Response> {
 		super();
 	}
 
-	public async run(params: Params): Promise<Response> {
+	public async run(params: AddTrackParams): Promise<AddTrackResponse> {
 		const { keyword, id, requestedBy, guildId, textChannel, voiceChannel } = params;
 
 		let queue = this.queueRepository.get(guildId);
@@ -52,17 +54,17 @@ export class AddTrackUseCase extends UseCase<Params, Response> {
 			: [await this.youtubeProvider.getVideo(id)];
 		if (!video) throw new Error("Video not found");
 
-		queue.addTrack(
-			new Track({
-				id: video.id,
-				duration: "duration" in video ? video.duration || 0 : 0,
-				title: video.title,
-				thumbnailUrl: video.thumbnails.best,
-				channel: video.channel,
-				requestedBy,
-			})
-		);
+		const track = new Track({
+			id: video.id,
+			duration: "duration" in video ? video.duration || 0 : 0,
+			title: video.title,
+			thumbnailUrl: video.thumbnails.best,
+			channel: video.channel,
+			requestedBy,
+		});
 
-		return queue;
+		queue.addTrack(track);
+
+		return track;
 	}
 }

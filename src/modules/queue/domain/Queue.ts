@@ -124,7 +124,7 @@ export class Queue extends EventEmitter {
 
 	public remove(index: number): Track | null {
 		const [removed] = this.tracks.splice(index, 1);
-		if (index === 0) this.skip();
+		if (index === 0) this.audioPlayer.stop();
 		return removed;
 	}
 

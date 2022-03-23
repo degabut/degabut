@@ -12,9 +12,8 @@ export class QueueCommand implements ICommand {
 	constructor(@inject(GetQueueTracksUseCase) private getQueueTracks: GetQueueTracksUseCase) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
-		const page = +(args.shift() || 1) - 1;
+		const page = Number(args.shift() || 1);
 		const perPage = 10;
-		const start = page * perPage;
 
 		const { tracks, totalLength } = await this.getQueueTracks.execute({
 			guildId: message.guild?.id,
@@ -22,9 +21,10 @@ export class QueueCommand implements ICommand {
 			perPage,
 		});
 
+		const start = (page - 1) * perPage;
 		const embed = new MessageEmbed({
 			title: "Queue",
-			description: `Showing page **${page + 1}** / **${Math.ceil(totalLength / perPage)}**`,
+			description: `Showing page **${page}** / **${Math.ceil(totalLength / perPage)}**`,
 			fields: tracks.map((track, index) => ({
 				name: `${start + index + 1}. ${track.title}`,
 				value: `${track.url}\r\nRequested by <@!${track.requestedBy?.id}>`,

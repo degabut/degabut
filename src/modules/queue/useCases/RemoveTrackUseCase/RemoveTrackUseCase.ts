@@ -14,7 +14,7 @@ type Response = Track | null;
 export class RemoveTrackUseCase extends UseCase<Params, Response> {
 	public paramsSchema = Joi.object<Params>({
 		guildId: Joi.string().required(),
-		index: Joi.string(),
+		index: Joi.number().min(0).failover(0),
 	}).required();
 
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {

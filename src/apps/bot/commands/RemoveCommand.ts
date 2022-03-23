@@ -11,9 +11,11 @@ export class RemoveCommand implements ICommand {
 	constructor(@inject(RemoveTrackUseCase) private removeTrack: RemoveTrackUseCase) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
+		const index = +args[0];
+
 		const removed = await this.removeTrack.execute({
 			guildId: message.guild?.id,
-			index: +args[0],
+			index: index ? index - 1 : undefined,
 		});
 
 		if (removed) await message.reply(`🚮 **${removed.title} removed from queue**`);

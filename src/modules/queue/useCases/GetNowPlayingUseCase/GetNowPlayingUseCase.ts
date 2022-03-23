@@ -1,7 +1,7 @@
 import { UseCase } from "@core";
+import { IQueueRepository, Track } from "@modules/queue";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-import { QueueManager, Track } from "../..";
 
 interface Params {
 	guildId: string;
@@ -15,14 +15,14 @@ export class GetNowPlayingUseCase extends UseCase<Params, Response> {
 		guildId: Joi.string().required(),
 	}).required();
 
-	constructor(@inject(QueueManager) private queueManager: QueueManager) {
+	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
 	public async run(params: Params): Promise<Response> {
 		const { guildId } = params;
 
-		const queue = this.queueManager.get(guildId);
+		const queue = this.queueRepository.get(guildId);
 
 		if (!queue) throw new Error("Queue not found");
 

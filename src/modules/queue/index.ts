@@ -1,3 +1,3 @@
 export * from "./domain";
-export * from "./managers";
+export * from "./repository";
 export * from "./useCases";

@@ -1,8 +1,8 @@
 import { UseCase } from "@core";
 import { ILyricProvider, Lyric, LyricProvider } from "@modules/lyric";
+import { IQueueRepository } from "@modules/queue";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-import { QueueManager } from "../..";
 
 interface Params {
 	guildId: string;
@@ -17,7 +17,7 @@ export class GetNowPlayingLyricUseCase extends UseCase<Params, Response> {
 	}).required();
 
 	constructor(
-		@inject(QueueManager) private queueManager: QueueManager,
+		@inject("QueueRepository") private queueRepository: IQueueRepository,
 		@inject(LyricProvider) private lyricProvider: ILyricProvider
 	) {
 		super();
@@ -26,7 +26,7 @@ export class GetNowPlayingLyricUseCase extends UseCase<Params, Response> {
 	public async run(params: Params): Promise<Response> {
 		const { guildId } = params;
 
-		const queue = this.queueManager.get(guildId);
+		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new Error("Queue not found");
 
 		const target = queue.nowPlaying;

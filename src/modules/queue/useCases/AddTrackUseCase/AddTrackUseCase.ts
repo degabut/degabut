@@ -1,9 +1,9 @@
 import { UseCase } from "@core";
+import { AutoAddTrackUseCase, IQueueRepository, Queue, Track } from "@modules/queue";
 import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, GuildMember } from "discord.js";
 import Joi from "joi";
 import { delay, inject, injectable } from "tsyringe";
-import { AutoAddTrackUseCase, Queue, QueueManager, Track } from "../..";
 
 type Params = {
 	keyword: string;
@@ -31,7 +31,7 @@ export class AddTrackUseCase extends UseCase<Params, Response> {
 
 	constructor(
 		@inject(YoutubeProvider) private youtubeProvider: IYoutubeProvider,
-		@inject(QueueManager) private queueManager: QueueManager,
+		@inject("QueueRepository") private queueRepository: IQueueRepository,
 		@inject(delay(() => AutoAddTrackUseCase)) private autoAddTrack: AutoAddTrackUseCase
 	) {
 		super();
@@ -40,10 +40,10 @@ export class AddTrackUseCase extends UseCase<Params, Response> {
 	public async run(params: Params): Promise<Response> {
 		const { keyword, id, requestedBy, guildId, textChannel, voiceChannel } = params;
 
-		let queue = this.queueManager.get(guildId);
+		let queue = this.queueRepository.get(guildId);
 		if (!queue) {
 			if (!textChannel || !voiceChannel) throw new Error("Queue not found");
-			queue = this.queueManager.create({ guildId, voiceChannel, textChannel });
+			queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
 			queue.on("autoplay", () => this.autoAddTrack.execute({ queue }));
 		}
 

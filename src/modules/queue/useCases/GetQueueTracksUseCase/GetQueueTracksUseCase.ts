@@ -1,7 +1,7 @@
 import { UseCase } from "@core";
+import { IQueueRepository, Track } from "@modules/queue";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-import { QueueManager, Track } from "../..";
 
 interface Params {
 	guildId: string;
@@ -22,14 +22,14 @@ export class GetQueueTracksUseCase extends UseCase<Params, Response> {
 		perPage: Joi.number().min(100).required().failover(10),
 	}).required();
 
-	constructor(@inject(QueueManager) private queueManager: QueueManager) {
+	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
 	public async run(params: Params): Promise<Response> {
 		const { guildId, page, perPage } = params;
 
-		const queue = this.queueManager.get(guildId);
+		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new Error("Queue not found");
 
 		const start = (page - 1) * perPage;

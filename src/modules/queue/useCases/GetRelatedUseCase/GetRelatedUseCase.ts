@@ -1,9 +1,9 @@
 import { UseCase } from "@core";
+import { IQueueRepository } from "@modules/queue";
 import { YoutubeProvider } from "@modules/youtube";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";
-import { QueueManager } from "../..";
 
 interface Params {
 	guildId: string;
@@ -18,7 +18,7 @@ export class GetRelatedUseCase extends UseCase<Params, Response> {
 	}).required();
 
 	constructor(
-		@inject(QueueManager) private queueManager: QueueManager,
+		@inject("QueueRepository") private queueRepository: IQueueRepository,
 		@inject(YoutubeProvider) private youtubeProvider: YoutubeProvider
 	) {
 		super();
@@ -27,7 +27,7 @@ export class GetRelatedUseCase extends UseCase<Params, Response> {
 	public async run(params: Params): Promise<Response> {
 		const { guildId } = params;
 
-		const queue = this.queueManager.get(guildId);
+		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new Error("Queue not found");
 
 		const target = queue.nowPlaying || queue.history[0];

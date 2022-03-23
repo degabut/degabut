@@ -1,7 +1,7 @@
 import { UseCase } from "@core";
+import { IQueueRepository, Track } from "@modules/queue";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-import { QueueManager, Track } from "../..";
 
 interface Params {
 	guildId: string;
@@ -17,14 +17,14 @@ export class RemoveTrackUseCase extends UseCase<Params, Response> {
 		index: Joi.string(),
 	}).required();
 
-	constructor(@inject(QueueManager) private queueManager: QueueManager) {
+	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
 	public async run(params: Params): Promise<Response> {
 		const { guildId, index } = params;
 
-		const queue = this.queueManager.get(guildId);
+		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new Error("Queue not found");
 
 		const removed = queue.remove(index || queue.tracks.length - 1);

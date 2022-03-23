@@ -1,7 +1,6 @@
 import { joinVoiceChannel } from "@discordjs/voice";
+import { IQueueRepository, Queue } from "@modules/queue";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
-import { injectable } from "tsyringe";
-import { Queue } from "../domain";
 
 type CreateProps = {
 	voiceChannel: BaseGuildVoiceChannel;
@@ -9,16 +8,11 @@ type CreateProps = {
 	guildId: string;
 };
 
-@injectable()
-export class QueueManager {
+export class QueueMemoryRepository implements IQueueRepository {
 	private queues: Map<string, Queue> = new Map();
 
 	public get(guildId: string): Queue | undefined {
 		return this.queues.get(guildId);
-	}
-
-	public set(guildId: string, queue: Queue): void {
-		this.queues.set(guildId, queue);
 	}
 
 	public delete(guildId: string): void {
@@ -36,7 +30,7 @@ export class QueueManager {
 			textChannel,
 		});
 
-		this.set(guildId, queue);
+		this.queues.set(guildId, queue);
 		return queue;
 	}
 }

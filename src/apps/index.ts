@@ -1,12 +1,13 @@
+import * as lyricModules from "@modules/lyric";
 import { LyricProvider } from "@modules/lyric";
-import * as lyricUseCases from "@modules/lyric/useCases";
-import { QueueManager } from "@modules/queue";
-import * as queueUseCases from "@modules/queue/useCases";
+import * as queueModules from "@modules/queue";
+import { QueueMemoryRepository } from "@modules/queue";
+import * as youtubeModules from "@modules/youtube";
 import { YoutubeProvider } from "@modules/youtube";
-import * as youtubeUseCases from "@modules/youtube/useCases";
 import dotenv from "dotenv";
 import "reflect-metadata";
 import { container } from "tsyringe";
+import { constructor } from "tsyringe/dist/typings/types";
 import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, UseCase } from "../core";
 import { Bot } from "./bot";
@@ -14,6 +15,11 @@ import * as commands from "./bot/commands";
 import { ICommand, IInteractionCommand } from "./bot/core";
 import { OnInteractHandler, OnMessageHandler } from "./bot/handlers";
 import * as interactions from "./bot/interactions";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getUseCases = (modules: Record<string, any>): constructor<UseCase>[] => {
+	return Object.values(modules).filter((U) => U.prototype instanceof UseCase);
+};
 
 export const run = (): void => {
 	//#region Config
@@ -29,9 +35,8 @@ export const run = (): void => {
 	container.register(Config, { useValue: new Config(config) });
 	//#endregion
 
-	//#region States
-	// container.register(QueueManager, { useValue: new QueueManager() });
-	container.registerSingleton(QueueManager);
+	//#region Repository
+	container.registerSingleton("QueueRepository", QueueMemoryRepository);
 	//#endregion
 
 	//#region Providers
@@ -41,17 +46,9 @@ export const run = (): void => {
 	//#endregion
 
 	//#region Use Cases
-	Object.values(queueUseCases)
-		.filter((U) => U.prototype instanceof UseCase)
-		.forEach((U) => container.registerSingleton<UseCase>(U));
-
-	Object.values(youtubeUseCases)
-		.filter((U) => U.prototype instanceof UseCase)
-		.forEach((U) => container.registerSingleton<UseCase>(U));
-
-	Object.values(lyricUseCases)
-		.filter((U) => U.prototype instanceof UseCase)
-		.forEach((U) => container.registerSingleton<UseCase>(U));
+	getUseCases(queueModules).forEach((U) => container.registerSingleton(U));
+	getUseCases(youtubeModules).forEach((U) => container.registerSingleton(U));
+	getUseCases(lyricModules).forEach((U) => container.registerSingleton(U));
 	//#endregion
 
 	//#region Bot

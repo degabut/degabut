@@ -1,9 +1,9 @@
 import { UseCase } from "@core";
+import { Queue, Track } from "@modules/queue";
 import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";
-import { Queue, Track } from "../..";
 
 interface Params {
 	queue: Queue;

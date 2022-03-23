@@ -10,9 +10,6 @@
 			"@modules/queue": ["./src/modules/queue"],
 			"@modules/lyric": ["./src/modules/lyric"],
 			"@modules/youtube": ["./src/modules/youtube"],
-			"@modules/queue/*": ["./src/modules/queue/*"],
-			"@modules/lyric/*": ["./src/modules/lyric/*"],
-			"@modules/youtube/*": ["./src/modules/youtube/*"],
 			"@core": ["./src/core"],
 			"@utils": ["./src/utils"]
 		},

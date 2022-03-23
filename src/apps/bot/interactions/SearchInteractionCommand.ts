@@ -16,13 +16,14 @@ export class SearchInteractionCommand implements IInteractionCommand {
 	}
 
 	async execute(interaction: ButtonInteraction, videoId: string): Promise<void> {
-		await interaction.deferUpdate();
 		if (
 			!(interaction.member instanceof GuildMember) ||
 			!(interaction.channel instanceof TextChannel) ||
 			!(interaction.message instanceof Message)
-		)
+		) {
+			await interaction.deferUpdate();
 			return;
+		}
 
 		await this.addTrack.execute({
 			id: videoId,
@@ -31,5 +32,6 @@ export class SearchInteractionCommand implements IInteractionCommand {
 			textChannel: interaction.channel,
 			voiceChannel: interaction.member.voice.channel || undefined,
 		});
+		await interaction.deferUpdate();
 	}
 }

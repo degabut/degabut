@@ -17,13 +17,10 @@ import * as botCommands from "./discord/commands";
 import * as botInteractions from "./discord/interactions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getUseCases = (modules: Record<string, any>): constructor<UseCase>[] => {
-	return Object.values(modules).filter((U) => U.prototype instanceof UseCase);
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getEventHandlers = (modules: Record<string, any>): constructor<EventHandler>[] => {
-	return Object.values(modules).filter((E) => E.prototype instanceof EventHandler);
+const getTokens = (modules: Record<string, any>): constructor<UseCase>[] => {
+	return Object.values(modules).filter(
+		(U) => U.prototype instanceof UseCase || U.prototype instanceof EventHandler
+	);
 };
 
 export const run = (): void => {
@@ -49,14 +46,10 @@ export const run = (): void => {
 	container.registerSingleton(LyricProvider);
 	//#endregion
 
-	//#region Use Cases
-	getUseCases(queueModules).forEach((U) => container.registerSingleton(U));
-	getUseCases(youtubeModules).forEach((U) => container.registerSingleton(U));
-	getUseCases(lyricModules).forEach((U) => container.registerSingleton(U));
-	//#endregion
-
-	//#region Event Handlers
-	getEventHandlers(queueModules).forEach((U) => container.registerSingleton(U));
+	//#region Use Cases and Event Handlers
+	getTokens(queueModules).forEach((U) => container.registerSingleton(U));
+	getTokens(youtubeModules).forEach((U) => container.registerSingleton(U));
+	getTokens(lyricModules).forEach((U) => container.registerSingleton(U));
 	//#endregion
 
 	//#region Bot

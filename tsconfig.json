@@ -11,6 +11,8 @@
 			"@modules/lyric": ["./src/modules/lyric"],
 			"@modules/youtube": ["./src/modules/youtube"],
 			"@core": ["./src/core"],
+			"@apps/api": ["./src/apps/api"],
+			"@apps/bot": ["./src/apps/bot"],
 			"@utils": ["./src/utils"]
 		},
 		"outDir": "./dist",

@@ -10,6 +10,8 @@ import { container } from "tsyringe";
 import { constructor } from "tsyringe/dist/typings/types";
 import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, EventHandler, UseCase } from "../core";
+import { Controller, createApi } from "./api";
+import * as apiControllers from "./api/controllers";
 import { Bot } from "./bot";
 import * as botCommands from "./bot/commands";
 import { ICommand, IInteractionCommand } from "./bot/core";
@@ -32,8 +34,7 @@ export const run = (): void => {
 	const config: ConfigProps = {
 		prefix: process.env.PREFIX as string,
 		token: process.env.TOKEN as string,
-		webSocketServer: process.env.WEBSOCKET_SERVER === "true",
-		jwtSecret: process.env.JWT_SECRET,
+		apiServer: process.env.API_SERVER === "true",
 	};
 
 	container.register(Config, { useValue: new Config(config) });
@@ -66,14 +67,18 @@ export const run = (): void => {
 	Object.values(botInteractions).forEach((C) => {
 		container.registerSingleton<IInteractionCommand>("interactionCommands", C);
 	});
-	//#endregion
 
-	container.register(Bot, { useClass: Bot });
-	//#endregion
-
-	//#region start
 	const bot = new Bot();
-
 	bot.login(config.token);
+	//#endregion
+
+	//#region Api
+	if (config.apiServer) {
+		Object.values(apiControllers).forEach((C) => {
+			container.registerSingleton<Controller>("controllers", C);
+		});
+		const api = createApi();
+		api.listen(8080);
+	}
 	//#endregion
 };

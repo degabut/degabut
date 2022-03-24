@@ -23,6 +23,7 @@
 		"cheerio": "1.0.0-rc.10",
 		"discord.js": "13.6.0",
 		"dotenv": "16.0.0",
+		"fastify": "3.27.4",
 		"ffmpeg-static": "5.0.0",
 		"joi": "17.6.0",
 		"libsodium-wrappers": "0.7.9",

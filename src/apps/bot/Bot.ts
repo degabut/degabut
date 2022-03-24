@@ -1,13 +1,12 @@
+import { Config } from "@core";
 import { Client as DiscordClient, Intents } from "discord.js";
-import { inject, injectable } from "tsyringe";
+import { container, injectable } from "tsyringe";
+import { ICommand, IInteractionCommand } from "./core";
 import { OnInteractHandler, OnMessageHandler } from "./handlers";
 
 @injectable()
 export class Bot extends DiscordClient {
-	constructor(
-		@inject(OnMessageHandler) onMessageHandler: OnMessageHandler,
-		@inject(OnInteractHandler) onInteractHandler: OnInteractHandler
-	) {
+	constructor() {
 		super({
 			intents: [
 				Intents.FLAGS.GUILDS,
@@ -17,6 +16,13 @@ export class Bot extends DiscordClient {
 				Intents.FLAGS.DIRECT_MESSAGES,
 			],
 		});
+
+		const commands = container.resolve<ICommand[]>("commands");
+		const interactionCommands = container.resolve<IInteractionCommand[]>("interactionCommands");
+		const { prefix } = container.resolve(Config);
+
+		const onMessageHandler = new OnMessageHandler(commands, prefix);
+		const onInteractHandler = new OnInteractHandler(interactionCommands);
 
 		this.once("ready", () => console.log("Ready!"));
 		this.on("messageCreate", (message) => onMessageHandler.execute(message));

@@ -1,10 +1,8 @@
 import { Interaction } from "discord.js";
-import { injectable, injectAll } from "tsyringe";
 import { IInteractionCommand } from "../core";
 
-@injectable()
 export class OnInteractHandler {
-	constructor(@injectAll("interactionCommands") private commands: IInteractionCommand[]) {}
+	constructor(private commands: IInteractionCommand[]) {}
 
 	async execute(interaction: Interaction): Promise<void> {
 		if (!interaction.isButton()) return;

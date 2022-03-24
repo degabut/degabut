@@ -11,10 +11,9 @@ import { constructor } from "tsyringe/dist/typings/types";
 import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, EventHandler, UseCase } from "../core";
 import { Bot } from "./bot";
-import * as commands from "./bot/commands";
+import * as botCommands from "./bot/commands";
 import { ICommand, IInteractionCommand } from "./bot/core";
-import { OnInteractHandler, OnMessageHandler } from "./bot/handlers";
-import * as interactions from "./bot/interactions";
+import * as botInteractions from "./bot/interactions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getUseCases = (modules: Record<string, any>): constructor<UseCase>[] => {
@@ -61,21 +60,20 @@ export const run = (): void => {
 	//#endregion
 
 	//#region Bot
-	Object.values(commands).forEach((C) => {
+	Object.values(botCommands).forEach((C) => {
 		container.registerSingleton<ICommand>("commands", C);
 	});
-	Object.values(interactions).forEach((C) => {
+	Object.values(botInteractions).forEach((C) => {
 		container.registerSingleton<IInteractionCommand>("interactionCommands", C);
 	});
-
-	container.registerSingleton(OnMessageHandler);
-	container.registerSingleton(OnInteractHandler);
+	//#endregion
 
 	container.register(Bot, { useClass: Bot });
 	//#endregion
 
 	//#region start
-	const bot = container.resolve(Bot);
+	const bot = new Bot();
+
 	bot.login(config.token);
 	//#endregion
 };

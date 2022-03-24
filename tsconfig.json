@@ -12,7 +12,7 @@
 			"@modules/youtube": ["./src/modules/youtube"],
 			"@core": ["./src/core"],
 			"@apps/api": ["./src/apps/api"],
-			"@apps/bot": ["./src/apps/bot"],
+			"@apps/discord": ["./src/apps/discord"],
 			"@utils": ["./src/utils"]
 		},
 		"outDir": "./dist",

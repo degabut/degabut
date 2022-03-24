@@ -12,10 +12,9 @@ import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, EventHandler, UseCase } from "../core";
 import { Controller, createApi } from "./api";
 import * as apiControllers from "./api/controllers";
-import { Bot } from "./bot";
-import * as botCommands from "./bot/commands";
-import { ICommand, IInteractionCommand } from "./bot/core";
-import * as botInteractions from "./bot/interactions";
+import { Bot, ICommand, IInteractionCommand } from "./discord";
+import * as botCommands from "./discord/commands";
+import * as botInteractions from "./discord/interactions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getUseCases = (modules: Record<string, any>): constructor<UseCase>[] => {

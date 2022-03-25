@@ -1,3 +1,5 @@
+import * as discordModules from "@modules/discord";
+import { DiscordOAuthProvider } from "@modules/discord";
 import * as lyricModules from "@modules/lyric";
 import { LyricProvider } from "@modules/lyric";
 import * as queueModules from "@modules/queue";
@@ -43,6 +45,7 @@ export const run = (): void => {
 	//#region Providers
 	container.registerSingleton(YoutubeClient);
 	container.registerSingleton(YoutubeProvider);
+	container.registerSingleton(DiscordOAuthProvider);
 	container.registerSingleton(LyricProvider);
 	//#endregion
 
@@ -50,6 +53,7 @@ export const run = (): void => {
 	getTokens(queueModules).forEach((U) => container.registerSingleton(U));
 	getTokens(youtubeModules).forEach((U) => container.registerSingleton(U));
 	getTokens(lyricModules).forEach((U) => container.registerSingleton(U));
+	getTokens(discordModules).forEach((U) => container.registerSingleton(U));
 	//#endregion
 
 	//#region Bot

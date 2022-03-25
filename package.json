@@ -37,6 +37,7 @@
 		"@types/qs": "6.9.7",
 		"@typescript-eslint/eslint-plugin": "4.31.1",
 		"@typescript-eslint/parser": "4.31.1",
+		"discord-api-types": "0.30.0",
 		"eslint": "7.32.0",
 		"husky": "7.0.4",
 		"prettier": "2.4.0",

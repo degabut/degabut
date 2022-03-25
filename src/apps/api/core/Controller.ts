@@ -14,7 +14,7 @@ export interface IResponse<T = unknown> {
 	body?: T;
 }
 
-export interface IRequest<Body, Params> {
+export interface IRequest<Body = unknown, Params = unknown> {
 	body: Body;
 	params: Params;
 }

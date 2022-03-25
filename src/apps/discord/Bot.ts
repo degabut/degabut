@@ -17,8 +17,8 @@ export class Bot extends DiscordClient {
 			],
 		});
 
-		const commands = container.resolve<ICommand[]>("commands");
-		const interactionCommands = container.resolve<IInteractionCommand[]>("interactionCommands");
+		const commands = container.resolveAll<ICommand>("commands");
+		const interactionCommands = container.resolveAll<IInteractionCommand>("interactionCommands");
 		const { prefix } = container.resolve(Config);
 
 		const onMessageHandler = new OnMessageHandler(commands, prefix);

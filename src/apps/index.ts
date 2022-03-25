@@ -33,6 +33,10 @@ export const run = (): void => {
 		prefix: process.env.PREFIX as string,
 		token: process.env.TOKEN as string,
 		apiServer: process.env.API_SERVER === "true",
+		jwtSecret: process.env.JWT_SECRET,
+		discordOAuthClientId: process.env.DISCORD_OAUTH_CLIENT_ID,
+		discordOAuthClientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET,
+		discordOAuthRedirectUri: process.env.DISCORD_OAUTH_REDIRECT_URI,
 	};
 
 	container.register(Config, { useValue: new Config(config) });
@@ -45,8 +49,15 @@ export const run = (): void => {
 	//#region Providers
 	container.registerSingleton(YoutubeClient);
 	container.registerSingleton(YoutubeProvider);
-	container.registerSingleton(DiscordOAuthProvider);
 	container.registerSingleton(LyricProvider);
+
+	const discordOAuthProvider = new DiscordOAuthProvider({
+		botToken: config.token,
+		clientId: config.discordOAuthClientId,
+		clientSecret: config.discordOAuthClientSecret,
+		redirectUri: config.discordOAuthRedirectUri,
+	});
+	container.register(DiscordOAuthProvider, { useValue: discordOAuthProvider });
 	//#endregion
 
 	//#region Use Cases and Event Handlers

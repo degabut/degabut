@@ -8,23 +8,23 @@ import fetch, { RequestInit } from "node-fetch";
 
 interface ConstructorOptions {
 	clientId?: string;
-	clientToken?: string;
+	clientSecret?: string;
 	redirectUri?: string;
 	botToken?: string;
 }
 
 export class DiscordOAuthProvider {
 	private clientId: string;
-	private clientToken: string;
+	private clientSecret: string;
 	private redirectUri: string;
 	private botToken: string;
 
-	constructor({ clientId, clientToken, botToken, redirectUri }: ConstructorOptions) {
-		if (!clientId || !clientToken || !botToken || !redirectUri)
+	constructor({ clientId, clientSecret, botToken, redirectUri }: ConstructorOptions) {
+		if (!clientId || !clientSecret || !botToken || !redirectUri)
 			throw new Error("Invalid Discord credentials.");
 
 		this.clientId = clientId;
-		this.clientToken = clientToken;
+		this.clientSecret = clientSecret;
 		this.redirectUri = redirectUri;
 		this.botToken = botToken;
 	}
@@ -36,7 +36,7 @@ export class DiscordOAuthProvider {
 				grant_type: "authorization_code",
 				code,
 				client_id: this.clientId,
-				client_secret: this.clientToken,
+				client_secret: this.clientSecret,
 				redirect_uri: this.redirectUri,
 			}),
 		});

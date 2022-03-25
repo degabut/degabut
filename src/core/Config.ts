@@ -36,7 +36,7 @@ export class Config {
 			this.apiServer &&
 			(!this.jwtSecret ||
 				!this.discordOAuthClientId ||
-				this.discordOAuthClientSecret ||
+				!this.discordOAuthClientSecret ||
 				!this.discordOAuthRedirectUri)
 		) {
 			throw new Error("Missing config for API server");

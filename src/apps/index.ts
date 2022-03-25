@@ -14,7 +14,7 @@ import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, EventHandler, UseCase } from "../core";
 import { Controller, createApi } from "./api";
 import * as apiControllers from "./api/controllers";
-import { Bot, ICommand, IInteractionCommand } from "./discord";
+import { DiscordClient, ICommand, IInteractionCommand } from "./discord";
 import * as botCommands from "./discord/commands";
 import * as botInteractions from "./discord/interactions";
 
@@ -51,13 +51,15 @@ export const run = (): void => {
 	container.registerSingleton(YoutubeProvider);
 	container.registerSingleton(LyricProvider);
 
-	const discordOAuthProvider = new DiscordOAuthProvider({
-		botToken: config.token,
-		clientId: config.discordOAuthClientId,
-		clientSecret: config.discordOAuthClientSecret,
-		redirectUri: config.discordOAuthRedirectUri,
-	});
-	container.register(DiscordOAuthProvider, { useValue: discordOAuthProvider });
+	if (config.apiServer) {
+		const discordOAuthProvider = new DiscordOAuthProvider({
+			botToken: config.token,
+			clientId: config.discordOAuthClientId,
+			clientSecret: config.discordOAuthClientSecret,
+			redirectUri: config.discordOAuthRedirectUri,
+		});
+		container.register(DiscordOAuthProvider, { useValue: discordOAuthProvider });
+	}
 	//#endregion
 
 	//#region Use Cases and Event Handlers
@@ -75,8 +77,9 @@ export const run = (): void => {
 		container.registerSingleton<IInteractionCommand>("interactionCommands", C);
 	});
 
-	const bot = new Bot();
-	bot.login(config.token);
+	const discordClient = new DiscordClient();
+	discordClient.login(config.token);
+	container.register(DiscordClient, { useValue: discordClient });
 	//#endregion
 
 	//#region Api

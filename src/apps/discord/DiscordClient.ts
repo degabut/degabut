@@ -1,11 +1,11 @@
 import { Config } from "@core";
-import { Client as DiscordClient, Intents } from "discord.js";
+import { Client, Intents } from "discord.js";
 import { container, injectable } from "tsyringe";
 import { ICommand, IInteractionCommand } from "./core";
 import { OnInteractHandler, OnMessageHandler } from "./handlers";
 
 @injectable()
-export class Bot extends DiscordClient {
+export class DiscordClient extends Client {
 	constructor() {
 		super({
 			intents: [

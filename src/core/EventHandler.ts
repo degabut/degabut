@@ -1,8 +1,3 @@
-export type EventHandlerRunParams<Params, Value> = {
-	params: Params;
-	value: Value;
-};
-
-export abstract class EventHandler<Params = unknown, Value = unknown> {
-	abstract run(params: EventHandlerRunParams<Params, Value>): Promise<void>;
+export abstract class EventHandler<Data = unknown> {
+	abstract run(params: Data): Promise<void>;
 }

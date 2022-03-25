@@ -6,14 +6,18 @@ import { registerMeRoutes } from "./routes";
 import { registerAuthRoutes } from "./routes/auth";
 
 export const asHandler = (Controller: constructor<Controller>): RouteHandler => {
-	const controller = container.resolve(Controller); // TODO better resolve
-
 	return async (request: FastifyRequest, reply: FastifyReply) => {
+		const controller = container.resolve(Controller);
+
+		if (request.user) controller.user = request.user;
 		const response = await controller.execute({
 			body: request.body || {},
 			params: request.params || {},
+			headers: request.headers || {},
 		});
-		reply.status(response.status).send(response.body);
+		if (controller.user) request.user = controller.user;
+
+		if (controller.done) return reply.status(response.status).send(response.body);
 	};
 };
 

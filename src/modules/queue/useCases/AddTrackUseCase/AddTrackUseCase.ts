@@ -1,10 +1,9 @@
 import { UseCase } from "@core";
-import { IQueueRepository, OnTrackAddEvent, Track } from "@modules/queue";
+import { IQueueRepository, OnTrackAddEvent, OnTrackEndEvent, Track } from "@modules/queue";
 import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, GuildMember } from "discord.js";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-import { OnTrackEndEvent } from "../../events";
 
 export type AddTrackParams = {
 	keyword: string;

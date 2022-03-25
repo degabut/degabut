@@ -1,7 +1,6 @@
 import { EventHandler } from "@core";
-import { Queue } from "@modules/queue";
+import { AutoAddTrackUseCase, Queue } from "@modules/queue";
 import { inject, injectable } from "tsyringe";
-import { AutoAddTrackUseCase } from "../../useCases";
 
 type Data = Queue;
 

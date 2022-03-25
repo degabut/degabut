@@ -46,11 +46,11 @@ export class DiscordOAuthProvider {
 		return accessToken;
 	}
 
-	async getCurrentUser(accessToken: string): Promise<APIUser> {
+	async getCurrentUser(accessToken: string): Promise<APIUser | undefined> {
 		const response = await this.fetch("/users/@me", {
 			headers: { Authorization: `Bearer ${accessToken}` },
 		});
-		return await response.json();
+		return response.status === 200 ? await response.json() : undefined;
 	}
 
 	async getCurrentUserGuilds(accessToken: string): Promise<APIGuild[]> {

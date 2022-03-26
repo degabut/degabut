@@ -1,7 +1,7 @@
 import { GetLyricUseCase } from "@modules/lyric";
 import { GetNowPlayingLyricUseCase } from "@modules/queue";
 import { MessageEmbed } from "discord.js";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -10,8 +10,9 @@ export class LyricCommand implements ICommand {
 	public readonly description = "Get lyric of current playing song or by keyword";
 
 	constructor(
-		@inject(GetLyricUseCase) private getLyric: GetLyricUseCase,
-		@inject(GetNowPlayingLyricUseCase) private getNowPlayingLyric: GetNowPlayingLyricUseCase
+		@inject(delay(() => GetLyricUseCase)) private getLyric: GetLyricUseCase,
+		@inject(delay(() => GetNowPlayingLyricUseCase))
+		private getNowPlayingLyric: GetNowPlayingLyricUseCase
 	) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {

@@ -14,8 +14,9 @@ import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, EventHandler, UseCase } from "../core";
 import { Controller, createApi } from "./api";
 import * as apiControllers from "./api/controllers";
-import { DiscordClient, ICommand, IInteractionCommand } from "./discord";
+import { ICommand, IInteractionCommand } from "./discord";
 import * as botCommands from "./discord/commands";
+import { DiscordClient } from "./discord/DiscordClient";
 import * as botInteractions from "./discord/interactions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,14 +63,7 @@ export const run = (): void => {
 	}
 	//#endregion
 
-	//#region Use Cases and Event Handlers
-	getTokens(queueModules).forEach((U) => container.registerSingleton(U));
-	getTokens(youtubeModules).forEach((U) => container.registerSingleton(U));
-	getTokens(lyricModules).forEach((U) => container.registerSingleton(U));
-	getTokens(discordModules).forEach((U) => container.registerSingleton(U));
-	//#endregion
-
-	//#region Bot
+	//#region Discord Client
 	Object.values(botCommands).forEach((C) => {
 		container.registerSingleton<ICommand>("commands", C);
 	});
@@ -78,8 +72,15 @@ export const run = (): void => {
 	});
 
 	const discordClient = new DiscordClient();
-	discordClient.login(config.token);
 	container.register(DiscordClient, { useValue: discordClient });
+	discordClient.login(config.token);
+	//#endregion
+
+	//#region Use Cases and Event Handlers
+	getTokens(queueModules).forEach((U) => container.registerSingleton(U));
+	getTokens(youtubeModules).forEach((U) => container.registerSingleton(U));
+	getTokens(lyricModules).forEach((U) => container.registerSingleton(U));
+	getTokens(discordModules).forEach((U) => container.registerSingleton(U));
 	//#endregion
 
 	//#region Api

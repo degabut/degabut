@@ -1,6 +1,6 @@
 import { GetQueueTracksUseCase } from "@modules/queue";
 import { MessageEmbed } from "discord.js";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -9,7 +9,9 @@ export class QueueCommand implements ICommand {
 	public readonly aliases = ["q"];
 	public readonly description = "Show current queue";
 
-	constructor(@inject(GetQueueTracksUseCase) private getQueueTracks: GetQueueTracksUseCase) {}
+	constructor(
+		@inject(delay(() => GetQueueTracksUseCase)) private getQueueTracks: GetQueueTracksUseCase
+	) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const page = Number(args.shift() || 1);

@@ -1,5 +1,5 @@
 import { ChangeLoopTypeUseCase, LoopType } from "@modules/queue";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -7,7 +7,9 @@ export class LoopQueueCommand implements ICommand {
 	public readonly name = "loopqueue";
 	public readonly description = "Loop Queue";
 
-	constructor(@inject(ChangeLoopTypeUseCase) private changeLoopType: ChangeLoopTypeUseCase) {}
+	constructor(
+		@inject(delay(() => ChangeLoopTypeUseCase)) private changeLoopType: ChangeLoopTypeUseCase
+	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
 		const loopType = await this.changeLoopType.execute({

@@ -1,5 +1,5 @@
 import { RemoveTrackUseCase } from "@modules/queue";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -8,7 +8,7 @@ export class RemoveCommand implements ICommand {
 	public readonly description = "Remove a song from queue";
 	public readonly aliases = ["rm"];
 
-	constructor(@inject(RemoveTrackUseCase) private removeTrack: RemoveTrackUseCase) {}
+	constructor(@inject(delay(() => RemoveTrackUseCase)) private removeTrack: RemoveTrackUseCase) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const index = +args[0];

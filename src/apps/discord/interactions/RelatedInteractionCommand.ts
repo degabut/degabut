@@ -1,6 +1,6 @@
 import { AddTrackUseCase } from "@modules/queue";
 import { ButtonInteraction, GuildMember, Message, TextChannel } from "discord.js";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { IInteractionCommand } from "../core";
 
 @injectable()
@@ -8,7 +8,7 @@ export class RelatedInteractionCommand implements IInteractionCommand<string> {
 	public readonly name = "related";
 	public readonly description = "Play related song";
 
-	constructor(@inject(AddTrackUseCase) private addTrack: AddTrackUseCase) {}
+	constructor(@inject(delay(() => AddTrackUseCase)) private addTrack: AddTrackUseCase) {}
 
 	buttonInteractionIdParser(customId: string): string {
 		const [, videoId] = customId.split("/");
@@ -25,13 +25,15 @@ export class RelatedInteractionCommand implements IInteractionCommand<string> {
 			return;
 		}
 
-		await this.addTrack.execute({
-			id: videoId,
-			guildId: interaction.message.guild?.id,
-			requestedBy: interaction.member,
-			textChannel: interaction.channel,
-			voiceChannel: interaction.member.voice.channel || undefined,
-		});
+		await this.addTrack.execute(
+			{
+				id: videoId,
+				guildId: interaction.message.guild?.id,
+				textChannel: interaction.channel,
+				voiceChannel: interaction.member.voice.channel || undefined,
+			},
+			{ userId: interaction.member.id }
+		);
 		await interaction.deferUpdate();
 	}
 }

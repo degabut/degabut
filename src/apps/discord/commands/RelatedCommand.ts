@@ -1,7 +1,7 @@
 import { GetNowPlayingUseCase, GetRelatedUseCase } from "@modules/queue";
 import { videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -10,8 +10,8 @@ export class RelatedCommand implements ICommand {
 	public readonly description = "Show songs related to the current song";
 
 	constructor(
-		@inject(GetRelatedUseCase) private getRelated: GetRelatedUseCase,
-		@inject(GetNowPlayingUseCase) private getNowPlaying: GetNowPlayingUseCase
+		@inject(delay(() => GetRelatedUseCase)) private getRelated: GetRelatedUseCase,
+		@inject(delay(() => GetNowPlayingUseCase)) private getNowPlaying: GetNowPlayingUseCase
 	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {

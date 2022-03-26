@@ -1,5 +1,5 @@
 import { GetAccessTokenUseCase } from "@modules/discord";
-import { inject, injectable } from "tsyringe";
+import { delay, inject, injectable } from "tsyringe";
 import { Controller, IRequest, ResponseStatus } from "../../core";
 
 type Body = {
@@ -8,7 +8,9 @@ type Body = {
 
 @injectable()
 export class LoginController extends Controller<Body> {
-	constructor(@inject(GetAccessTokenUseCase) private getAccessToken: GetAccessTokenUseCase) {
+	constructor(
+		@inject(delay(() => GetAccessTokenUseCase)) private getAccessToken: GetAccessTokenUseCase
+	) {
 		super();
 	}
 

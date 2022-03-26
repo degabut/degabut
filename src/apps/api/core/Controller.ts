@@ -12,7 +12,7 @@ export enum ResponseStatus {
 }
 
 export interface IResponse<T = unknown> {
-	status: ResponseStatus;
+	status?: ResponseStatus;
 	body?: T;
 }
 
@@ -23,9 +23,8 @@ export interface IRequest<Body = unknown, Params = unknown> {
 }
 
 export abstract class Controller<Body = unknown, Params = unknown> {
-	private responseStatus = ResponseStatus.OK;
+	private responseStatus?: ResponseStatus;
 	private responseBody?: unknown;
-	public done = false;
 	public user!: APIUser;
 
 	protected status(status: ResponseStatus): this {
@@ -35,7 +34,6 @@ export abstract class Controller<Body = unknown, Params = unknown> {
 
 	protected send(body?: unknown): this {
 		this.responseBody = body;
-		this.done = true;
 		return this;
 	}
 

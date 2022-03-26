@@ -17,7 +17,7 @@ export const asHandler = (Controller: constructor<Controller>): RouteHandler => 
 		});
 		if (controller.user) request.user = controller.user;
 
-		if (controller.done) return reply.status(response.status).send(response.body);
+		if (response.status) return reply.status(response.status).send(response.body);
 	};
 };
 

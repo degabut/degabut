@@ -48,7 +48,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 		if (!queue) {
 			if (!textChannel || !voiceChannel) throw new Error("Queue not found");
 			queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
-			queue.on("autoplay", () => queue && super.emit(OnTrackEndEvent, queue));
+			queue.on("trackEnd", () => queue && super.emit(OnTrackEndEvent, queue));
 		}
 
 		if (!queue.voiceChannel.members.find((m) => m.id === requestedBy.id)) {

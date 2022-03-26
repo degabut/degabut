@@ -11,6 +11,9 @@ export class OnTrackEndEvent extends EventHandler<Data> {
 	}
 
 	public async run(queue: Data): Promise<void> {
-		await this.autoAddTrack.execute({ queue });
+		if (queue.autoplay) {
+			const lastSong = queue.history[0];
+			if (lastSong) await this.autoAddTrack.execute({ queue });
+		}
 	}
 }

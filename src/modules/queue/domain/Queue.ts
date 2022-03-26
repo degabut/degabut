@@ -36,7 +36,7 @@ export class Queue extends EventEmitter {
 	public readonly tracks: Track[];
 	public readonly history: Track[];
 	public loopType: LoopType;
-	private autoplay: boolean;
+	public autoplay: boolean;
 	public readyLock: boolean;
 
 	constructor(props: ConstructorProps) {
@@ -54,6 +54,7 @@ export class Queue extends EventEmitter {
 
 		this.audioPlayer = createAudioPlayer();
 
+		//#region event listener setup
 		this.voiceConnection.on("stateChange", async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
 				if (
@@ -91,7 +92,6 @@ export class Queue extends EventEmitter {
 			}
 		});
 
-		// Configure audio player
 		this.audioPlayer.on("stateChange", (oldState, newState) => {
 			if (
 				newState.status === AudioPlayerStatus.Idle &&
@@ -106,6 +106,7 @@ export class Queue extends EventEmitter {
 		this.audioPlayer.on("error", (error) => {
 			(error.resource as AudioResource<Track>).metadata.emit("error", error);
 		});
+		//#endregion
 
 		props.voiceConnection.subscribe(this.audioPlayer);
 	}
@@ -150,15 +151,7 @@ export class Queue extends EventEmitter {
 		if (this.readyLock) return;
 
 		this.nowPlaying = this.tracks[0];
-		if (!this.nowPlaying) {
-			if (!this.autoplay) return;
-
-			// Autoplay
-			const lastSong = this.history[0];
-			if (!lastSong) return;
-			this.emit("autoplay");
-			return;
-		}
+		if (!this.nowPlaying) return;
 
 		this.history.unshift(this.nowPlaying);
 		this.history.splice(10);
@@ -171,6 +164,7 @@ export class Queue extends EventEmitter {
 			if (this.loopType === LoopType.Queue && previous) this.tracks.push(previous);
 
 			this.nowPlaying = null;
+			this.emit("trackEnd");
 			this.processQueue();
 		});
 		this.nowPlaying.on("start", () => {

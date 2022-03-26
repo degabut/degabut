@@ -3,15 +3,22 @@ import { container } from "tsyringe";
 import { constructor } from "tsyringe/dist/typings/types";
 import { EventHandler } from "./EventHandler";
 
+export type IUseCaseContext = {
+	userId: string;
+};
+
 abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 	protected abstract paramsSchema: Joi.ObjectSchema<ParamsSchema>;
-	protected abstract run(params: ParamsSchema): Promise<Response>;
+	protected abstract run(params: ParamsSchema, context?: IUseCaseContext): Promise<Response>;
 	protected emits?: constructor<EventHandler>[];
 	protected awaitEmit?: boolean;
 
-	public async execute(params: Partial<ParamsSchema>): Promise<Response> {
-		const validatedParams = this.validate(params);
-		const response = await this.run(validatedParams);
+	public async execute(
+		params: Partial<ParamsSchema>,
+		context?: IUseCaseContext
+	): Promise<Response> {
+		const validatedParams = await this.validate(params);
+		const response = await this.run(validatedParams, context);
 
 		if (this.emits) {
 			const promises = this.emits.map((handler) => {
@@ -35,10 +42,9 @@ abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 		await eventHandler.run(data);
 	}
 
-	private validate(params: Partial<ParamsSchema>): ParamsSchema {
-		const result = this.paramsSchema.validate(params);
-		if (result.error) throw new Error(result.error.message);
-		return result.value;
+	private async validate(params: Partial<ParamsSchema>): Promise<ParamsSchema> {
+		const result = await this.paramsSchema.validateAsync(params);
+		return result;
 	}
 }
 

@@ -1,6 +1,6 @@
 import { AddTrackUseCase } from "@modules/queue";
 import { ButtonInteraction, GuildMember, Message, TextChannel } from "discord.js";
-import { delay, inject, injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { IInteractionCommand } from "../core";
 
 @injectable()
@@ -8,7 +8,7 @@ export class SearchInteractionCommand implements IInteractionCommand {
 	public readonly name = "search";
 	public readonly description = "Search for a song";
 
-	constructor(@inject(delay(() => AddTrackUseCase)) private addTrack: AddTrackUseCase) {}
+	constructor(@inject(AddTrackUseCase) private addTrack: AddTrackUseCase) {}
 
 	buttonInteractionIdParser(customId: string): string {
 		const [, videoId] = customId.split("/");

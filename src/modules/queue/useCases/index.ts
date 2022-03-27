@@ -6,6 +6,7 @@ export * from "./GetNowPlayingLyricUseCase";
 export * from "./GetNowPlayingUseCase";
 export * from "./GetQueueTracksUseCase";
 export * from "./GetRelatedUseCase";
+export * from "./GetUserQueueUseCase";
 export * from "./RemoveTrackUseCase";
 export * from "./SkipTrackUseCase";
 export * from "./ToggleAutoplayUseCase";

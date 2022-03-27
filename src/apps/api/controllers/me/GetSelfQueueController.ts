@@ -1,5 +1,5 @@
 import { GetUserQueueUseCase } from "@modules/queue";
-import { delay, inject, injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { Controller, ResponseStatus } from "../../core";
 
 type Body = {
@@ -12,7 +12,7 @@ type Params = {
 
 @injectable()
 export class GetSelfQueueController extends Controller<Body, Params> {
-	constructor(@inject(delay(() => GetUserQueueUseCase)) private getUserQueue: GetUserQueueUseCase) {
+	constructor(@inject(GetUserQueueUseCase) private getUserQueue: GetUserQueueUseCase) {
 		super();
 	}
 

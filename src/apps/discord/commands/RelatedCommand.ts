@@ -1,7 +1,7 @@
 import { GetNowPlayingUseCase, GetRelatedUseCase } from "@modules/queue";
 import { videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
-import { delay, inject, injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -10,14 +10,14 @@ export class RelatedCommand implements ICommand {
 	public readonly description = "Show songs related to the current song";
 
 	constructor(
-		@inject(delay(() => GetRelatedUseCase)) private getRelated: GetRelatedUseCase,
-		@inject(delay(() => GetNowPlayingUseCase)) private getNowPlaying: GetNowPlayingUseCase
+		@inject(GetRelatedUseCase) private getRelated: GetRelatedUseCase,
+		@inject(GetNowPlayingUseCase) private getNowPlaying: GetNowPlayingUseCase
 	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
 		const [nowPlaying, relatedVideos] = await Promise.all([
-			this.getNowPlaying.execute({ guildId: message.guild?.id }),
-			this.getRelated.execute({ guildId: message.guild?.id }),
+			this.getNowPlaying.execute({ guildId: message.guild?.id }, { userId: message.author.id }),
+			this.getRelated.execute({ guildId: message.guild?.id }, { userId: message.author.id }),
 		]);
 
 		const buttons = relatedVideos.map((v, i) => videoToMessageButton(v, i, "related"));

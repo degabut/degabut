@@ -1,7 +1,7 @@
-import { GetLyricUseCase } from "@modules/lyric";
+import { GetLyricUseCase, Lyric } from "@modules/lyric";
 import { GetNowPlayingLyricUseCase } from "@modules/queue";
 import { MessageEmbed } from "discord.js";
-import { delay, inject, injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -10,17 +10,24 @@ export class LyricCommand implements ICommand {
 	public readonly description = "Get lyric of current playing song or by keyword";
 
 	constructor(
-		@inject(delay(() => GetLyricUseCase)) private getLyric: GetLyricUseCase,
-		@inject(delay(() => GetNowPlayingLyricUseCase))
+		@inject(GetLyricUseCase) private getLyric: GetLyricUseCase,
+		@inject(GetNowPlayingLyricUseCase)
 		private getNowPlayingLyric: GetNowPlayingLyricUseCase
 	) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const keyword = args.join(" ");
 
-		const lyric = await (keyword
-			? this.getLyric.execute({ keyword })
-			: this.getNowPlayingLyric.execute({ guildId: message.guild?.id }));
+		let lyric: Lyric;
+
+		if (keyword) {
+			lyric = await this.getLyric.execute({ keyword }, { userId: message.author.id });
+		} else {
+			lyric = await this.getNowPlayingLyric.execute(
+				{ guildId: message.guild?.id },
+				{ userId: message.author.id }
+			);
+		}
 
 		let maxLength = 4096;
 		maxLength -= lyric.sourceUrl.length - 16;

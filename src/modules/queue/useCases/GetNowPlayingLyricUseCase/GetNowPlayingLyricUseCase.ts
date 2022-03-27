@@ -1,4 +1,4 @@
-import { UseCase } from "@core";
+import { IUseCaseContext, UseCase } from "@core";
 import { ILyricProvider, Lyric, LyricProvider } from "@modules/lyric";
 import { IQueueRepository } from "@modules/queue";
 import Joi from "joi";
@@ -23,11 +23,14 @@ export class GetNowPlayingLyricUseCase extends UseCase<Params, Response> {
 		super();
 	}
 
-	public async run(params: Params): Promise<Response> {
+	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new Error("Queue not found");
+		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
+			throw new Error("User not in voice channel");
+		}
 
 		const target = queue.nowPlaying;
 		if (!target) throw new Error("No song is playing");

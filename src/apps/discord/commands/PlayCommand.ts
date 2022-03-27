@@ -1,6 +1,6 @@
 import { AddTrackUseCase } from "@modules/queue";
 import { TextChannel } from "discord.js";
-import { delay, inject, injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -9,7 +9,7 @@ export class PlayCommand implements ICommand {
 	public readonly description = "Play a song";
 	public readonly aliases = ["p"];
 
-	constructor(@inject(delay(() => AddTrackUseCase)) private addTrack: AddTrackUseCase) {}
+	constructor(@inject(AddTrackUseCase) private addTrack: AddTrackUseCase) {}
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const keyword = args.join(" ");

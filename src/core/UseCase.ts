@@ -7,6 +7,10 @@ export type IUseCaseContext = {
 	userId: string;
 };
 
+const contextSchema = Joi.object({
+	userId: Joi.string().required(),
+});
+
 abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 	protected abstract paramsSchema: Joi.ObjectSchema<ParamsSchema>;
 	protected abstract run(params: ParamsSchema, context?: IUseCaseContext): Promise<Response>;
@@ -17,7 +21,7 @@ abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 		params: Partial<ParamsSchema>,
 		context?: IUseCaseContext
 	): Promise<Response> {
-		const validatedParams = await this.validate(params);
+		const validatedParams = await this.validate(params, context);
 		const response = await this.run(validatedParams, context);
 
 		if (this.emits) {
@@ -42,7 +46,11 @@ abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 		await eventHandler.run(data);
 	}
 
-	private async validate(params: Partial<ParamsSchema>): Promise<ParamsSchema> {
+	private async validate(
+		params: Partial<ParamsSchema>,
+		context?: IUseCaseContext
+	): Promise<ParamsSchema> {
+		if (context) await contextSchema.validateAsync(context);
 		const result = await this.paramsSchema.validateAsync(params);
 		return result;
 	}

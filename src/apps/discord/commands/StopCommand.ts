@@ -1,5 +1,5 @@
 import { DisconnectUseCase } from "@modules/queue";
-import { delay, inject, injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core";
 
 @injectable()
@@ -8,12 +8,10 @@ export class StopCommand implements ICommand {
 	public readonly aliases = ["disconnect", "dc"];
 	public readonly description = "Disconnects the bot from voice channel";
 
-	constructor(@inject(delay(() => DisconnectUseCase)) private disconnect: DisconnectUseCase) {}
+	constructor(@inject(DisconnectUseCase) private disconnect: DisconnectUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		await this.disconnect.execute({
-			guildId: message.guild?.id,
-		});
+		await this.disconnect.execute({ guildId: message.guild?.id }, { userId: message.author.id });
 		await message.react("👋🏻");
 	}
 }

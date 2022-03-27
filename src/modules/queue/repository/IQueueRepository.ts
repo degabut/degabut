@@ -9,6 +9,7 @@ type CreateProps = {
 
 export interface IQueueRepository {
 	get(guildId: string): Queue | undefined;
+	getByUserId(userId: string): Queue | undefined;
 	delete(guildId: string): void;
 	create(props: CreateProps): Queue;
 }

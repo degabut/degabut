@@ -1,5 +1,5 @@
 import * as discordModules from "@modules/discord";
-import { DiscordOAuthProvider } from "@modules/discord";
+import { DiscordClient, DiscordOAuthProvider } from "@modules/discord";
 import * as lyricModules from "@modules/lyric";
 import { LyricProvider } from "@modules/lyric";
 import * as queueModules from "@modules/queue";
@@ -14,9 +14,8 @@ import { Client as YoutubeClient } from "youtubei";
 import { Config, ConfigProps, EventHandler, UseCase } from "../core";
 import { Controller, createApi } from "./api";
 import * as apiControllers from "./api/controllers";
-import { ICommand, IInteractionCommand } from "./discord";
+import { ICommand, IInteractionCommand, initDiscord } from "./discord";
 import * as botCommands from "./discord/commands";
-import { DiscordClient } from "./discord/DiscordClient";
 import * as botInteractions from "./discord/interactions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,14 +62,7 @@ export const run = (): void => {
 	}
 	//#endregion
 
-	//#region Discord Client
-	Object.values(botCommands).forEach((C) => {
-		container.registerSingleton<ICommand>("commands", C);
-	});
-	Object.values(botInteractions).forEach((C) => {
-		container.registerSingleton<IInteractionCommand>("interactionCommands", C);
-	});
-
+	//#region Clients
 	const discordClient = new DiscordClient();
 	container.register(DiscordClient, { useValue: discordClient });
 	discordClient.login(config.token);
@@ -91,5 +83,15 @@ export const run = (): void => {
 		const api = createApi();
 		api.listen(8080);
 	}
+	//#endregion
+
+	//#region Discord
+	Object.values(botCommands).forEach((C) => {
+		container.registerSingleton<ICommand>("commands", C);
+	});
+	Object.values(botInteractions).forEach((C) => {
+		container.registerSingleton<IInteractionCommand>("interactionCommands", C);
+	});
+	initDiscord(discordClient, config.prefix);
 	//#endregion
 };

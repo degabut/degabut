@@ -15,6 +15,11 @@ export class QueueMemoryRepository implements IQueueRepository {
 		return this.queues.get(guildId);
 	}
 
+	public getByUserId(userId: string): Queue | undefined {
+		const queues = [...this.queues.values()];
+		return queues.find((q) => q.voiceChannel.members.has(userId));
+	}
+
 	public delete(guildId: string): void {
 		this.queues.delete(guildId);
 	}

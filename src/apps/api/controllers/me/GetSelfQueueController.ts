@@ -22,6 +22,6 @@ export class GetSelfQueueController extends Controller<Body, Params> {
 		});
 
 		if (!queue) return this.status(ResponseStatus.NOT_FOUND).send();
-		// this.status(ResponseStatus.OK).send(await toBaseQueueSchema(queue));
+		this.status(ResponseStatus.OK).send(queue);
 	}
 }

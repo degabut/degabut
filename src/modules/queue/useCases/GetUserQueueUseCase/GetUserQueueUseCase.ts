@@ -1,13 +1,14 @@
 import { UseCase } from "@core";
-import { IQueueRepository, Queue } from "@modules/queue";
+import { IQueueRepository } from "@modules/queue";
 import Joi from "joi";
+import { QueueDto } from "modules/queue/dto";
 import { inject, injectable } from "tsyringe";
 
 interface Params {
 	userId: string;
 }
 
-type Response = Queue | undefined;
+type Response = QueueDto | undefined;
 
 @injectable()
 export class GetUserQueueUseCase extends UseCase<Params, Response> {
@@ -24,6 +25,6 @@ export class GetUserQueueUseCase extends UseCase<Params, Response> {
 
 		const queue = this.queueRepository.getByUserId(userId);
 
-		return queue;
+		return queue ? QueueDto.create(queue) : undefined;
 	}
 }

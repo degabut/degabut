@@ -1,6 +1,6 @@
-import { GetAccessTokenUseCase } from "@modules/discord";
+import { GetAccessTokenUseCase } from "@modules/discord/useCases/GetAccessTokenUseCase";
 import { inject, injectable } from "tsyringe";
-import { Controller, IRequest, ResponseStatus } from "../../core";
+import { Controller, IRequest, ResponseStatus } from "../../core/Controller";
 
 type Body = {
 	code: string;

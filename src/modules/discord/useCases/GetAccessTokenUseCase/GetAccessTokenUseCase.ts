@@ -1,5 +1,5 @@
 import { UseCase } from "@core";
-import { DiscordOAuthProvider } from "@modules/discord";
+import { DiscordOAuthProvider } from "@modules/discord/providers/DiscordOAuthProvider";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 

@@ -1,6 +1,6 @@
-import { GetNowPlayingUseCase } from "@modules/queue";
+import { GetNowPlayingUseCase } from "@modules/queue/useCases/GetNowPlayingUseCase";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class NowPlayingCommand implements ICommand {

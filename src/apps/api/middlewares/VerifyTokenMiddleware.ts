@@ -1,6 +1,6 @@
-import { GetUserUseCase } from "@modules/discord";
+import { GetUserUseCase } from "@modules/discord/useCases/GetUserUseCase";
 import { inject, injectable } from "tsyringe";
-import { Controller, IRequest, ResponseStatus } from "../core";
+import { Controller, IRequest, ResponseStatus } from "../core/Controller";
 
 @injectable()
 export class VerifyTokenMiddleware extends Controller {

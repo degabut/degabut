@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { ICommand } from "../core";
+import { ICommand } from "../core/ICommand";
 
 export class OnMessageHandler {
 	constructor(private commands: ICommand[], private prefix: string) {}

@@ -1,7 +1,11 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { GetGuildMemberUseCase } from "@modules/discord";
-import { IQueueRepository, OnTrackAddEvent, OnTrackEndEvent, Track } from "@modules/queue";
-import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
+import { GetGuildMemberUseCase } from "@modules/discord/useCases/GetGuildMemberUseCase";
+import { Track } from "@modules/queue/domain/Track";
+import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
+import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
+import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
+import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";

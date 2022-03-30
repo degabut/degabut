@@ -1,5 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { IQueueRepository, LoopType } from "@modules/queue";
+import { LoopType } from "@modules/queue/domain/Queue";
+import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 

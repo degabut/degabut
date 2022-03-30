@@ -1,5 +1,5 @@
 import { Interaction } from "discord.js";
-import { IInteractionCommand } from "../core";
+import { IInteractionCommand } from "../core/IInteractionCommand";
 
 export class OnInteractHandler {
 	constructor(private commands: IInteractionCommand[]) {}

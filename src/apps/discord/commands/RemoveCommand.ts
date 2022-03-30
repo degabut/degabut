@@ -1,6 +1,6 @@
-import { RemoveTrackUseCase } from "@modules/queue";
+import { RemoveTrackUseCase } from "@modules/queue/useCases/RemoveTrackUseCase";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class RemoveCommand implements ICommand {

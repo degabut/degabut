@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { asHandler, LoginController } from "../";
+import { asHandler } from "../api";
+import { LoginController } from "../controllers/auth/LoginController";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 	app.post("/", asHandler(LoginController));

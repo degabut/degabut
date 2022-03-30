@@ -1,7 +1,7 @@
 import { UseCase } from "@core";
-import { IQueueRepository } from "@modules/queue";
+import { QueueDto } from "@modules/queue/dto/QueueDto";
+import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import Joi from "joi";
-import { QueueDto } from "modules/queue/dto";
 import { inject, injectable } from "tsyringe";
 
 interface Params {

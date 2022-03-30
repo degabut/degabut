@@ -1,6 +1,6 @@
-import { GetUserQueueUseCase } from "@modules/queue";
+import { GetUserQueueUseCase } from "@modules/queue/useCases/GetUserQueueUseCase";
 import { inject, injectable } from "tsyringe";
-import { Controller, ResponseStatus } from "../../core";
+import { Controller, ResponseStatus } from "../../core/Controller";
 
 type Body = {
 	id: string;

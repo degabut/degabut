@@ -8,13 +8,11 @@
 		"baseUrl": "./src",
 		"moduleResolution": "node",
 		"paths": {
-			"@modules/discord": ["./modules/discord"],
-			"@modules/queue": ["./modules/queue"],
-			"@modules/lyric": ["./modules/lyric"],
-			"@modules/youtube": ["./modules/youtube"],
+			"@modules/discord/*": ["./modules/discord/*"],
+			"@modules/queue/*": ["./modules/queue/*"],
+			"@modules/lyric/*": ["./modules/lyric/*"],
+			"@modules/youtube/*": ["./modules/youtube/*"],
 			"@core": ["./core"],
-			"@apps/api": ["./apps/api"],
-			"@apps/discord": ["./apps/discord"],
 			"@utils": ["./utils"]
 		},
 		"outDir": "./dist",

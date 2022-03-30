@@ -1,7 +1,7 @@
-import { AddTrackUseCase } from "@modules/queue";
+import { AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
 import { ButtonInteraction, GuildMember, Message, TextChannel } from "discord.js";
 import { inject, injectable } from "tsyringe";
-import { IInteractionCommand } from "../core";
+import { IInteractionCommand } from "../core/IInteractionCommand";
 
 @injectable()
 export class RelatedInteractionCommand implements IInteractionCommand<string> {

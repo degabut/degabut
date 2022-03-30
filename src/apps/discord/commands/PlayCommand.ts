@@ -1,7 +1,7 @@
-import { AddTrackUseCase } from "@modules/queue";
+import { AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
 import { TextChannel } from "discord.js";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class PlayCommand implements ICommand {

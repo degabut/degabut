@@ -1,6 +1,6 @@
-import { SkipTrackUseCase } from "@modules/queue";
+import { SkipTrackUseCase } from "@modules/queue/useCases/SkipTrackUseCase";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class SkipCommand implements ICommand {

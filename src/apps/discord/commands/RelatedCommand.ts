@@ -1,8 +1,9 @@
-import { GetNowPlayingUseCase, GetRelatedUseCase } from "@modules/queue";
+import { GetNowPlayingUseCase } from "@modules/queue/useCases/GetNowPlayingUseCase";
+import { GetRelatedUseCase } from "@modules/queue/useCases/GetRelatedUseCase";
 import { videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class RelatedCommand implements ICommand {

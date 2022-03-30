@@ -1,5 +1,7 @@
 import { UseCase } from "@core";
-import { ILyricProvider, Lyric, LyricProvider } from "@modules/lyric";
+import { Lyric } from "@modules/lyric/domains/Lyric";
+import { ILyricProvider } from "@modules/lyric/providers/ILyricProvider";
+import { LyricProvider } from "@modules/lyric/providers/LyricProvider";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 

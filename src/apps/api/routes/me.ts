@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { asHandler, GetSelfQueueController } from "../";
-import { VerifyTokenMiddleware } from "../middlewares/VerifiyTokenMiddleware";
+import { asHandler } from "../api";
+import { GetSelfQueueController } from "../controllers/me/GetSelfQueueController";
+import { VerifyTokenMiddleware } from "../middlewares/VerifyTokenMiddleware";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 	app.get(

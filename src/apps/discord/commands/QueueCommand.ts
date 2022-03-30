@@ -1,7 +1,7 @@
-import { GetQueueTracksUseCase } from "@modules/queue";
+import { GetQueueTracksUseCase } from "@modules/queue/useCases/GetQueueTracksUseCase";
 import { MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class QueueCommand implements ICommand {

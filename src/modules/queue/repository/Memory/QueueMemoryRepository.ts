@@ -1,6 +1,7 @@
 import { joinVoiceChannel } from "@discordjs/voice";
-import { IQueueRepository, Queue } from "@modules/queue";
+import { Queue } from "@modules/queue/domain/Queue";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
+import { IQueueRepository } from "../IQueueRepository";
 
 type CreateProps = {
 	voiceChannel: BaseGuildVoiceChannel;

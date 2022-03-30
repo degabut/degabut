@@ -1,6 +1,8 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { ILyricProvider, Lyric, LyricProvider } from "@modules/lyric";
-import { IQueueRepository } from "@modules/queue";
+import { Lyric } from "@modules/lyric/domains/Lyric";
+import { ILyricProvider } from "@modules/lyric/providers/ILyricProvider";
+import { LyricProvider } from "@modules/lyric/providers/LyricProvider";
+import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 

@@ -1,6 +1,7 @@
-import { ChangeLoopTypeUseCase, LoopType } from "@modules/queue";
+import { LoopType } from "@modules/queue/domain/Queue";
+import { ChangeLoopTypeUseCase } from "@modules/queue/useCases/ChangeLoopTypeUseCase";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class LoopCommand implements ICommand {

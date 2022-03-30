@@ -1,8 +1,9 @@
-import { GetLyricUseCase, Lyric } from "@modules/lyric";
-import { GetNowPlayingLyricUseCase } from "@modules/queue";
+import { Lyric } from "@modules/lyric/domains/Lyric";
+import { GetLyricUseCase } from "@modules/lyric/useCases/GetLyricUseCase";
+import { GetNowPlayingLyricUseCase } from "@modules/queue/useCases/GetNowPlayingLyricUseCase";
 import { MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class LyricCommand implements ICommand {

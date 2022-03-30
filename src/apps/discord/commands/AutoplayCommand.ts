@@ -1,6 +1,6 @@
-import { ToggleAutoplayUseCase } from "@modules/queue";
+import { ToggleAutoplayUseCase } from "@modules/queue/useCases/ToggleAutoplayUseCase";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class AutoplayCommand implements ICommand {

@@ -1,5 +1,6 @@
 import { UseCase } from "@core";
-import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
+import { IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
+import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";

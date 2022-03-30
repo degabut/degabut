@@ -6,7 +6,7 @@ import {
 } from "discord-api-types/v9";
 import fetch, { RequestInit } from "node-fetch";
 
-interface ConstructorOptions {
+export interface DiscordOAuthProviderProps {
 	clientId?: string;
 	clientSecret?: string;
 	redirectUri?: string;
@@ -19,7 +19,7 @@ export class DiscordOAuthProvider {
 	private redirectUri: string;
 	private botToken: string;
 
-	constructor({ clientId, clientSecret, botToken, redirectUri }: ConstructorOptions) {
+	constructor({ clientId, clientSecret, botToken, redirectUri }: DiscordOAuthProviderProps) {
 		if (!clientId || !clientSecret || !botToken || !redirectUri)
 			throw new Error("Invalid Discord credentials.");
 

@@ -1,6 +1,6 @@
 import { MessageActionRow, MessageButton } from "discord.js";
 import { injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class TogetherCommand implements ICommand {

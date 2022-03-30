@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { IQueueRepository } from "@modules/queue";
-import { YoutubeProvider } from "@modules/youtube";
+import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";

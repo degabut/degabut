@@ -1,5 +1,5 @@
 import { UseCase } from "@core";
-import { DiscordClient } from "@modules/discord";
+import { DiscordClient } from "@modules/discord/DiscordClient";
 import { GuildMember } from "discord.js";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";

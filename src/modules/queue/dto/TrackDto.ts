@@ -1,5 +1,5 @@
 import { Exclude, Expose, plainToInstance } from "class-transformer";
-import { Track } from "../domain";
+import { Track } from "../domain/Track";
 
 @Exclude()
 export class TrackDto {

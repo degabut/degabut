@@ -1,10 +1,10 @@
-import { inject, injectable } from "tsyringe";
+import { injectable } from "tsyringe";
 import { Client as YoutubeClient, LiveVideo, Video, VideoCompact } from "youtubei";
 import { IYoutubeProvider } from "./IYoutubeProvider";
 
 @injectable()
 export class YoutubeProvider implements IYoutubeProvider {
-	constructor(@inject(YoutubeClient) private youtubeClient: YoutubeClient) {}
+	constructor(private youtubeClient: YoutubeClient) {}
 
 	public async searchVideo(keyword: string): Promise<VideoCompact[]> {
 		const videos = await this.youtubeClient.search(keyword, { type: "video" });

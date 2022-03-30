@@ -1,6 +1,6 @@
-import { DisconnectUseCase } from "@modules/queue";
+import { DisconnectUseCase } from "@modules/queue/useCases/DisconnectUseCase";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
 @injectable()
 export class StopCommand implements ICommand {

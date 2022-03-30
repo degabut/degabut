@@ -11,7 +11,7 @@ import {
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { EventEmitter } from "events";
 import { promisify } from "node:util";
-import { Track } from ".";
+import { Track } from "./Track";
 
 const wait = promisify(setTimeout);
 

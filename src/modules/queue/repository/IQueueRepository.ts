@@ -1,5 +1,5 @@
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
-import { Queue } from "../domain";
+import { Queue } from "../domain/Queue";
 
 type CreateProps = {
 	voiceChannel: BaseGuildVoiceChannel;

@@ -1,6 +1,8 @@
 import { UseCase } from "@core";
-import { Queue, Track } from "@modules/queue";
-import { IYoutubeProvider, YoutubeProvider } from "@modules/youtube";
+import { Queue } from "@modules/queue/domain/Queue";
+import { Track } from "@modules/queue/domain/Track";
+import { IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
+import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
 import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";

@@ -1,5 +1,5 @@
 import { EventHandler } from "@core";
-import { AddTrackParams, AddTrackResponse } from "@modules/queue";
+import { AddTrackParams, AddTrackResponse } from "@modules/queue/useCases/AddTrackUseCase";
 import { injectable } from "tsyringe";
 
 type Data = {

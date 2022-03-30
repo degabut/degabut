@@ -1,5 +1,5 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
-import { Queue } from "../domain";
+import { Queue } from "../domain/Queue";
 import { TrackDto } from "./TrackDto";
 
 @Exclude()

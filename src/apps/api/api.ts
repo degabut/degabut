@@ -1,9 +1,9 @@
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandler } from "fastify";
 import { container } from "tsyringe";
 import { constructor } from "tsyringe/dist/typings/types";
-import { Controller } from "./core";
-import { registerMeRoutes } from "./routes";
+import { Controller } from "./core/Controller";
 import { registerAuthRoutes } from "./routes/auth";
+import { registerMeRoutes } from "./routes/me";
 
 export const asHandler = (Controller: constructor<Controller>): RouteHandler => {
 	return async (request: FastifyRequest, reply: FastifyReply) => {

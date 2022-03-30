@@ -1,9 +1,9 @@
-import { SearchVideoUseCase } from "@modules/youtube";
+import { SearchVideoUseCase } from "@modules/youtube/useCases/SearchVideoUseCase";
 import { videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
-import { CommandExecuteProps, ICommand } from "../core";
-import { SearchInteractionCommand } from "../interactions";
+import { CommandExecuteProps, ICommand } from "../core/ICommand";
+import { SearchInteractionCommand } from "../interactions/SearchInteractionCommand";
 
 @injectable()
 export class SearchCommand implements ICommand {

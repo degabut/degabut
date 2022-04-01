@@ -1,37 +1,21 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { GetGuildMemberUseCase } from "@modules/discord/useCases/GetGuildMemberUseCase";
+import {
+	GetGuildMemberAdapter,
+	GetGuildMemberUseCase,
+} from "@modules/discord/useCases/GetGuildMemberUseCase";
 import { Track } from "@modules/queue/domain/Track";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import { IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
-import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-export type AddTrackParams = {
-	keyword: string;
-	id: string;
-	guildId: string;
-	voiceChannel?: BaseGuildVoiceChannel;
-	textChannel?: BaseGuildTextChannel;
-};
+import { AddTrackParams } from "./AddTrackAdapter";
 
 export type AddTrackResponse = Track;
 
 @injectable()
 export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
-	public paramsSchema = Joi.object<AddTrackParams>({
-		keyword: Joi.string(),
-		id: Joi.string(),
-		guildId: Joi.string().required(),
-		voiceChannel: Joi.object().instance(BaseGuildVoiceChannel),
-		textChannel: Joi.object().instance(BaseGuildTextChannel),
-	})
-		.required()
-		.xor("keyword", "id");
-
 	public emits = [OnTrackAddEvent];
 
 	constructor(
@@ -45,7 +29,9 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 	public async run(params: AddTrackParams, { userId }: IUseCaseContext): Promise<AddTrackResponse> {
 		const { keyword, id, guildId, textChannel, voiceChannel } = params;
 
-		const requestedBy = await this.getGuildMember.execute({ guildId, userId });
+		const requestedBy = await this.getGuildMember.execute(
+			new GetGuildMemberAdapter({ guildId, userId })
+		);
 		if (!requestedBy) throw new Error("User not found");
 
 		let queue = this.queueRepository.get(guildId);

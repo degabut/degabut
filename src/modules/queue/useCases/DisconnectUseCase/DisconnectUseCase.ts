@@ -1,25 +1,17 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	guildId: string;
-}
+import { DisconnectParams } from "./DisconnectAdapter";
 
 type Response = void;
 
 @injectable()
-export class DisconnectUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-	}).required();
-
+export class DisconnectUseCase extends UseCase<DisconnectParams, Response> {
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: DisconnectParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);

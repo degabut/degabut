@@ -1,14 +1,8 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { Track } from "@modules/queue/domain/Track";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	guildId: string;
-	page: number;
-	perPage: number;
-}
+import { GetQueueTracksParams } from "./GetQueueTracksAdapter";
 
 type Response = {
 	tracks: Track[];
@@ -16,18 +10,12 @@ type Response = {
 };
 
 @injectable()
-export class GetQueueTracksUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-		page: Joi.number().min(1).required().failover(1),
-		perPage: Joi.number().min(100).required().failover(10),
-	}).required();
-
+export class GetQueueTracksUseCase extends UseCase<GetQueueTracksParams, Response> {
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: GetQueueTracksParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId, page, perPage } = params;
 
 		const queue = this.queueRepository.get(guildId);

@@ -1,28 +1,18 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { LoopType } from "@modules/queue/domain/Queue";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-type Params = {
-	guildId: string;
-	loopType?: LoopType;
-};
+import { ChangeLoopTypeParams } from "./ChangeLoopTypeAdapter";
 
 type Response = LoopType;
 
 @injectable()
-export class ChangeLoopTypeUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-		loopType: Joi.string().valid(...Object.values(LoopType)),
-	}).required();
-
+export class ChangeLoopTypeUseCase extends UseCase<ChangeLoopTypeParams, Response> {
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: ChangeLoopTypeParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { loopType, guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);

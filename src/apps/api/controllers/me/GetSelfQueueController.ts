@@ -1,4 +1,7 @@
-import { GetUserQueueUseCase } from "@modules/queue/useCases/GetUserQueueUseCase";
+import {
+	GetUserQueueAdapter,
+	GetUserQueueUseCase,
+} from "@modules/queue/useCases/GetUserQueueUseCase";
 import { inject, injectable } from "tsyringe";
 import { Controller, ResponseStatus } from "../../core/Controller";
 
@@ -17,9 +20,8 @@ export class GetSelfQueueController extends Controller<Body, Params> {
 	}
 
 	async run(): Promise<unknown> {
-		const queue = await this.getUserQueue.execute({
-			userId: this.user.id,
-		});
+		const adapter = new GetUserQueueAdapter({ userId: this.user.id });
+		const queue = await this.getUserQueue.execute(adapter);
 
 		if (!queue) return this.status(ResponseStatus.NOT_FOUND).send();
 		this.status(ResponseStatus.OK).send(queue);

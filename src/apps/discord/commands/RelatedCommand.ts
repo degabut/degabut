@@ -1,5 +1,8 @@
-import { GetNowPlayingUseCase } from "@modules/queue/useCases/GetNowPlayingUseCase";
-import { GetRelatedUseCase } from "@modules/queue/useCases/GetRelatedUseCase";
+import {
+	GetNowPlayingAdapter,
+	GetNowPlayingUseCase,
+} from "@modules/queue/useCases/GetNowPlayingUseCase";
+import { GetRelatedAdapter, GetRelatedUseCase } from "@modules/queue/useCases/GetRelatedUseCase";
 import { videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
@@ -16,9 +19,12 @@ export class RelatedCommand implements ICommand {
 	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
+		const getNowPlayingAdapter = new GetNowPlayingAdapter({ guildId: message.guild?.id });
+		const getRelatedAdapter = new GetRelatedAdapter({ guildId: message.guild?.id });
+
 		const [nowPlaying, relatedVideos] = await Promise.all([
-			this.getNowPlaying.execute({ guildId: message.guild?.id }, { userId: message.author.id }),
-			this.getRelated.execute({ guildId: message.guild?.id }, { userId: message.author.id }),
+			this.getNowPlaying.execute(getNowPlayingAdapter, { userId: message.author.id }),
+			this.getRelated.execute(getRelatedAdapter, { userId: message.author.id }),
 		]);
 
 		const buttons = relatedVideos.map((v, i) => videoToMessageButton(v, i, "related"));

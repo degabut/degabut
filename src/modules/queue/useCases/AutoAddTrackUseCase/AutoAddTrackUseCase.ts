@@ -1,29 +1,20 @@
 import { UseCase } from "@core";
-import { Queue } from "@modules/queue/domain/Queue";
 import { Track } from "@modules/queue/domain/Track";
 import { IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";
-
-interface Params {
-	queue: Queue;
-}
+import { AutoAddTrackParams } from "./AutoAddTrackAdapter";
 
 type Response = void;
 
 @injectable()
-export class AutoAddTrackUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		queue: Joi.object().instance(Queue).required(),
-	}).required();
-
+export class AutoAddTrackUseCase extends UseCase<AutoAddTrackParams, Response> {
 	constructor(@inject(YoutubeProvider) private youtubeProvider: IYoutubeProvider) {
 		super();
 	}
 
-	public async run(params: Params): Promise<Response> {
+	public async run(params: AutoAddTrackParams): Promise<Response> {
 		const { queue } = params;
 
 		const lastSong = queue.history[0];

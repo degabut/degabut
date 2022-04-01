@@ -1,6 +1,9 @@
 import { Lyric } from "@modules/lyric/domains/Lyric";
-import { GetLyricUseCase } from "@modules/lyric/useCases/GetLyricUseCase";
-import { GetNowPlayingLyricUseCase } from "@modules/queue/useCases/GetNowPlayingLyricUseCase";
+import { GetLyricAdapter, GetLyricUseCase } from "@modules/lyric/useCases/GetLyricUseCase";
+import {
+	GetNowPlayingLyricAdapter,
+	GetNowPlayingLyricUseCase,
+} from "@modules/queue/useCases/GetNowPlayingLyricUseCase";
 import { MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
@@ -22,12 +25,11 @@ export class LyricCommand implements ICommand {
 		let lyric: Lyric;
 
 		if (keyword) {
-			lyric = await this.getLyric.execute({ keyword }, { userId: message.author.id });
+			const adapter = new GetLyricAdapter({ keyword });
+			lyric = await this.getLyric.execute(adapter, { userId: message.author.id });
 		} else {
-			lyric = await this.getNowPlayingLyric.execute(
-				{ guildId: message.guild?.id },
-				{ userId: message.author.id }
-			);
+			const adapter = new GetNowPlayingLyricAdapter({ guildId: message.guild?.id });
+			lyric = await this.getNowPlayingLyric.execute(adapter, { userId: message.author.id });
 		}
 
 		let maxLength = 4096;

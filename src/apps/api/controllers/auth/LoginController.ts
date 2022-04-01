@@ -1,4 +1,7 @@
-import { GetAccessTokenUseCase } from "@modules/discord/useCases/GetAccessTokenUseCase";
+import {
+	GetAccessTokenAdapter,
+	GetAccessTokenUseCase,
+} from "@modules/discord/useCases/GetAccessTokenUseCase";
 import { inject, injectable } from "tsyringe";
 import { Controller, IRequest, ResponseStatus } from "../../core/Controller";
 
@@ -13,9 +16,8 @@ export class LoginController extends Controller<Body> {
 	}
 
 	async run({ body }: IRequest<Body>): Promise<void> {
-		const accessToken = await this.getAccessToken.execute({
-			code: body.code,
-		});
+		const adapter = new GetAccessTokenAdapter({ code: body.code });
+		const accessToken = await this.getAccessToken.execute(adapter);
 
 		this.status(ResponseStatus.OK).send({ accessToken });
 	}

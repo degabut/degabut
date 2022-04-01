@@ -1,28 +1,18 @@
 import { UseCase } from "@core";
 import { DiscordClient } from "@modules/discord/DiscordClient";
 import { GuildMember } from "discord.js";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	guildId: string;
-	userId: string;
-}
+import { GetGuildMemberParams } from "./GetGuildMemberAdapter";
 
 type Response = GuildMember | undefined;
 
 @injectable()
-export class GetGuildMemberUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-		userId: Joi.string().required(),
-	}).required();
-
+export class GetGuildMemberUseCase extends UseCase<GetGuildMemberParams, Response> {
 	constructor(@inject(DiscordClient) private discordClient: DiscordClient) {
 		super();
 	}
 
-	protected async run(params: Params): Promise<Response> {
+	protected async run(params: GetGuildMemberParams): Promise<Response> {
 		const { guildId, userId } = params;
 
 		const guild = await this.discordClient.guilds.fetch(guildId);

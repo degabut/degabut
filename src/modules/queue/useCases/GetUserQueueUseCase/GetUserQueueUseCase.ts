@@ -1,26 +1,18 @@
 import { UseCase } from "@core";
 import { QueueDto } from "@modules/queue/dto/QueueDto";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	userId: string;
-}
+import { GetUserQueueParams } from "./GetUserQueueAdapter";
 
 type Response = QueueDto | undefined;
 
 @injectable()
-export class GetUserQueueUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		userId: Joi.string().required(),
-	}).required();
-
+export class GetUserQueueUseCase extends UseCase<GetUserQueueParams, Response> {
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
-	public async run(params: Params): Promise<Response> {
+	public async run(params: GetUserQueueParams): Promise<Response> {
 		const { userId } = params;
 
 		const queue = this.queueRepository.getByUserId(userId);

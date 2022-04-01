@@ -1,4 +1,4 @@
-import { GetUserUseCase } from "@modules/discord/useCases/GetUserUseCase";
+import { GetUserAdapter, GetUserUseCase } from "@modules/discord/useCases/GetUserUseCase";
 import { inject, injectable } from "tsyringe";
 import { Controller, IRequest, ResponseStatus } from "../core/Controller";
 
@@ -18,7 +18,8 @@ export class VerifyTokenMiddleware extends Controller {
 		const [, accessToken] = authorization.split(" ");
 		if (!accessToken) return this.status(ResponseStatus.UNAUTHORIZED).send();
 
-		const user = await this.getUser.execute({ accessToken });
+		const adapter = new GetUserAdapter({ accessToken });
+		const user = await this.getUser.execute(adapter);
 		if (!user) return this.status(ResponseStatus.UNAUTHORIZED).send();
 
 		this.user = user;

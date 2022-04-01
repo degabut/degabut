@@ -1,4 +1,7 @@
-import { GetNowPlayingUseCase } from "@modules/queue/useCases/GetNowPlayingUseCase";
+import {
+	GetNowPlayingAdapter,
+	GetNowPlayingUseCase,
+} from "@modules/queue/useCases/GetNowPlayingUseCase";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
@@ -11,10 +14,8 @@ export class NowPlayingCommand implements ICommand {
 	constructor(@inject(GetNowPlayingUseCase) private getNowPlaying: GetNowPlayingUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		const track = await this.getNowPlaying.execute(
-			{ guildId: message.guild?.id },
-			{ userId: message.author.id }
-		);
+		const adapter = new GetNowPlayingAdapter({ guildId: message.guild?.id });
+		const track = await this.getNowPlaying.execute(adapter, { userId: message.author.id });
 
 		if (!track) return;
 		await message.reply({ embeds: [track.embed] });

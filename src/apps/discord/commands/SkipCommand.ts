@@ -1,4 +1,4 @@
-import { SkipTrackUseCase } from "@modules/queue/useCases/SkipTrackUseCase";
+import { SkipTrackAdapter, SkipTrackUseCase } from "@modules/queue/useCases/SkipTrackUseCase";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
@@ -10,6 +10,7 @@ export class SkipCommand implements ICommand {
 	constructor(@inject(SkipTrackUseCase) private skipTrack: SkipTrackUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		await this.skipTrack.execute({ guildId: message.guild?.id }, { userId: message.author.id });
+		const adapter = new SkipTrackAdapter({ guildId: message.guild?.id });
+		await this.skipTrack.execute(adapter, { userId: message.author.id });
 	}
 }

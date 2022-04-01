@@ -2,6 +2,7 @@ import Joi from "joi";
 import { container } from "tsyringe";
 import { constructor } from "tsyringe/dist/typings/types";
 import { EventHandler } from "./EventHandler";
+import { UseCaseAdapter } from "./UseCaseAdapter";
 
 export type IUseCaseContext = {
 	userId: string;
@@ -12,13 +13,12 @@ const contextSchema = Joi.object({
 });
 
 abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
-	protected abstract paramsSchema: Joi.ObjectSchema<ParamsSchema>;
 	protected abstract run(params: ParamsSchema, context?: IUseCaseContext): Promise<Response>;
 	protected emits?: constructor<EventHandler>[];
 	protected awaitEmit?: boolean;
 
 	public async execute(
-		params: Partial<ParamsSchema>,
+		params: UseCaseAdapter<ParamsSchema>,
 		context?: IUseCaseContext
 	): Promise<Response> {
 		const validatedParams = await this.validate(params, context);
@@ -47,11 +47,12 @@ abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 	}
 
 	private async validate(
-		params: Partial<ParamsSchema>,
+		params: Partial<UseCaseAdapter<ParamsSchema>>,
 		context?: IUseCaseContext
 	): Promise<ParamsSchema> {
 		if (context) await contextSchema.validateAsync(context);
-		const result = await this.paramsSchema.validateAsync(params);
+		const result = await params.validate?.();
+		if (!result) throw new Error("Couldn't validate adapter");
 		return result;
 	}
 }

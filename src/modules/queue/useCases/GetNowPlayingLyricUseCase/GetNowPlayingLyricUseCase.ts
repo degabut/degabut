@@ -3,21 +3,13 @@ import { Lyric } from "@modules/lyric/domains/Lyric";
 import { ILyricProvider } from "@modules/lyric/providers/ILyricProvider";
 import { LyricProvider } from "@modules/lyric/providers/LyricProvider";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	guildId: string;
-}
+import { GetNowPlayingParams } from "../GetNowPlayingUseCase";
 
 type Response = Lyric;
 
 @injectable()
-export class GetNowPlayingLyricUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-	}).required();
-
+export class GetNowPlayingLyricUseCase extends UseCase<GetNowPlayingParams, Response> {
 	constructor(
 		@inject("QueueRepository") private queueRepository: IQueueRepository,
 		@inject(LyricProvider) private lyricProvider: ILyricProvider
@@ -25,7 +17,7 @@ export class GetNowPlayingLyricUseCase extends UseCase<Params, Response> {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: GetNowPlayingParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);

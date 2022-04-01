@@ -1,26 +1,18 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { Track } from "@modules/queue/domain/Track";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	guildId: string;
-}
+import { GetNowPlayingParams } from "./GetNowPlayingAdapter";
 
 type Response = Track | null;
 
 @injectable()
-export class GetNowPlayingUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-	}).required();
-
+export class GetNowPlayingUseCase extends UseCase<GetNowPlayingParams, Response> {
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: GetNowPlayingParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);

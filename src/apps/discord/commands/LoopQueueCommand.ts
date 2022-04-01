@@ -1,5 +1,8 @@
 import { LoopType } from "@modules/queue/domain/Queue";
-import { ChangeLoopTypeUseCase } from "@modules/queue/useCases/ChangeLoopTypeUseCase";
+import {
+	ChangeLoopTypeAdapters,
+	ChangeLoopTypeUseCase,
+} from "@modules/queue/useCases/ChangeLoopTypeUseCase";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
@@ -11,13 +14,11 @@ export class LoopQueueCommand implements ICommand {
 	constructor(@inject(ChangeLoopTypeUseCase) private changeLoopType: ChangeLoopTypeUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		const loopType = await this.changeLoopType.execute(
-			{
-				guildId: message.guild?.id,
-				loopType: LoopType.Queue,
-			},
-			{ userId: message.author.id }
-		);
+		const adapter = new ChangeLoopTypeAdapters({
+			guildId: message.guild?.id,
+			loopType: LoopType.Queue,
+		});
+		const loopType = await this.changeLoopType.execute(adapter, { userId: message.author.id });
 
 		await message.reply(
 			loopType === LoopType.Queue ? "🔂 **Looping Queue**" : "▶ **Loop Queue Disabled**"

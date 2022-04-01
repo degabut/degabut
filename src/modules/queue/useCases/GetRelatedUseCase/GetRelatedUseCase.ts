@@ -1,22 +1,14 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
 import { VideoCompact } from "youtubei";
-
-interface Params {
-	guildId: string;
-}
+import { GetRelatedParams } from "./GetRelatedAdapter";
 
 type Response = VideoCompact[];
 
 @injectable()
-export class GetRelatedUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-	}).required();
-
+export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
 	constructor(
 		@inject("QueueRepository") private queueRepository: IQueueRepository,
 		@inject(YoutubeProvider) private youtubeProvider: YoutubeProvider
@@ -24,7 +16,7 @@ export class GetRelatedUseCase extends UseCase<Params, Response> {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: GetRelatedParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);

@@ -1,4 +1,4 @@
-import { AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
+import { AddTrackAdapter, AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
 import { ButtonInteraction, GuildMember, Message, TextChannel } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { IInteractionCommand } from "../core/IInteractionCommand";
@@ -25,15 +25,13 @@ export class SearchInteractionCommand implements IInteractionCommand {
 			return;
 		}
 
-		await this.addTrack.execute(
-			{
-				id: videoId,
-				guildId: interaction.message.guild?.id,
-				textChannel: interaction.channel,
-				voiceChannel: interaction.member.voice.channel || undefined,
-			},
-			{ userId: interaction.member.id }
-		);
+		const adapter = new AddTrackAdapter({
+			id: videoId,
+			guildId: interaction.message.guild?.id,
+			textChannel: interaction.channel,
+			voiceChannel: interaction.member.voice.channel || undefined,
+		});
+		await this.addTrack.execute(adapter, { userId: interaction.member.id });
 		await interaction.deferUpdate();
 	}
 }

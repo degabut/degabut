@@ -1,4 +1,4 @@
-import { DisconnectUseCase } from "@modules/queue/useCases/DisconnectUseCase";
+import { DisconnectAdapter, DisconnectUseCase } from "@modules/queue/useCases/DisconnectUseCase";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
@@ -11,7 +11,9 @@ export class StopCommand implements ICommand {
 	constructor(@inject(DisconnectUseCase) private disconnect: DisconnectUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		await this.disconnect.execute({ guildId: message.guild?.id }, { userId: message.author.id });
+		const adapter = new DisconnectAdapter({ guildId: message.guild?.id });
+		await this.disconnect.execute(adapter, { userId: message.author.id });
+
 		await message.react("👋🏻");
 	}
 }

@@ -1,28 +1,18 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { Track } from "@modules/queue/domain/Track";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import Joi from "joi";
 import { inject, injectable } from "tsyringe";
-
-interface Params {
-	guildId: string;
-	index?: number;
-}
+import { RemoveTrackParams } from "./RemoveTrackAdapter";
 
 type Response = Track | null;
 
 @injectable()
-export class RemoveTrackUseCase extends UseCase<Params, Response> {
-	public paramsSchema = Joi.object<Params>({
-		guildId: Joi.string().required(),
-		index: Joi.number().min(0).failover(0),
-	}).required();
-
+export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
 		super();
 	}
 
-	public async run(params: Params, { userId }: IUseCaseContext): Promise<Response> {
+	public async run(params: RemoveTrackParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId, index } = params;
 
 		const queue = this.queueRepository.get(guildId);

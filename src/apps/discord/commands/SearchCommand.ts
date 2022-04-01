@@ -1,4 +1,7 @@
-import { SearchVideoUseCase } from "@modules/youtube/useCases/SearchVideoUseCase";
+import {
+	SearchVideoAdapter,
+	SearchVideoUseCase,
+} from "@modules/youtube/useCases/SearchVideoUseCase";
 import { videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
@@ -20,7 +23,10 @@ export class SearchCommand implements ICommand {
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const keyword = args.join("");
 
-		const videos = await this.searchVideo.execute({ keyword }, { userId: message.author.id });
+		const adapter = new SearchVideoAdapter({ keyword });
+		const videos = await this.searchVideo.execute(adapter, {
+			userId: message.author.id,
+		});
 		const splicedVideos = videos.slice(0, 10);
 
 		const buttons = splicedVideos.map((v, i) =>

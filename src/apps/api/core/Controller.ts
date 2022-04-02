@@ -16,13 +16,14 @@ export interface IResponse<T = unknown> {
 	body?: T;
 }
 
-export interface IRequest<Body = unknown, Params = unknown> {
+export interface IRequest<Body = unknown, Params = unknown, Query = unknown> {
 	body: Body;
 	params: Params;
+	query: Query;
 	headers: Record<string, string | string[] | undefined>;
 }
 
-export abstract class Controller<Body = unknown, Params = unknown> {
+export abstract class Controller<Body = unknown, Params = unknown, Query = unknown> {
 	private responseStatus?: ResponseStatus;
 	private responseBody?: unknown;
 	public user!: APIUser;
@@ -37,10 +38,10 @@ export abstract class Controller<Body = unknown, Params = unknown> {
 		return this;
 	}
 
-	async execute(request: IRequest<Body, Params>): Promise<IResponse> {
+	async execute(request: IRequest<Body, Params, Query>): Promise<IResponse> {
 		await this.run(request);
 		return { status: this.responseStatus, body: this.responseBody };
 	}
 
-	abstract run(request: IRequest<Body, Params>): Promise<unknown>;
+	abstract run(request: IRequest<Body, Params, Query>): Promise<unknown>;
 }

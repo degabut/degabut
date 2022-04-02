@@ -1,5 +1,6 @@
 import { UseCase } from "@core";
 import { VideoCompact } from "@modules/youtube/domains/VideoCompact";
+import { VideoCompactDto } from "@modules/youtube/dto/VideoCompactDto";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { inject, injectable } from "tsyringe";
 import { SearchVideoParams } from "./SearchVideoAdapter";
@@ -17,6 +18,6 @@ export class SearchVideoUseCase extends UseCase<SearchVideoParams, Response> {
 
 		const videos = await this.youtubeProvider.searchVideo(keyword);
 
-		return videos;
+		return videos.map(VideoCompactDto.create);
 	}
 }

@@ -4,6 +4,7 @@ import { constructor } from "tsyringe/dist/typings/types";
 import { Controller } from "./core/Controller";
 import { registerAuthRoutes } from "./routes/auth";
 import { registerMeRoutes } from "./routes/me";
+import { registerVideosRoutes } from "./routes/videos";
 
 export const asHandler = (Controller: constructor<Controller>): RouteHandler => {
 	return async (request: FastifyRequest, reply: FastifyReply) => {
@@ -14,6 +15,7 @@ export const asHandler = (Controller: constructor<Controller>): RouteHandler => 
 			body: request.body || {},
 			params: request.params || {},
 			headers: request.headers || {},
+			query: request.query || {},
 		});
 		if (controller.user) request.user = controller.user;
 
@@ -26,6 +28,7 @@ export const createApi = (): FastifyInstance => {
 
 	registerMeRoutes(app);
 	registerAuthRoutes(app);
+	registerVideosRoutes(app);
 
 	return app;
 };

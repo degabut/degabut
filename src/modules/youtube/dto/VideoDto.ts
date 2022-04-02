@@ -1,5 +1,7 @@
-import { Exclude, Expose, plainToInstance } from "class-transformer";
+import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import { Video } from "../domains/Video";
+import { ChannelDto } from "./ChannelDto";
+import { VideoCompactDto } from "./VideoCompactDto";
 
 @Exclude()
 export class VideoDto {
@@ -17,6 +19,18 @@ export class VideoDto {
 
 	@Expose()
 	viewCount!: number;
+
+	@Expose()
+	@Type(() => ChannelDto)
+	channel!: ChannelDto;
+
+	@Expose()
+	@Type(() => VideoCompactDto)
+	upNext!: VideoCompactDto | null;
+
+	@Expose()
+	@Type(() => VideoCompactDto)
+	related!: VideoCompactDto[];
 
 	public static create(entity: Video): VideoDto {
 		return plainToInstance(VideoDto, entity);

@@ -22,9 +22,9 @@ interface ConstructorProps {
 }
 
 export enum LoopType {
-	Disabled = "Disabled",
-	Song = "Song",
-	Queue = "Queue",
+	Disabled = "DISABLED",
+	Song = "SONG",
+	Queue = "QUEUE",
 }
 
 export class Queue extends EventEmitter {

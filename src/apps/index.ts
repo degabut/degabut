@@ -49,7 +49,9 @@ export const run = (): void => {
 	//#region Api
 	if (config.apiServer) {
 		const api = createApi();
-		api.listen(8080);
+		api.listen(8080, "0.0.0.0", (_, address) => {
+			console.log(`API Ready (${address})`);
+		});
 	}
 	//#endregion
 

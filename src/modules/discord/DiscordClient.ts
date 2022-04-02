@@ -13,6 +13,6 @@ export class DiscordClient extends Client {
 				Intents.FLAGS.DIRECT_MESSAGES,
 			],
 		});
-		this.once("ready", () => console.log("Ready!"));
+		this.once("ready", () => console.log("Bot Ready"));
 	}
 }

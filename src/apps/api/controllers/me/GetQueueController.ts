@@ -5,16 +5,8 @@ import {
 import { inject, injectable } from "tsyringe";
 import { Controller, ResponseStatus } from "../../core/Controller";
 
-type Body = {
-	id: string;
-};
-
-type Params = {
-	id: string;
-};
-
 @injectable()
-export class GetSelfQueueController extends Controller<Body, Params> {
+export class GetQueueController extends Controller {
 	constructor(@inject(GetUserQueueUseCase) private getUserQueue: GetUserQueueUseCase) {
 		super();
 	}
@@ -23,7 +15,7 @@ export class GetSelfQueueController extends Controller<Body, Params> {
 		const adapter = new GetUserQueueAdapter({ userId: this.user.id });
 		const queue = await this.getUserQueue.execute(adapter);
 
-		if (!queue) return this.status(ResponseStatus.NOT_FOUND).send();
+		if (!queue) return this.status(ResponseStatus.NOT_FOUND);
 		this.status(ResponseStatus.OK).send(queue);
 	}
 }

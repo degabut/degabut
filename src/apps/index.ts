@@ -38,7 +38,12 @@ export const run = (): void => {
 	registerQueueModules();
 	registerYoutubeModules();
 	registerLyricModules();
-	registerDiscordModules();
+	registerDiscordModules({
+		botToken: config.token,
+		clientId: config.discordOAuthClientId,
+		clientSecret: config.discordOAuthClientSecret,
+		redirectUri: config.discordOAuthRedirectUri,
+	});
 	//#endregion
 
 	//#region Api

@@ -131,7 +131,7 @@ export class Queue extends EventEmitter {
 
 	public async skip(): Promise<void> {
 		if (!this.nowPlaying) return;
-		await this.textChannel.send(`⏭ **Skipping ${this.nowPlaying.title}**`);
+		await this.textChannel.send(`⏭ **Skipping ${this.nowPlaying.video.title}**`);
 		// this will triggers `finish` event on nowPlaying
 		this.audioPlayer.stop(true);
 	}

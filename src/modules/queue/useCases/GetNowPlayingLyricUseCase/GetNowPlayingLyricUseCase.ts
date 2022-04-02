@@ -29,7 +29,7 @@ export class GetNowPlayingLyricUseCase extends UseCase<GetNowPlayingParams, Resp
 		const target = queue.nowPlaying;
 		if (!target) throw new Error("No song is playing");
 
-		const lyric = await this.lyricProvider.getLyric(target.title);
+		const lyric = await this.lyricProvider.getLyric(target.video.title);
 		if (!lyric) throw new Error("Lyric not found");
 
 		return lyric;

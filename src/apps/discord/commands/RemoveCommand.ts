@@ -19,7 +19,7 @@ export class RemoveCommand implements ICommand {
 		});
 		const removed = await this.removeTrack.execute(adapter, { userId: message.author.id });
 
-		if (removed) await message.reply(`🚮 **${removed.title} removed from queue**`);
+		if (removed) await message.reply(`🚮 **${removed.video.title} removed from queue**`);
 		else await message.reply("Invalid index!");
 	}
 }

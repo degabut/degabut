@@ -5,7 +5,7 @@ import Joi from "joi";
 export type AddTrackParams = {
 	keyword: string;
 	id: string;
-	guildId: string;
+	guildId?: string;
 	voiceChannel?: BaseGuildVoiceChannel;
 	textChannel?: BaseGuildTextChannel;
 };
@@ -18,7 +18,7 @@ export class AddTrackAdapter extends UseCaseAdapter<AddTrackParams> {
 	static SCHEMA = Joi.object<AddTrackParams>({
 		keyword: Joi.string(),
 		id: Joi.string(),
-		guildId: Joi.string().required(),
+		guildId: Joi.string(),
 		voiceChannel: Joi.object().instance(BaseGuildVoiceChannel),
 		textChannel: Joi.object().instance(BaseGuildTextChannel),
 	})

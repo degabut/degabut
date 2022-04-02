@@ -30,7 +30,7 @@ export class RelatedCommand implements ICommand {
 		const buttons = relatedVideos.map((v, i) => videoToMessageButton(v, i, "related"));
 
 		await message.reply({
-			content: `⭐ **Songs related with ${nowPlaying?.title}**`,
+			content: `⭐ **Songs related with ${nowPlaying?.video.title}**`,
 			embeds: [new MessageEmbed({ fields: relatedVideos.map(videoToEmbedField) })],
 			components: [
 				new MessageActionRow({ components: buttons.slice(0, 5) }),

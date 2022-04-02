@@ -1,5 +1,6 @@
+import { Video } from "@modules/youtube/domains/Video";
+import { VideoCompact } from "@modules/youtube/domains/VideoCompact";
 import { EmbedField, MessageButton } from "discord.js";
-import { Video, VideoCompact } from "youtubei";
 
 export const secondToTime = (seconds: number): string => {
 	return new Date(seconds * 1000).toISOString().substring(11, 19).replace("-", ":");

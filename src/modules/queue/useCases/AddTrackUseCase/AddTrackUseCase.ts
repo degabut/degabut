@@ -3,12 +3,13 @@ import {
 	GetGuildMemberAdapter,
 	GetGuildMemberUseCase,
 } from "@modules/discord/useCases/GetGuildMemberUseCase";
+import { Queue } from "@modules/queue/domain/Queue";
 import { Track } from "@modules/queue/domain/Track";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import { IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
-import { YoutubeProvider } from "@modules/youtube/providers/YoutubeProvider";
+import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
+import { GuildMember } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { AddTrackParams } from "./AddTrackAdapter";
 
@@ -19,7 +20,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 	public emits = [OnTrackAddEvent];
 
 	constructor(
-		@inject(YoutubeProvider) private youtubeProvider: IYoutubeProvider,
+		@inject(DIYoutubeProvider) private youtubeProvider: IYoutubeProvider,
 		@inject("QueueRepository") private queueRepository: IQueueRepository,
 		@inject(GetGuildMemberUseCase) private getGuildMember: GetGuildMemberUseCase
 	) {
@@ -29,21 +30,32 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 	public async run(params: AddTrackParams, { userId }: IUseCaseContext): Promise<AddTrackResponse> {
 		const { keyword, id, guildId, textChannel, voiceChannel } = params;
 
-		const requestedBy = await this.getGuildMember.execute(
-			new GetGuildMemberAdapter({ guildId, userId })
-		);
+		let queue: Queue | undefined;
+		let requestedBy: GuildMember | undefined;
+
+		if (guildId) {
+			// if guildId is passed, get queue by guildId
+			requestedBy = await this.getGuildMember.execute(
+				new GetGuildMemberAdapter({ guildId, userId })
+			);
+			queue = this.queueRepository.get(guildId);
+
+			if (!queue) {
+				// create queue if doesn't exists
+				if (!textChannel || !voiceChannel) throw new Error("Queue not found");
+				queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
+				queue.on("trackEnd", () => queue && super.emit(OnTrackEndEvent, queue));
+			} else if (!requestedBy || !queue.voiceChannel.members.get(requestedBy.id)) {
+				throw new Error("User not in voice channel");
+			}
+		} else {
+			// if guildId is not passed, get queue by userId
+			queue = this.queueRepository.getByUserId(userId);
+			requestedBy = queue?.voiceChannel.members.get(userId);
+		}
+
+		if (!queue) throw new Error("Queue not found");
 		if (!requestedBy) throw new Error("User not found");
-
-		let queue = this.queueRepository.get(guildId);
-		if (!queue) {
-			if (!textChannel || !voiceChannel) throw new Error("Queue not found");
-			queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
-			queue.on("trackEnd", () => queue && super.emit(OnTrackEndEvent, queue));
-		}
-
-		if (!queue.voiceChannel.members.find((m) => m.id === requestedBy.id)) {
-			throw new Error("User not in voice channel");
-		}
 
 		const [video] = keyword
 			? await this.youtubeProvider.searchVideo(keyword)
@@ -51,11 +63,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 		if (!video) throw new Error("Video not found");
 
 		const track = new Track({
-			id: video.id,
-			duration: "duration" in video ? video.duration || 0 : 0,
-			title: video.title,
-			thumbnailUrl: video.thumbnails.best,
-			channel: video.channel,
+			video,
 			requestedBy,
 		});
 

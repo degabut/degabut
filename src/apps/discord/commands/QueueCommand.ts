@@ -32,7 +32,7 @@ export class QueueCommand implements ICommand {
 			title: "Queue",
 			description: `Showing page **${page}** / **${Math.ceil(totalLength / perPage)}**`,
 			fields: tracks.map((track, index) => ({
-				name: `${start + index + 1}. ${track.title}`,
+				name: `${start + index + 1}. ${track.video.title}`,
 				value: `${track.url}\r\nRequested by <@!${track.requestedBy?.id}>`,
 			})),
 		});

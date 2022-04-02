@@ -31,8 +31,8 @@ export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
 		const video = await this.youtubeProvider.getVideo(target.video.id);
 		if (!video) throw new Error("Video not found");
 
-		const relatedVideos = [video.upNext, ...video.related]
-			.filter((v): v is VideoCompact => v !== null)
+		const relatedVideos = [...video.related]
+			.filter((v): v is VideoCompact => v instanceof VideoCompact)
 			.slice(0, 10);
 
 		return relatedVideos;

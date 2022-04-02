@@ -21,7 +21,7 @@ export class AutoAddTrackUseCase extends UseCase<AutoAddTrackParams, Response> {
 		const video = await this.youtubeProvider.getVideo(lastSong.video.id);
 		if (!video) return;
 
-		const upNext = video.upNext || video.related[0];
+		const upNext = video.related[0];
 		if (!upNext) return;
 
 		return queue.addTrack(

@@ -26,10 +26,6 @@ export class VideoDto {
 
 	@Expose()
 	@Type(() => VideoCompactDto)
-	upNext!: VideoCompactDto | null;
-
-	@Expose()
-	@Type(() => VideoCompactDto)
 	related!: VideoCompactDto[];
 
 	public static create(entity: Video): VideoDto {

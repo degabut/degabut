@@ -44,10 +44,6 @@ export class YoutubeiYoutubeProvider implements IYoutubeProvider {
 			related: video.related
 				.filter((r): r is YoutubeiVideoCompact => r instanceof YoutubeiVideoCompact)
 				.map(this.videoCompactToEntity),
-			upNext:
-				video.upNext instanceof YoutubeiVideoCompact
-					? this.videoCompactToEntity(video.upNext)
-					: null,
 		});
 		return entity;
 	}

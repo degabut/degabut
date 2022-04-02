@@ -9,7 +9,6 @@ interface Props {
 	channel: Channel | null;
 	viewCount: number | null;
 	related: VideoCompact[];
-	upNext: VideoCompact | null;
 }
 
 export class Video implements Props {
@@ -20,7 +19,6 @@ export class Video implements Props {
 	public readonly channel: Channel | null;
 	public readonly viewCount: number | null;
 	public readonly related: VideoCompact[];
-	public readonly upNext: VideoCompact | null;
 
 	constructor(props: Props) {
 		this.id = props.id;
@@ -30,6 +28,5 @@ export class Video implements Props {
 		this.channel = props.channel;
 		this.viewCount = props.viewCount;
 		this.related = props.related;
-		this.upNext = props.upNext;
 	}
 }

@@ -18,7 +18,7 @@ export class QueueDto {
 	@Expose()
 	public loopType!: LoopType;
 
-	public static create(queue: Queue): QueueDto {
-		return plainToInstance(QueueDto, queue);
+	public static create(entity: Queue): QueueDto {
+		return plainToInstance(QueueDto, entity);
 	}
 }

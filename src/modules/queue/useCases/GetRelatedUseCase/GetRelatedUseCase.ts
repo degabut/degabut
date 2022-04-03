@@ -1,11 +1,16 @@
 import { IUseCaseContext, UseCase } from "@core";
+import { TrackDto } from "@modules/queue/dto/TrackDto";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import { VideoCompact } from "@modules/youtube/domains/VideoCompact";
+import { VideoCompactDto } from "@modules/youtube/dto/VideoCompactDto";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { inject, injectable } from "tsyringe";
 import { GetRelatedParams } from "./GetRelatedAdapter";
 
-type Response = VideoCompact[];
+type Response = {
+	target: TrackDto;
+	videos: VideoCompactDto[];
+};
 
 @injectable()
 export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
@@ -35,6 +40,9 @@ export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
 			.filter((v): v is VideoCompact => v instanceof VideoCompact)
 			.slice(0, 10);
 
-		return relatedVideos;
+		return {
+			target: TrackDto.create(target),
+			videos: relatedVideos.map(VideoCompactDto.create),
+		};
 	}
 }

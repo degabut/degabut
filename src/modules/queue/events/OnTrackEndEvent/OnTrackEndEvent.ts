@@ -13,7 +13,7 @@ export class OnTrackEndEvent extends EventHandler<Data> {
 	}
 
 	public async run(queue: Data): Promise<void> {
-		if (queue.autoplay) {
+		if (queue.autoplay && !queue.tracks.length) {
 			const lastSong = queue.history[0];
 			if (lastSong) {
 				const adapter = new AutoAddTrackAdapter({ queue });

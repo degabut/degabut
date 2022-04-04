@@ -31,6 +31,7 @@ export class YoutubeiYoutubeProvider implements IYoutubeProvider {
 			? new Channel({
 					id: video.channel.id,
 					name: video.channel.name,
+					thumbnail: video.channel.thumbnails?.best || null,
 			  })
 			: null;
 
@@ -59,6 +60,7 @@ export class YoutubeiYoutubeProvider implements IYoutubeProvider {
 				? new Channel({
 						id: video.channel.id,
 						name: video.channel.name,
+						thumbnail: video.channel.thumbnails?.best || null,
 				  })
 				: null,
 		});

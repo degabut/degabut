@@ -9,6 +9,9 @@ export class ChannelDto {
 	@Expose()
 	public name!: string;
 
+	@Expose()
+	public thumbnail!: string | null;
+
 	public static create(entity: Channel): ChannelDto {
 		return plainToInstance(ChannelDto, entity);
 	}

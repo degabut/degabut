@@ -2185,10 +2185,10 @@ yallist@^4.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
-youtubei@0.0.1-rc.29:
-  version "0.0.1-rc.29"
-  resolved "https://registry.yarnpkg.com/youtubei/-/youtubei-0.0.1-rc.29.tgz#7e6a348a61f17d2299b498de82e0296ca44f051e"
-  integrity sha512-4y9GiPHK5oA37BH7Mlkemi5V8CJbkPd5ZJWx3P9r25GHvSHHkmDrk3eg/IGb+8yOnYyiFOVC64GoVwziaDOInA==
+youtubei@0.0.1-rc.34:
+  version "0.0.1-rc.34"
+  resolved "https://registry.yarnpkg.com/youtubei/-/youtubei-0.0.1-rc.34.tgz#2b39015c7e2fec968abd84d8229c7745a89d8072"
+  integrity sha512-7EbAoJ8wKlOq2+2Y9F6BhDK85Vr7XkacW44g7F2++up/lncdwRVXcz/Q4vOxxMZcvadEWPOc/78U10GQUeI1fw==
 
 zod@^3.11.6:
   version "3.11.6"

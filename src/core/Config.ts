@@ -3,6 +3,7 @@ import { injectable } from "tsyringe";
 export interface ConfigProps {
 	prefix: string;
 	token: string;
+	env: "development" | "production";
 	apiServer?: boolean;
 	jwtSecret?: string;
 	discordOAuthClientId?: string;
@@ -14,6 +15,7 @@ export interface ConfigProps {
 export class Config {
 	readonly prefix!: string;
 	readonly token!: string;
+	readonly env!: "development" | "production";
 	readonly apiServer?: boolean;
 	readonly jwtSecret?: string;
 	readonly discordOAuthClientId?: string;
@@ -23,6 +25,7 @@ export class Config {
 	constructor(props: ConfigProps) {
 		this.prefix = props.prefix;
 		this.token = props.token;
+		this.env = props.env || "development";
 		this.apiServer = !!props.apiServer;
 		this.jwtSecret = props.jwtSecret;
 		this.discordOAuthClientId = props.discordOAuthClientId;

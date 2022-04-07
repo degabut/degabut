@@ -1,4 +1,6 @@
+import { Config } from "@core";
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandler } from "fastify";
+import fastifyCors from "fastify-cors";
 import { container } from "tsyringe";
 import { constructor } from "tsyringe/dist/typings/types";
 import { Controller } from "./core/Controller";
@@ -23,8 +25,12 @@ export const asHandler = (Controller: constructor<Controller>): RouteHandler => 
 	};
 };
 
-export const createApi = (): FastifyInstance => {
+export const createApi = (config: Config): FastifyInstance => {
 	const app = fastify();
+
+	if (config.env === "development") {
+		app.register(fastifyCors, { origin: "*" });
+	}
 
 	registerMeRoutes(app);
 	registerAuthRoutes(app);

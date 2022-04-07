@@ -18,6 +18,7 @@ export const run = (): void => {
 	const config: ConfigProps = {
 		prefix: process.env.PREFIX as string,
 		token: process.env.TOKEN as string,
+		env: process.env.NODE_ENV as "development" | "production",
 		apiServer: process.env.API_SERVER === "true",
 		jwtSecret: process.env.JWT_SECRET,
 		discordOAuthClientId: process.env.DISCORD_OAUTH_CLIENT_ID,
@@ -48,7 +49,7 @@ export const run = (): void => {
 
 	//#region Api
 	if (config.apiServer) {
-		const api = createApi();
+		const api = createApi(config);
 		api.listen(8080, "0.0.0.0", (_, address) => {
 			console.log(`API Ready (${address})`);
 		});

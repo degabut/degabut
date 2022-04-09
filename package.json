@@ -33,7 +33,7 @@
 		"qs": "6.10.3",
 		"reflect-metadata": "0.1.13",
 		"tsyringe": "4.6.0",
-		"youtubei": "0.0.1-rc.34"
+		"youtubei": "0.0.1-rc.35"
 	},
 	"devDependencies": {
 		"@types/qs": "6.9.7",

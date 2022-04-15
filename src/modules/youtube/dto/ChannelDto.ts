@@ -1,5 +1,6 @@
-import { Exclude, Expose, plainToInstance } from "class-transformer";
+import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import { Channel } from "../domains/Channel";
+import { ThumbnailDto } from "./ThumbnailDto";
 
 @Exclude()
 export class ChannelDto {
@@ -10,7 +11,8 @@ export class ChannelDto {
 	public name!: string;
 
 	@Expose()
-	public thumbnail!: string | null;
+	@Type(() => ThumbnailDto)
+	thumbnails!: ThumbnailDto[];
 
 	public static create(entity: Channel): ChannelDto {
 		return plainToInstance(ChannelDto, entity);

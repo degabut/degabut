@@ -31,7 +31,7 @@ export class YoutubeiYoutubeProvider implements IYoutubeProvider {
 			? new Channel({
 					id: video.channel.id,
 					name: video.channel.name,
-					thumbnail: video.channel.thumbnails?.best || null,
+					thumbnails: video.channel.thumbnails || [],
 			  })
 			: null;
 
@@ -39,7 +39,7 @@ export class YoutubeiYoutubeProvider implements IYoutubeProvider {
 			id: video.id,
 			title: video.title,
 			duration: "duration" in video ? video.duration || 0 : 0,
-			thumbnail: video.thumbnails.best || null,
+			thumbnails: video.thumbnails,
 			viewCount: video.viewCount || null,
 			channel,
 			related: video.related
@@ -54,13 +54,13 @@ export class YoutubeiYoutubeProvider implements IYoutubeProvider {
 			id: video.id,
 			title: video.title,
 			duration: "duration" in video ? video.duration || 0 : 0,
-			thumbnail: video.thumbnails.best || null,
+			thumbnails: video.thumbnails,
 			viewCount: video.viewCount || null,
 			channel: video.channel
 				? new Channel({
 						id: video.channel.id,
 						name: video.channel.name,
-						thumbnail: video.channel.thumbnails?.best || null,
+						thumbnails: video.channel.thumbnails || [],
 				  })
 				: null,
 		});

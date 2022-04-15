@@ -1,11 +1,12 @@
 import { Channel } from "./Channel";
+import { Thumbnail } from "./Thumbnail";
 import { VideoCompact } from "./VideoCompact";
 
 interface Props {
 	id: string;
 	title: string;
 	duration: number;
-	thumbnail: string | null;
+	thumbnails: Thumbnail[];
 	channel: Channel | null;
 	viewCount: number | null;
 	related: VideoCompact[];
@@ -15,7 +16,7 @@ export class Video implements Props {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly duration: number;
-	public readonly thumbnail: string | null;
+	public readonly thumbnails: Thumbnail[];
 	public readonly channel: Channel | null;
 	public readonly viewCount: number | null;
 	public readonly related: VideoCompact[];
@@ -24,7 +25,7 @@ export class Video implements Props {
 		this.id = props.id;
 		this.title = props.title;
 		this.duration = props.duration;
-		this.thumbnail = props.thumbnail;
+		this.thumbnails = props.thumbnails;
 		this.channel = props.channel;
 		this.viewCount = props.viewCount;
 		this.related = props.related;

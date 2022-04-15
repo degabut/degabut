@@ -1,17 +1,19 @@
+import { Thumbnail } from "./Thumbnail";
+
 interface Props {
 	id: string;
 	name: string;
-	thumbnail: string | null;
+	thumbnails: Thumbnail[];
 }
 
 export class Channel implements Props {
 	public readonly id: string;
 	public readonly name: string;
-	public readonly thumbnail: string | null;
+	public readonly thumbnails: Thumbnail[];
 
 	constructor(props: Props) {
 		this.id = props.id;
 		this.name = props.name;
-		this.thumbnail = props.thumbnail;
+		this.thumbnails = props.thumbnails;
 	}
 }

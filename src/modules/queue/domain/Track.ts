@@ -45,7 +45,7 @@ export class Track extends EventEmitter {
 			title: this.video.title,
 			description: descriptions.join("\r\n"),
 			url: this.url,
-			image: this.video.thumbnail ? { url: this.video.thumbnail } : undefined,
+			image: this.video.thumbnails.at(-1) ? { url: this.video.thumbnails.at(-1)?.url } : undefined,
 			fields,
 		});
 	}

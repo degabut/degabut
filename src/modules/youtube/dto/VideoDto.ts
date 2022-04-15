@@ -1,6 +1,7 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import { Video } from "../domains/Video";
 import { ChannelDto } from "./ChannelDto";
+import { ThumbnailDto } from "./ThumbnailDto";
 import { VideoCompactDto } from "./VideoCompactDto";
 
 @Exclude()
@@ -15,7 +16,8 @@ export class VideoDto {
 	duration!: number;
 
 	@Expose()
-	thumbnail!: string;
+	@Type(() => ThumbnailDto)
+	thumbnails!: ThumbnailDto[];
 
 	@Expose()
 	viewCount!: number;

@@ -6,6 +6,9 @@ import { Track } from "../domain/Track";
 @Exclude()
 export class TrackDto {
 	@Expose()
+	public id!: string;
+
+	@Expose()
 	@Type(() => VideoCompactDto)
 	public video!: VideoCompactDto;
 

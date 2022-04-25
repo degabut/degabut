@@ -39,12 +39,16 @@ export const run = (): void => {
 	registerQueueModules();
 	registerYoutubeModules();
 	registerLyricModules();
-	registerDiscordModules({
-		botToken: config.token,
-		clientId: config.discordOAuthClientId,
-		clientSecret: config.discordOAuthClientSecret,
-		redirectUri: config.discordOAuthRedirectUri,
-	});
+	registerDiscordModules(
+		config.apiServer
+			? {
+					botToken: config.token,
+					clientId: config.discordOAuthClientId,
+					clientSecret: config.discordOAuthClientSecret,
+					redirectUri: config.discordOAuthRedirectUri,
+			  }
+			: undefined
+	);
 	//#endregion
 
 	//#region Api

@@ -1,4 +1,4 @@
-import { UseCaseAdapter } from "core/UseCaseAdapter";
+import { UseCaseAdapter } from "@core";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import Joi from "joi";
 

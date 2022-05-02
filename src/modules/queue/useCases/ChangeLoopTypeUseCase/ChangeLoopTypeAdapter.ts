@@ -1,5 +1,5 @@
+import { UseCaseAdapter } from "@core";
 import { LoopType } from "@modules/queue/domain/Queue";
-import { UseCaseAdapter } from "core/UseCaseAdapter";
 import Joi from "joi";
 
 export interface ChangeLoopTypeParams {

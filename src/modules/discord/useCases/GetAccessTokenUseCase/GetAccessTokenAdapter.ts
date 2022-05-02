@@ -1,4 +1,4 @@
-import { UseCaseAdapter } from "core/UseCaseAdapter";
+import { UseCaseAdapter } from "@core";
 import Joi from "joi";
 
 export interface GetAccessTokenParams {

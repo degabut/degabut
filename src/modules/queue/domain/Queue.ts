@@ -28,13 +28,13 @@ export enum LoopType {
 }
 
 export class Queue extends EventEmitter {
-	private readonly audioPlayer: AudioPlayer;
+	public readonly audioPlayer: AudioPlayer;
 	public readonly voiceConnection: VoiceConnection;
-	private textChannel: BaseGuildTextChannel;
-	public voiceChannel: BaseGuildVoiceChannel;
-	public nowPlaying: Track | null;
 	public readonly tracks: Track[];
 	public readonly history: Track[];
+	public textChannel: BaseGuildTextChannel;
+	public voiceChannel: BaseGuildVoiceChannel;
+	public nowPlaying: Track | null;
 	public loopType: LoopType;
 	public autoplay: boolean;
 	public readyLock: boolean;
@@ -51,64 +51,8 @@ export class Queue extends EventEmitter {
 		this.loopType = LoopType.Disabled;
 		this.autoplay = false;
 		this.readyLock = false;
-
 		this.audioPlayer = createAudioPlayer();
-
-		//#region event listener setup
-		this.voiceConnection.on("stateChange", async (_, newState) => {
-			if (newState.status === VoiceConnectionStatus.Disconnected) {
-				if (
-					newState.reason === VoiceConnectionDisconnectReason.WebSocketClose &&
-					newState.closeCode === 4014
-				) {
-					try {
-						await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
-					} catch {
-						this.voiceConnection.destroy();
-					}
-				} else if (this.voiceConnection.rejoinAttempts < 5) {
-					await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
-					this.voiceConnection.rejoin();
-				} else {
-					this.voiceConnection.destroy();
-				}
-			} else if (newState.status === VoiceConnectionStatus.Destroyed) {
-				this.stop();
-			} else if (
-				!this.readyLock &&
-				(newState.status === VoiceConnectionStatus.Connecting ||
-					newState.status === VoiceConnectionStatus.Signalling)
-			) {
-				this.readyLock = true;
-				try {
-					await entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20_000);
-				} catch {
-					if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed)
-						this.voiceConnection.destroy();
-				} finally {
-					this.readyLock = false;
-					this.processQueue();
-				}
-			}
-		});
-
-		this.audioPlayer.on("stateChange", (oldState, newState) => {
-			if (
-				newState.status === AudioPlayerStatus.Idle &&
-				oldState.status !== AudioPlayerStatus.Idle
-			) {
-				(oldState.resource as AudioResource<Track>).metadata.emit("finish");
-			} else if (newState.status === AudioPlayerStatus.Playing) {
-				(newState.resource as AudioResource<Track>).metadata.emit("start");
-			}
-		});
-
-		this.audioPlayer.on("error", (error) => {
-			(error.resource as AudioResource<Track>).metadata.emit("error", error);
-		});
-		//#endregion
-
-		props.voiceConnection.subscribe(this.audioPlayer);
+		this.initVoiceConnection();
 	}
 
 	public addTrack(track: Track): void {
@@ -190,5 +134,63 @@ export class Queue extends EventEmitter {
 			this.nowPlaying.emit("error", error);
 			this.processQueue();
 		}
+	}
+
+	private initVoiceConnection(): void {
+		//#region event listener setup
+		this.voiceConnection.on("stateChange", async (_, newState) => {
+			if (newState.status === VoiceConnectionStatus.Disconnected) {
+				if (
+					newState.reason === VoiceConnectionDisconnectReason.WebSocketClose &&
+					newState.closeCode === 4014
+				) {
+					try {
+						await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
+					} catch {
+						this.voiceConnection.destroy();
+					}
+				} else if (this.voiceConnection.rejoinAttempts < 5) {
+					await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
+					this.voiceConnection.rejoin();
+				} else {
+					this.voiceConnection.destroy();
+				}
+			} else if (newState.status === VoiceConnectionStatus.Destroyed) {
+				this.stop();
+			} else if (
+				!this.readyLock &&
+				(newState.status === VoiceConnectionStatus.Connecting ||
+					newState.status === VoiceConnectionStatus.Signalling)
+			) {
+				this.readyLock = true;
+				try {
+					await entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20_000);
+				} catch {
+					if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed)
+						this.voiceConnection.destroy();
+				} finally {
+					this.readyLock = false;
+					this.processQueue();
+				}
+			}
+		});
+
+		this.audioPlayer.on("stateChange", (oldState, newState) => {
+			if (
+				newState.status === AudioPlayerStatus.Idle &&
+				oldState.status !== AudioPlayerStatus.Idle
+			) {
+				(oldState.resource as AudioResource<Track>).metadata.emit("finish");
+			} else if (newState.status === AudioPlayerStatus.Playing) {
+				(newState.resource as AudioResource<Track>).metadata.emit("start");
+			}
+		});
+
+		this.audioPlayer.on("error", (error) => {
+			(error.resource as AudioResource<Track>).metadata.emit("error", error);
+		});
+		//#endregion
+
+		this.voiceConnection.subscribe(this.audioPlayer);
 	}
 }

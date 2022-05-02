@@ -1,5 +1,6 @@
 import { UseCase } from "@core";
 import { Track } from "@modules/queue/domain/Track";
+import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { inject, injectable } from "tsyringe";
 import { AutoAddTrackParams } from "./AutoAddTrackAdapter";
@@ -24,11 +25,12 @@ export class AutoAddTrackUseCase extends UseCase<AutoAddTrackParams, Response> {
 		const upNext = video.related[0];
 		if (!upNext) return;
 
-		return queue.addTrack(
-			new Track({
-				video: upNext,
-				requestedBy: lastSong.requestedBy,
-			})
-		);
+		const track = new Track({
+			video: upNext,
+			requestedBy: lastSong.requestedBy,
+		});
+		queue.addTrack(track);
+
+		this.emit(OnTrackAddEvent, { queue, track });
 	}
 }

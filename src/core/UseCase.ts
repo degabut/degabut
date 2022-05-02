@@ -14,8 +14,6 @@ const contextSchema = Joi.object({
 
 abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 	protected abstract run(params: ParamsSchema, context?: IUseCaseContext): Promise<Response>;
-	protected emits?: constructor<EventHandler>[];
-	protected awaitEmit?: boolean;
 
 	public async execute(
 		params: UseCaseAdapter<ParamsSchema>,
@@ -23,17 +21,6 @@ abstract class UseCase<ParamsSchema = unknown, Response = unknown> {
 	): Promise<Response> {
 		const validatedParams = await this.validate(params, context);
 		const response = await this.run(validatedParams, context);
-
-		if (this.emits) {
-			const promises = this.emits.map((handler) => {
-				const eventHandler = container.resolve(handler); // TODO better way to resolve?
-				return eventHandler.run({
-					params: validatedParams,
-					value: response,
-				});
-			});
-			if (this.awaitEmit) await Promise.all(promises);
-		}
 
 		return response;
 	}

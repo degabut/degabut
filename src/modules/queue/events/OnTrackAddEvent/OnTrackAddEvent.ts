@@ -1,15 +1,15 @@
 import { EventHandler } from "@core";
-import { AddTrackParams, AddTrackResponse } from "@modules/queue/useCases/AddTrackUseCase";
+import { Queue } from "@modules/queue/domain/Queue";
+import { Track } from "@modules/queue/domain/Track";
 import { injectable } from "tsyringe";
 
 type Data = {
-	params: AddTrackParams;
-	value: AddTrackResponse;
+	track: Track;
+	queue: Queue;
 };
-
 @injectable()
 export class OnTrackAddEvent extends EventHandler<Data> {
-	public async run({ params, value }: Data): Promise<void> {
+	public async run({ queue, track }: Data): Promise<void> {
 		// TODO implement
 		// console.log({ params, id: value.id });
 	}

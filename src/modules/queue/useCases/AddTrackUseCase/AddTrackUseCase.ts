@@ -17,8 +17,6 @@ export type AddTrackResponse = Track;
 
 @injectable()
 export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
-	public emits = [OnTrackAddEvent];
-
 	constructor(
 		@inject(DIYoutubeProvider) private youtubeProvider: IYoutubeProvider,
 		@inject("QueueRepository") private queueRepository: IQueueRepository,
@@ -68,6 +66,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 		});
 
 		queue.addTrack(track);
+		this.emit(OnTrackAddEvent, { queue, track });
 
 		return track;
 	}

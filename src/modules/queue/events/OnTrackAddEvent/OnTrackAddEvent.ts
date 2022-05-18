@@ -6,11 +6,17 @@ import { injectable } from "tsyringe";
 type Data = {
 	track: Track;
 	queue: Queue;
+	isPlayedImmediately: boolean;
 };
+
 @injectable()
 export class OnTrackAddEvent extends EventHandler<Data> {
-	public async run({ queue, track }: Data): Promise<void> {
-		// TODO implement
-		// console.log({ params, id: value.id });
+	public async run({ queue, track, isPlayedImmediately }: Data): Promise<void> {
+		if (isPlayedImmediately) return;
+
+		await queue.textChannel.send({
+			content: `🎵 **Added To Queue** (${queue.tracks.length})`,
+			embeds: [track.embed],
+		});
 	}
 }

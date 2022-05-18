@@ -1,19 +1,7 @@
-import {
-	AudioPlayer,
-	AudioPlayerStatus,
-	AudioResource,
-	createAudioPlayer,
-	entersState,
-	VoiceConnection,
-	VoiceConnectionDisconnectReason,
-	VoiceConnectionStatus,
-} from "@discordjs/voice";
+import { AudioPlayer, createAudioPlayer, VoiceConnection } from "@discordjs/voice";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { EventEmitter } from "events";
-import { promisify } from "node:util";
 import { Track } from "./Track";
-
-const wait = promisify(setTimeout);
 
 interface ConstructorProps {
 	voiceConnection: VoiceConnection;
@@ -52,19 +40,18 @@ export class Queue extends EventEmitter {
 		this.autoplay = false;
 		this.readyLock = false;
 		this.audioPlayer = createAudioPlayer();
-		this.initVoiceConnection();
 	}
 
 	public addTrack(track: Track): void {
 		this.tracks.push(track);
-		if (this.nowPlaying) {
-			this.textChannel.send({
-				content: `🎵 **Added To Queue** (${this.tracks.length})`,
-				embeds: [track.embed],
-			});
-		} else {
-			this.processQueue();
-		}
+		if (!this.nowPlaying) this.processQueue();
+	}
+
+	public changeTrackOrder(fromIndex: number, toIndex: number): void {
+		const track = this.tracks[fromIndex];
+		if (!track) return; // TODO handle error
+		this.tracks.splice(fromIndex, 1);
+		this.tracks.splice(toIndex, 0, track);
 	}
 
 	public remove(index: number): Track | null {
@@ -73,11 +60,12 @@ export class Queue extends EventEmitter {
 		return removed;
 	}
 
-	public async skip(): Promise<void> {
+	public skip(): Track | undefined {
 		if (!this.nowPlaying) return;
-		await this.textChannel.send(`⏭ **Skipping ${this.nowPlaying.video.title}**`);
+		const skipped = this.nowPlaying;
 		// this will triggers `finish` event on nowPlaying
 		this.audioPlayer.stop(true);
+		return skipped;
 	}
 
 	public stop(): void {
@@ -91,7 +79,7 @@ export class Queue extends EventEmitter {
 		return this.autoplay;
 	}
 
-	private async processQueue(): Promise<void> {
+	public async processQueue(): Promise<void> {
 		if (this.readyLock) return;
 
 		this.nowPlaying = this.tracks[0];
@@ -113,10 +101,7 @@ export class Queue extends EventEmitter {
 		});
 		this.nowPlaying.on("start", () => {
 			if (!this.nowPlaying) return;
-			this.textChannel.send({
-				content: "🎶 **Now Playing**",
-				embeds: [this.nowPlaying.embed],
-			});
+			this.emit("trackStart");
 		});
 		this.nowPlaying.on("error", () => {
 			/* TODO handle error */
@@ -134,63 +119,5 @@ export class Queue extends EventEmitter {
 			this.nowPlaying.emit("error", error);
 			this.processQueue();
 		}
-	}
-
-	private initVoiceConnection(): void {
-		//#region event listener setup
-		this.voiceConnection.on("stateChange", async (_, newState) => {
-			if (newState.status === VoiceConnectionStatus.Disconnected) {
-				if (
-					newState.reason === VoiceConnectionDisconnectReason.WebSocketClose &&
-					newState.closeCode === 4014
-				) {
-					try {
-						await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
-					} catch {
-						this.voiceConnection.destroy();
-					}
-				} else if (this.voiceConnection.rejoinAttempts < 5) {
-					await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
-					this.voiceConnection.rejoin();
-				} else {
-					this.voiceConnection.destroy();
-				}
-			} else if (newState.status === VoiceConnectionStatus.Destroyed) {
-				this.stop();
-			} else if (
-				!this.readyLock &&
-				(newState.status === VoiceConnectionStatus.Connecting ||
-					newState.status === VoiceConnectionStatus.Signalling)
-			) {
-				this.readyLock = true;
-				try {
-					await entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20_000);
-				} catch {
-					if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed)
-						this.voiceConnection.destroy();
-				} finally {
-					this.readyLock = false;
-					this.processQueue();
-				}
-			}
-		});
-
-		this.audioPlayer.on("stateChange", (oldState, newState) => {
-			if (
-				newState.status === AudioPlayerStatus.Idle &&
-				oldState.status !== AudioPlayerStatus.Idle
-			) {
-				(oldState.resource as AudioResource<Track>).metadata.emit("finish");
-			} else if (newState.status === AudioPlayerStatus.Playing) {
-				(newState.resource as AudioResource<Track>).metadata.emit("start");
-			}
-		});
-
-		this.audioPlayer.on("error", (error) => {
-			(error.resource as AudioResource<Track>).metadata.emit("error", error);
-		});
-		//#endregion
-
-		this.voiceConnection.subscribe(this.audioPlayer);
 	}
 }

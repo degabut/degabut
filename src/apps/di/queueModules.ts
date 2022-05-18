@@ -2,6 +2,7 @@ import { EventHandler, UseCase } from "@core";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
 import { QueueMemoryRepository } from "@modules/queue/repository/Memory/QueueMemoryRepository";
+import { QueueService } from "@modules/queue/services/QueueService";
 import { AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
 import { AutoAddTrackUseCase } from "@modules/queue/useCases/AutoAddTrackUseCase";
 import { ChangeLoopTypeUseCase } from "@modules/queue/useCases/ChangeLoopTypeUseCase";
@@ -33,9 +34,12 @@ const useCases = [
 
 const events = [OnTrackAddEvent, OnTrackEndEvent];
 
+const services = [QueueService];
+
 export const registerQueueModules = (): void => {
 	container.registerSingleton("QueueRepository", QueueMemoryRepository);
 
+	services.map((S) => container.registerSingleton(S));
 	useCases.map((U) => container.registerSingleton<UseCase>(U));
 	events.map((E) => container.registerSingleton<EventHandler>(E));
 };

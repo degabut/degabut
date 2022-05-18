@@ -29,8 +29,9 @@ export class AutoAddTrackUseCase extends UseCase<AutoAddTrackParams, Response> {
 			video: upNext,
 			requestedBy: lastSong.requestedBy,
 		});
-		queue.addTrack(track);
 
-		this.emit(OnTrackAddEvent, { queue, track });
+		const isPlayedImmediately = !queue.nowPlaying;
+		queue.addTrack(track);
+		this.emit(OnTrackAddEvent, { queue, track, isPlayedImmediately });
 	}
 }

@@ -4,7 +4,7 @@ import { AutoAddTrackAdapter } from "@modules/queue/useCases/AutoAddTrackUseCase
 import { AutoAddTrackUseCase } from "@modules/queue/useCases/AutoAddTrackUseCase/AutoAddTrackUseCase";
 import { inject, injectable } from "tsyringe";
 
-type Data = Queue;
+type Data = { queue: Queue };
 
 @injectable()
 export class OnTrackEndEvent extends EventHandler<Data> {
@@ -12,7 +12,7 @@ export class OnTrackEndEvent extends EventHandler<Data> {
 		super();
 	}
 
-	public async run(queue: Data): Promise<void> {
+	public async run({ queue }: Data): Promise<void> {
 		if (queue.autoplay && !queue.tracks.length) {
 			const lastSong = queue.history[0];
 			if (lastSong) {

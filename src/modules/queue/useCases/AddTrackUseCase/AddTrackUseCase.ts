@@ -5,21 +5,25 @@ import {
 } from "@modules/discord/useCases/GetGuildMemberUseCase";
 import { Queue } from "@modules/queue/domain/Queue";
 import { Track } from "@modules/queue/domain/Track";
+import { TrackDto } from "@modules/queue/dto/TrackDto";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
+import { OnTrackStartEvent } from "@modules/queue/events/OnTrackStartEvent";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { QueueService } from "@modules/queue/services/QueueService";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { GuildMember } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { AddTrackParams } from "./AddTrackAdapter";
 
-export type AddTrackResponse = Track;
+export type AddTrackResponse = TrackDto;
 
 @injectable()
 export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 	constructor(
 		@inject(DIYoutubeProvider) private youtubeProvider: IYoutubeProvider,
 		@inject("QueueRepository") private queueRepository: IQueueRepository,
+		@inject(QueueService) private queueService: QueueService,
 		@inject(GetGuildMemberUseCase) private getGuildMember: GetGuildMemberUseCase
 	) {
 		super();
@@ -41,8 +45,9 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 			if (!queue) {
 				// create queue if doesn't exists
 				if (!textChannel || !voiceChannel) throw new Error("Queue not found");
-				queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
-				queue.on("trackEnd", () => queue && super.emit(OnTrackEndEvent, queue));
+				queue = this.queueService.createQueue({ guildId, voiceChannel, textChannel });
+				queue.on("trackEnd", () => queue && this.emit(OnTrackEndEvent, { queue }));
+				queue.on("trackStart", () => queue && this.emit(OnTrackStartEvent, { queue }));
 			} else if (!requestedBy || !queue.voiceChannel.members.get(requestedBy.id)) {
 				throw new Error("User not in voice channel");
 			}
@@ -65,9 +70,10 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 			requestedBy,
 		});
 
+		const isPlayedImmediately = !queue.nowPlaying;
 		queue.addTrack(track);
-		this.emit(OnTrackAddEvent, { queue, track });
+		this.emit(OnTrackAddEvent, { queue, track, isPlayedImmediately });
 
-		return track;
+		return TrackDto.create(track);
 	}
 }

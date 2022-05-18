@@ -4,7 +4,7 @@ import { secondToTime } from "@utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";
 import play from "play-dl";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 
 interface ConstructorProps {
 	video: VideoCompact;
@@ -19,7 +19,7 @@ export class Track extends EventEmitter {
 	constructor(props: ConstructorProps) {
 		super();
 
-		this.id = uuid();
+		this.id = v4();
 		this.video = props.video;
 		this.requestedBy = props.requestedBy;
 	}

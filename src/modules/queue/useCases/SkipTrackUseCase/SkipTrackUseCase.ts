@@ -1,4 +1,5 @@
 import { IUseCaseContext, UseCase } from "@core";
+import { OnSkipEvent } from "@modules/queue/events/OnSkipEvent";
 import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
 import { inject, injectable } from "tsyringe";
 import { SkipTrackParams } from "./SkipTrackAdapter";
@@ -20,6 +21,7 @@ export class SkipTrackUseCase extends UseCase<SkipTrackParams, Response> {
 			throw new Error("User not in voice channel");
 		}
 
-		queue.skip();
+		const track = queue.skip();
+		if (track) this.emit(OnSkipEvent, { queue, track });
 	}
 }

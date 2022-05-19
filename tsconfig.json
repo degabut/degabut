@@ -12,6 +12,7 @@
 			"@modules/queue/*": ["./modules/queue/*"],
 			"@modules/lyric/*": ["./modules/lyric/*"],
 			"@modules/youtube/*": ["./modules/youtube/*"],
+			"@modules/user/*": ["./modules/user/*"],
 			"@core": ["./core"],
 			"@utils": ["./utils"]
 		},

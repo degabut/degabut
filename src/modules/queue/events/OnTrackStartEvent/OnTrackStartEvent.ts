@@ -1,7 +1,7 @@
 import { EventHandler } from "@core";
 import { Queue } from "@modules/queue/domain/Queue";
-import { TrackPlayHistory } from "@modules/queue/domain/TrackPlayHistory";
-import { TrackPlayHistoryRepository } from "@modules/queue/repository/TrackPlayHistoryRepository";
+import { UserPlayHistory } from "@modules/user/domain/UserPlayHistory";
+import { UserPlayHistoryRepository } from "@modules/user/repository/UserPlayHistoryRepository";
 import { inject, injectable } from "tsyringe";
 
 type Data = { queue: Queue };
@@ -9,8 +9,8 @@ type Data = { queue: Queue };
 @injectable()
 export class OnTrackStartEvent extends EventHandler<Data> {
 	constructor(
-		@inject(TrackPlayHistoryRepository)
-		private trackPlayHistoryRepository: TrackPlayHistoryRepository
+		@inject(UserPlayHistoryRepository)
+		private userPlayHistoryRepository: UserPlayHistoryRepository
 	) {
 		super();
 	}
@@ -23,8 +23,8 @@ export class OnTrackStartEvent extends EventHandler<Data> {
 			embeds: [queue.nowPlaying.embed],
 		});
 
-		await this.trackPlayHistoryRepository.insert(
-			new TrackPlayHistory({
+		await this.userPlayHistoryRepository.insert(
+			new UserPlayHistory({
 				playedAt: new Date(),
 				userId: queue.nowPlaying.requestedBy.id,
 				videoId: queue.nowPlaying.video.id,

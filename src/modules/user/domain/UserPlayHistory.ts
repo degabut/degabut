@@ -6,7 +6,7 @@ interface ConstructorProps {
 	playedAt: Date;
 }
 
-export class TrackPlayHistory extends EventEmitter {
+export class UserPlayHistory extends EventEmitter {
 	public readonly videoId: string;
 	public readonly userId: string;
 	public readonly playedAt: Date;

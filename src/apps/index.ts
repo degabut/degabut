@@ -8,6 +8,7 @@ import {
 	registerDiscordModules,
 	registerLyricModules,
 	registerQueueModules,
+	registerUserModules,
 	registerYoutubeModules,
 } from "./di";
 import { initDiscord } from "./discord/discord";
@@ -48,6 +49,7 @@ export const run = (): void => {
 	//#region Modules DI
 	registerQueueModules();
 	registerYoutubeModules();
+	registerUserModules();
 	registerLyricModules();
 	registerDiscordModules(
 		config.apiServer

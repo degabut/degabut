@@ -1,5 +1,6 @@
 import { DiscordClient } from "@modules/discord/DiscordClient";
 import dotenv from "dotenv";
+import Knex from "knex";
 import { container } from "tsyringe";
 import { Config, ConfigProps } from "../core";
 import { createApi } from "./api/api";
@@ -24,6 +25,7 @@ export const run = (): void => {
 		discordOAuthClientId: process.env.DISCORD_OAUTH_CLIENT_ID,
 		discordOAuthClientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET,
 		discordOAuthRedirectUri: process.env.DISCORD_OAUTH_REDIRECT_URI,
+		postgresDatabaseUrl: process.env.POSTGRES_DATABASE_URL,
 	};
 
 	container.register(Config, { useValue: new Config(config) });
@@ -33,6 +35,14 @@ export const run = (): void => {
 	const discordClient = new DiscordClient();
 	container.register(DiscordClient, { useValue: discordClient });
 	discordClient.login(config.token);
+	//#endregion
+
+	//region Db
+	const knex = Knex({
+		client: "pg",
+		connection: config.postgresDatabaseUrl,
+	});
+	container.register("knex", { useValue: knex });
 	//#endregion
 
 	//#region Modules DI

@@ -9,6 +9,7 @@ export interface ConfigProps {
 	discordOAuthClientId?: string;
 	discordOAuthClientSecret?: string;
 	discordOAuthRedirectUri?: string;
+	postgresDatabaseUrl?: string;
 }
 
 @injectable()
@@ -21,6 +22,7 @@ export class Config {
 	readonly discordOAuthClientId?: string;
 	readonly discordOAuthClientSecret?: string;
 	readonly discordOAuthRedirectUri?: string;
+	readonly postgresDatabaseUrl?: string;
 
 	constructor(props: ConfigProps) {
 		this.prefix = props.prefix;
@@ -31,6 +33,7 @@ export class Config {
 		this.discordOAuthClientId = props.discordOAuthClientId;
 		this.discordOAuthClientSecret = props.discordOAuthClientSecret;
 		this.discordOAuthRedirectUri = props.discordOAuthRedirectUri;
+		this.postgresDatabaseUrl = props.postgresDatabaseUrl;
 
 		if (!this.prefix) throw new Error("Missing config: PREFIX");
 		if (!this.token) throw new Error("Missing config: TOKEN");

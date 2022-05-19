@@ -28,7 +28,9 @@
 		"fastify-cors": "6.0.3",
 		"ffmpeg-static": "5.0.0",
 		"joi": "17.6.0",
+		"knex": "2.0.0",
 		"libsodium-wrappers": "0.7.9",
+		"pg": "8.7.3",
 		"play-dl": "1.8.9",
 		"qs": "6.10.3",
 		"reflect-metadata": "0.1.13",
@@ -45,6 +47,7 @@
 		"husky": "7.0.4",
 		"prettier": "2.4.0",
 		"prettier-plugin-organize-imports": "2.3.4",
+		"ts-node": "10.7.0",
 		"tsc-alias": "1.6.4",
 		"tsc-watch": "4.5.0",
 		"typescript": "4.5.5"

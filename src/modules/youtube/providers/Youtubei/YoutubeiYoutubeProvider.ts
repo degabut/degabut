@@ -5,9 +5,9 @@ import {
 	Video as YoutubeiVideo,
 	VideoCompact as YoutubeiVideoCompact,
 } from "youtubei";
-import { Channel } from "../../domains/Channel";
-import { Video } from "../../domains/Video";
-import { VideoCompact } from "../../domains/VideoCompact";
+import { Channel } from "../../entities/Channel";
+import { Video } from "../../entities/Video";
+import { VideoCompact } from "../../entities/VideoCompact";
 import { IYoutubeProvider } from "../IYoutubeProvider";
 
 @injectable()

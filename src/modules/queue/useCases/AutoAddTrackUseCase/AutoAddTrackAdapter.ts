@@ -1,5 +1,5 @@
 import { UseCaseAdapter } from "@core";
-import { Queue } from "@modules/queue/domain/Queue";
+import { Queue } from "@modules/queue/entities/Queue";
 import Joi from "joi";
 
 export interface AutoAddTrackParams {

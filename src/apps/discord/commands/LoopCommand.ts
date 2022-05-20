@@ -1,4 +1,4 @@
-import { LoopType } from "@modules/queue/domain/Queue";
+import { LoopType } from "@modules/queue/entities/Queue";
 import {
 	ChangeLoopTypeAdapters,
 	ChangeLoopTypeUseCase,

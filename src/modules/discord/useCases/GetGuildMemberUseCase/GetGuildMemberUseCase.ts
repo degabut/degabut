@@ -12,7 +12,7 @@ export class GetGuildMemberUseCase extends UseCase<GetGuildMemberParams, Respons
 		super();
 	}
 
-	protected async run(params: GetGuildMemberParams): Promise<Response> {
+	public async run(params: GetGuildMemberParams): Promise<Response> {
 		const { guildId, userId } = params;
 
 		const guild = await this.discordClient.guilds.fetch(guildId);

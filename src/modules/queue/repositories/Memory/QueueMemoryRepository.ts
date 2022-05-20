@@ -1,5 +1,5 @@
 import { joinVoiceChannel } from "@discordjs/voice";
-import { Queue } from "@modules/queue/domain/Queue";
+import { Queue } from "@modules/queue/entities/Queue";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { IQueueRepository } from "../IQueueRepository";
 

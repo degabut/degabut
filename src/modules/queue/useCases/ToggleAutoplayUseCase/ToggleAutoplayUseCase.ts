@@ -1,5 +1,5 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { inject, injectable } from "tsyringe";
 import { ToggleAutoPlayParams } from "./ToggleAutoPlayAdapter";
 

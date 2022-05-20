@@ -1,5 +1,5 @@
 import { Exclude, Expose, plainToInstance } from "class-transformer";
-import { Thumbnail } from "../domains/Thumbnail";
+import { Thumbnail } from "../entities/Thumbnail";
 
 @Exclude()
 export class ThumbnailDto {

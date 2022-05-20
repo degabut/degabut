@@ -1,5 +1,5 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
-import { Channel } from "../domains/Channel";
+import { Channel } from "../entities/Channel";
 import { ThumbnailDto } from "./ThumbnailDto";
 
 @Exclude()

@@ -1,5 +1,5 @@
-import { Video } from "../domains/Video";
-import { VideoCompact } from "../domains/VideoCompact";
+import { Video } from "../entities/Video";
+import { VideoCompact } from "../entities/VideoCompact";
 
 export const DIYoutubeProvider = Symbol("YoutubeProvider"); // TODO where to put this
 

@@ -12,7 +12,7 @@ export class GetUserUseCase extends UseCase<GetUserParams, Response> {
 		super();
 	}
 
-	protected async run(params: GetUserParams): Promise<Response> {
+	public async run(params: GetUserParams): Promise<Response> {
 		const { accessToken } = params;
 
 		const user = await this.discordOAuthProvider.getCurrentUser(accessToken);

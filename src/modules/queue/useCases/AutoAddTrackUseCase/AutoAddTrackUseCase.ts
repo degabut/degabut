@@ -1,5 +1,5 @@
 import { UseCase } from "@core";
-import { Track } from "@modules/queue/domain/Track";
+import { Track } from "@modules/queue/entities/Track";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { inject, injectable } from "tsyringe";

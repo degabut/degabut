@@ -1,4 +1,4 @@
-import { UserPlayHistoryRepository } from "@modules/user/repository/UserPlayHistoryRepository";
+import { UserPlayHistoryRepository } from "@modules/user/repositories/UserPlayHistoryRepository";
 import { container } from "tsyringe";
 
 const repositories = [UserPlayHistoryRepository];

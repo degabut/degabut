@@ -3,13 +3,13 @@ import {
 	GetGuildMemberAdapter,
 	GetGuildMemberUseCase,
 } from "@modules/discord/useCases/GetGuildMemberUseCase";
-import { Queue } from "@modules/queue/domain/Queue";
-import { Track } from "@modules/queue/domain/Track";
 import { TrackDto } from "@modules/queue/dto/TrackDto";
+import { Queue } from "@modules/queue/entities/Queue";
+import { Track } from "@modules/queue/entities/Track";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
 import { OnTrackStartEvent } from "@modules/queue/events/OnTrackStartEvent";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { QueueService } from "@modules/queue/services/QueueService";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { GuildMember } from "discord.js";

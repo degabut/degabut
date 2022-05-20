@@ -1,4 +1,4 @@
-import { Lyric } from "@modules/lyric/domains/Lyric";
+import { Lyric } from "@modules/lyric/entities/Lyric";
 import { GetLyricAdapter, GetLyricUseCase } from "@modules/lyric/useCases/GetLyricUseCase";
 import {
 	GetNowPlayingLyricAdapter,

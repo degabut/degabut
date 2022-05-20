@@ -1,5 +1,5 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
-import { VideoCompact } from "../domains/VideoCompact";
+import { VideoCompact } from "../entities/VideoCompact";
 import { ChannelDto } from "./ChannelDto";
 import { ThumbnailDto } from "./ThumbnailDto";
 

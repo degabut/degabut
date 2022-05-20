@@ -1,5 +1,5 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
-import { VideoCompact } from "@modules/youtube/domains/VideoCompact";
+import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
 import { secondToTime } from "@utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";

@@ -1,5 +1,5 @@
 import { EventHandler } from "@core";
-import { Queue } from "@modules/queue/domain/Queue";
+import { Queue } from "@modules/queue/entities/Queue";
 import { AutoAddTrackAdapter } from "@modules/queue/useCases/AutoAddTrackUseCase";
 import { AutoAddTrackUseCase } from "@modules/queue/useCases/AutoAddTrackUseCase/AutoAddTrackUseCase";
 import { inject, injectable } from "tsyringe";

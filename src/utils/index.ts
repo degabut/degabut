@@ -1,5 +1,5 @@
-import { Video } from "@modules/youtube/domains/Video";
-import { VideoCompact } from "@modules/youtube/domains/VideoCompact";
+import { Video } from "@modules/youtube/entities/Video";
+import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
 import { EmbedField, MessageButton } from "discord.js";
 
 export const secondToTime = (seconds: number): string => {

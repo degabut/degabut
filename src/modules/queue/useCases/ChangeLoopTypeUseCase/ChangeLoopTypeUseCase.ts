@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { LoopType } from "@modules/queue/domain/Queue";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { LoopType } from "@modules/queue/entities/Queue";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { inject, injectable } from "tsyringe";
 import { ChangeLoopTypeParams } from "./ChangeLoopTypeAdapter";
 

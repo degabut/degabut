@@ -1,7 +1,7 @@
 import { EventHandler } from "@core";
-import { Queue } from "@modules/queue/domain/Queue";
-import { UserPlayHistory } from "@modules/user/domain/UserPlayHistory";
-import { UserPlayHistoryRepository } from "@modules/user/repository/UserPlayHistoryRepository";
+import { Queue } from "@modules/queue/entities/Queue";
+import { UserPlayHistory } from "@modules/user/entities/UserPlayHistory";
+import { UserPlayHistoryRepository } from "@modules/user/repositories/UserPlayHistoryRepository";
 import { inject, injectable } from "tsyringe";
 
 type Data = { queue: Queue };

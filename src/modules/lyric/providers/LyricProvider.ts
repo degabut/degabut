@@ -1,7 +1,7 @@
 import { load } from "cheerio";
 import fetch from "node-fetch";
 import QueryString from "qs";
-import { Lyric } from "../domains/Lyric";
+import { Lyric } from "../entities/Lyric";
 import { ILyricProvider } from "./ILyricProvider";
 
 export class LyricProvider implements ILyricProvider {

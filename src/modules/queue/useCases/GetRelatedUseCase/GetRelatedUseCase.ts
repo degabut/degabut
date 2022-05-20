@@ -1,8 +1,8 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { TrackDto } from "@modules/queue/dto/TrackDto";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
-import { VideoCompact } from "@modules/youtube/domains/VideoCompact";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { VideoCompactDto } from "@modules/youtube/dto/VideoCompactDto";
+import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { inject, injectable } from "tsyringe";
 import { GetRelatedParams } from "./GetRelatedAdapter";

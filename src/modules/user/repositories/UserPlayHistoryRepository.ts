@@ -1,4 +1,4 @@
-import { UserPlayHistory } from "@modules/user/domain/UserPlayHistory";
+import { UserPlayHistory } from "@modules/user/entities/UserPlayHistory";
 import { Knex } from "knex";
 import { inject, injectable } from "tsyringe";
 

@@ -1,6 +1,6 @@
 import { UseCase } from "@core";
 import { QueueDto } from "@modules/queue/dto/QueueDto";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { inject, injectable } from "tsyringe";
 import { GetUserQueueParams } from "./GetUserQueueAdapter";
 

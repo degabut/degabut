@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { OnSkipEvent } from "@modules/queue/events/OnSkipEvent";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { inject, injectable } from "tsyringe";
 import { SkipTrackParams } from "./SkipTrackAdapter";
 

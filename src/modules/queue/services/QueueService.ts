@@ -5,9 +5,9 @@ import {
 	VoiceConnectionDisconnectReason,
 	VoiceConnectionStatus,
 } from "@discordjs/voice";
-import { Queue } from "@modules/queue/domain/Queue";
-import { Track } from "@modules/queue/domain/Track";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { Queue } from "@modules/queue/entities/Queue";
+import { Track } from "@modules/queue/entities/Track";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { inject, injectable } from "tsyringe";
 

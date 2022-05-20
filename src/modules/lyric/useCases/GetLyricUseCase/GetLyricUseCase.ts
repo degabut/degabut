@@ -1,5 +1,5 @@
 import { UseCase } from "@core";
-import { Lyric } from "@modules/lyric/domains/Lyric";
+import { Lyric } from "@modules/lyric/entities/Lyric";
 import { ILyricProvider } from "@modules/lyric/providers/ILyricProvider";
 import { LyricProvider } from "@modules/lyric/providers/LyricProvider";
 import { inject, injectable } from "tsyringe";

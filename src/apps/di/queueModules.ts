@@ -1,7 +1,7 @@
 import { EventHandler, UseCase } from "@core";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
-import { QueueMemoryRepository } from "@modules/queue/repository/Memory/QueueMemoryRepository";
+import { QueueMemoryRepository } from "@modules/queue/repositories/Memory/QueueMemoryRepository";
 import { QueueService } from "@modules/queue/services/QueueService";
 import { AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
 import { AutoAddTrackUseCase } from "@modules/queue/useCases/AutoAddTrackUseCase";

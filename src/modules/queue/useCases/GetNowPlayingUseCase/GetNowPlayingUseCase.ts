@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { Track } from "@modules/queue/domain/Track";
-import { IQueueRepository } from "@modules/queue/repository/IQueueRepository";
+import { Track } from "@modules/queue/entities/Track";
+import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { inject, injectable } from "tsyringe";
 import { GetNowPlayingParams } from "./GetNowPlayingAdapter";
 

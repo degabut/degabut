@@ -1,6 +1,6 @@
 import { EventHandler } from "@core";
-import { Queue } from "@modules/queue/domain/Queue";
-import { Track } from "@modules/queue/domain/Track";
+import { Queue } from "@modules/queue/entities/Queue";
+import { Track } from "@modules/queue/entities/Track";
 import { injectable } from "tsyringe";
 
 type Data = {

@@ -11,7 +11,7 @@ export class GetAccessTokenUseCase extends UseCase<GetAccessTokenParams, Respons
 		super();
 	}
 
-	protected async run(params: GetAccessTokenParams): Promise<Response> {
+	public async run(params: GetAccessTokenParams): Promise<Response> {
 		const { code } = params;
 
 		const token = await this.discordOAuthProvider.getAccessToken(code);

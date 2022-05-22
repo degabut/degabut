@@ -28,7 +28,7 @@ export class QueueService {
 	}
 
 	private initQueueConnection(queue: Queue): void {
-		queue.voiceConnection.on("stateChange", async (_, newState) => {
+		queue.voiceConnection.on<"stateChange">("stateChange", async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
 				if (
 					newState.reason === VoiceConnectionDisconnectReason.WebSocketClose &&
@@ -67,7 +67,7 @@ export class QueueService {
 			}
 		});
 
-		queue.audioPlayer.on("stateChange", (oldState, newState) => {
+		queue.audioPlayer.on<"stateChange">("stateChange", (oldState, newState) => {
 			if (
 				newState.status === AudioPlayerStatus.Idle &&
 				oldState.status !== AudioPlayerStatus.Idle

@@ -1,4 +1,4 @@
-import { joinVoiceChannel } from "@discordjs/voice";
+import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { Queue } from "@modules/queue/entities/Queue";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { IQueueRepository } from "../IQueueRepository";
@@ -30,7 +30,7 @@ export class QueueMemoryRepository implements IQueueRepository {
 			voiceConnection: joinVoiceChannel({
 				channelId: voiceChannel.id,
 				guildId: voiceChannel.guild.id,
-				adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+				adapterCreator: voiceChannel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
 			}),
 			voiceChannel,
 			textChannel,

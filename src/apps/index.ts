@@ -26,7 +26,6 @@ export const run = async (): Promise<void> => {
 		token: process.env.TOKEN as string,
 		env: process.env.NODE_ENV as "development" | "production",
 		apiServer: process.env.API_SERVER === "true",
-		jwtSecret: process.env.JWT_SECRET,
 		discordOAuthClientId: process.env.DISCORD_OAUTH_CLIENT_ID,
 		discordOAuthClientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET,
 		discordOAuthRedirectUri: process.env.DISCORD_OAUTH_REDIRECT_URI,

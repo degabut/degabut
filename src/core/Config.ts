@@ -5,7 +5,6 @@ export interface ConfigProps {
 	token: string;
 	env: "development" | "production";
 	apiServer?: boolean;
-	jwtSecret?: string;
 	discordOAuthClientId?: string;
 	discordOAuthClientSecret?: string;
 	discordOAuthRedirectUri?: string;
@@ -18,7 +17,6 @@ export class Config {
 	readonly token!: string;
 	readonly env!: "development" | "production";
 	readonly apiServer?: boolean;
-	readonly jwtSecret?: string;
 	readonly discordOAuthClientId?: string;
 	readonly discordOAuthClientSecret?: string;
 	readonly discordOAuthRedirectUri?: string;
@@ -29,7 +27,6 @@ export class Config {
 		this.token = props.token;
 		this.env = props.env || "development";
 		this.apiServer = !!props.apiServer;
-		this.jwtSecret = props.jwtSecret;
 		this.discordOAuthClientId = props.discordOAuthClientId;
 		this.discordOAuthClientSecret = props.discordOAuthClientSecret;
 		this.discordOAuthRedirectUri = props.discordOAuthRedirectUri;
@@ -40,8 +37,7 @@ export class Config {
 
 		if (
 			this.apiServer &&
-			(!this.jwtSecret ||
-				!this.discordOAuthClientId ||
+			(!this.discordOAuthClientId ||
 				!this.discordOAuthClientSecret ||
 				!this.discordOAuthRedirectUri)
 		) {

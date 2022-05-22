@@ -11,6 +11,7 @@ import { CommandExecuteProps, ICommand } from "../core/ICommand";
 @injectable()
 export class LyricCommand implements ICommand {
 	public readonly name = "lyric";
+	public readonly aliases = ["lyrics"];
 	public readonly description = "Get lyric of current playing song or by keyword";
 
 	constructor(

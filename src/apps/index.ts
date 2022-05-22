@@ -2,10 +2,10 @@ import { DiscordClient } from "@modules/discord/DiscordClient";
 import dotenv from "dotenv";
 import Knex from "knex";
 import { Model } from "objection";
+import path from "path";
 import { container } from "tsyringe";
 import { Config, ConfigProps } from "../core";
 import { createApi } from "./api/api";
-import { migrateDb } from "./db";
 import {
 	registerDiscordModules,
 	registerLyricModules,
@@ -16,8 +16,6 @@ import {
 import { initDiscord } from "./discord/discord";
 
 export const run = async (): Promise<void> => {
-	await migrateDb();
-
 	//#region Config
 	dotenv.config();
 
@@ -38,14 +36,7 @@ export const run = async (): Promise<void> => {
 	container.register(Config, { useValue: new Config(config) });
 	//#endregion
 
-	//#region Clients
-	const discordClient = new DiscordClient();
-	container.register(DiscordClient, { useValue: discordClient });
-	discordClient.login(config.token);
-	//#endregion
-
-	//region Db
-
+	//#region Db
 	const [host, port] = config.postgresHost.split(":");
 	const knex = Knex({
 		client: "pg",
@@ -56,9 +47,20 @@ export const run = async (): Promise<void> => {
 			host: host,
 			port: +(port || 5432),
 		},
+		migrations: {
+			directory: path.join(__dirname, "./db/migrations"),
+			tableName: "knex_migrations",
+		},
 	});
+	await knex.migrate.latest();
 	Model.knex(knex);
 	container.register("knex", { useValue: knex });
+	//#endregion
+
+	//#region Clients
+	const discordClient = new DiscordClient();
+	container.register(DiscordClient, { useValue: discordClient });
+	discordClient.login(config.token);
 	//#endregion
 
 	//#region Modules DI

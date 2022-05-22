@@ -5,6 +5,7 @@ import { Model } from "objection";
 import { container } from "tsyringe";
 import { Config, ConfigProps } from "../core";
 import { createApi } from "./api/api";
+import { migrateDb } from "./db";
 import {
 	registerDiscordModules,
 	registerLyricModules,
@@ -15,6 +16,8 @@ import {
 import { initDiscord } from "./discord/discord";
 
 export const run = async (): Promise<void> => {
+	await migrateDb();
+
 	//#region Config
 	dotenv.config();
 

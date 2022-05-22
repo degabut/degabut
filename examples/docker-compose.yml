@@ -1,0 +1,24 @@
+version: "3.3"
+services:
+  degabut:
+    container_name: degabut
+    image: suspiciouslookingowl/degabut:latest
+    ports:
+      - "8080:8080"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=postgres:5432
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    # ports: # uncomment to expose db port
+    #   - "5432:5432"
+    volumes:
+      - degabut_db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+volumes:
+  degabut_db_data:
+    driver: local

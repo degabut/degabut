@@ -1,7 +1,6 @@
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { Queue } from "@modules/queue/entities/Queue";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
-import { IQueueRepository } from "../IQueueRepository";
 
 type CreateProps = {
 	voiceChannel: BaseGuildVoiceChannel;
@@ -9,7 +8,7 @@ type CreateProps = {
 	guildId: string;
 };
 
-export class QueueMemoryRepository implements IQueueRepository {
+export class QueueRepository {
 	private queues: Map<string, Queue> = new Map();
 
 	public get(guildId: string): Queue | undefined {

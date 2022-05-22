@@ -7,9 +7,9 @@ import {
 } from "@discordjs/voice";
 import { Queue } from "@modules/queue/entities/Queue";
 import { Track } from "@modules/queue/entities/Track";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { inject, injectable } from "tsyringe";
+import { QueueRepository } from "../repositories/QueueRepository";
 
 type CreateQueueParams = {
 	guildId: string;
@@ -19,7 +19,7 @@ type CreateQueueParams = {
 
 @injectable()
 export class QueueService {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {}
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {}
 
 	public createQueue({ guildId, voiceChannel, textChannel }: CreateQueueParams): Queue {
 		const queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });

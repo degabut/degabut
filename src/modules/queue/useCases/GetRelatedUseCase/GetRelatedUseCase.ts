@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { TrackDto } from "@modules/queue/dto/TrackDto";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { VideoCompactDto } from "@modules/youtube/dto/VideoCompactDto";
 import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
@@ -15,7 +15,7 @@ type Response = {
 @injectable()
 export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
 	constructor(
-		@inject("QueueRepository") private queueRepository: IQueueRepository,
+		@inject(QueueRepository) private queueRepository: QueueRepository,
 		@inject(DIYoutubeProvider) private youtubeProvider: IYoutubeProvider
 	) {
 		super();

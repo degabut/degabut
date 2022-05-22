@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { OnSkipEvent } from "@modules/queue/events/OnSkipEvent";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { SkipTrackParams } from "./SkipTrackAdapter";
 
@@ -8,7 +8,7 @@ type Response = void;
 
 @injectable()
 export class SkipTrackUseCase extends UseCase<SkipTrackParams, Response> {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
 		super();
 	}
 

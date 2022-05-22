@@ -1,5 +1,5 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { ToggleAutoPlayParams } from "./ToggleAutoPlayAdapter";
 
@@ -7,7 +7,7 @@ type Response = boolean;
 
 @injectable()
 export class ToggleAutoplayUseCase extends UseCase<ToggleAutoPlayParams, Response> {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
 		super();
 	}
 

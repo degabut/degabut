@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { LoopType } from "@modules/queue/entities/Queue";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { ChangeLoopTypeParams } from "./ChangeLoopTypeAdapter";
 
@@ -8,7 +8,7 @@ type Response = LoopType;
 
 @injectable()
 export class ChangeLoopTypeUseCase extends UseCase<ChangeLoopTypeParams, Response> {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
 		super();
 	}
 

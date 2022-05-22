@@ -9,7 +9,7 @@ import { Track } from "@modules/queue/entities/Track";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { OnTrackEndEvent } from "@modules/queue/events/OnTrackEndEvent";
 import { OnTrackStartEvent } from "@modules/queue/events/OnTrackStartEvent";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { QueueService } from "@modules/queue/services/QueueService";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
 import { GuildMember } from "discord.js";
@@ -22,7 +22,7 @@ export type AddTrackResponse = TrackDto;
 export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 	constructor(
 		@inject(DIYoutubeProvider) private youtubeProvider: IYoutubeProvider,
-		@inject("QueueRepository") private queueRepository: IQueueRepository,
+		@inject(QueueRepository) private queueRepository: QueueRepository,
 		@inject(QueueService) private queueService: QueueService,
 		@inject(GetGuildMemberUseCase) private getGuildMember: GetGuildMemberUseCase
 	) {

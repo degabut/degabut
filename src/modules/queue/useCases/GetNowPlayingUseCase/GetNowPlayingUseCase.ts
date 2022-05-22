@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { Track } from "@modules/queue/entities/Track";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { GetNowPlayingParams } from "./GetNowPlayingAdapter";
 
@@ -8,7 +8,7 @@ type Response = Track | null;
 
 @injectable()
 export class GetNowPlayingUseCase extends UseCase<GetNowPlayingParams, Response> {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
 		super();
 	}
 

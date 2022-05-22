@@ -1,5 +1,5 @@
 import { IUseCaseContext, UseCase } from "@core";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { DisconnectParams } from "./DisconnectAdapter";
 
@@ -7,7 +7,7 @@ type Response = void;
 
 @injectable()
 export class DisconnectUseCase extends UseCase<DisconnectParams, Response> {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
 		super();
 	}
 

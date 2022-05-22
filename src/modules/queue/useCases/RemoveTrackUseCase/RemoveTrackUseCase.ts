@@ -1,6 +1,6 @@
 import { IUseCaseContext, UseCase } from "@core";
 import { Track } from "@modules/queue/entities/Track";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { RemoveTrackParams } from "./RemoveTrackAdapter";
 
@@ -8,7 +8,7 @@ type Response = Track | null;
 
 @injectable()
 export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
-	constructor(@inject("QueueRepository") private queueRepository: IQueueRepository) {
+	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
 		super();
 	}
 

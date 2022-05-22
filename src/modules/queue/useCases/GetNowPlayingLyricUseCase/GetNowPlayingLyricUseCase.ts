@@ -2,7 +2,7 @@ import { IUseCaseContext, UseCase } from "@core";
 import { Lyric } from "@modules/lyric/entities/Lyric";
 import { ILyricProvider } from "@modules/lyric/providers/ILyricProvider";
 import { LyricProvider } from "@modules/lyric/providers/LyricProvider";
-import { IQueueRepository } from "@modules/queue/repositories/IQueueRepository";
+import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
 import { GetNowPlayingParams } from "../GetNowPlayingUseCase";
 
@@ -11,7 +11,7 @@ type Response = Lyric;
 @injectable()
 export class GetNowPlayingLyricUseCase extends UseCase<GetNowPlayingParams, Response> {
 	constructor(
-		@inject("QueueRepository") private queueRepository: IQueueRepository,
+		@inject(QueueRepository) private queueRepository: QueueRepository,
 		@inject(LyricProvider) private lyricProvider: ILyricProvider
 	) {
 		super();

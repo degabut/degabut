@@ -22,11 +22,16 @@ export class RecommendationCommand implements ICommand {
 	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<unknown> {
-		const adapter = new GetRecommendationAdapter({ count: 10 });
-		const videos = await this.getRecommendation.execute(adapter, {
+		const adapter = new GetRecommendationAdapter({ count: 5 });
+		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, {
 			userId: message.author.id,
 		});
 
+		const filteredLastPlayed = lastPlayed.filter((v) => !mostPlayed.find((l) => l.id === v.id));
+		const slicedMostPlayed = mostPlayed.slice(0, Math.max(5, 10 - filteredLastPlayed.length));
+		const slicedLastPlayed = filteredLastPlayed.slice(0, 10 - slicedMostPlayed.length);
+
+		const videos = [...slicedLastPlayed, ...slicedMostPlayed];
 		if (!videos.length) return await message.reply("No recommendation found");
 
 		const buttons = videos.map((v, i) =>

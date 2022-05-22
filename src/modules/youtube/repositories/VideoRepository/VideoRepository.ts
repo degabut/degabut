@@ -24,10 +24,23 @@ export class VideoRepository {
 					.limit(count)
 					.as("user_play_history");
 			})
-			.withGraphFetched("video")
-			.withGraphFetched("video.channel")
 			.orderBy("played_at", "desc")
-			.limit(count);
+			.withGraphFetched("video")
+			.withGraphFetched("video.channel");
+
+		return results.map((r) => VideoRepositoryMapper.toDomainEntity(r.video as VideoModel));
+	}
+
+	public async getMostPlayedVideos(userId: string, count: number): Promise<VideoCompact[]> {
+		const results = await UserPlayHistoryModel.query()
+			.select("video_id")
+			.count("video_id as count")
+			.where({ user_id: userId })
+			.groupBy("user_play_history.video_id")
+			.orderBy("count", "desc")
+			.limit(count)
+			.withGraphFetched("video")
+			.withGraphFetched("video.channel");
 
 		return results.map((r) => VideoRepositoryMapper.toDomainEntity(r.video as VideoModel));
 	}

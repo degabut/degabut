@@ -4,7 +4,10 @@ import { VideoRepository } from "@modules/youtube/repositories/VideoRepository/V
 import { inject, injectable } from "tsyringe";
 import { GetRecommendationParams } from "./GetRecommendationAdapter";
 
-type Response = VideoCompactDto[];
+type Response = {
+	lastPlayed: VideoCompactDto[];
+	mostPlayed: VideoCompactDto[];
+};
 
 @injectable()
 export class GetRecommendationUseCase extends UseCase<GetRecommendationParams, Response> {
@@ -21,8 +24,14 @@ export class GetRecommendationUseCase extends UseCase<GetRecommendationParams, R
 	): Promise<Response> {
 		const { count } = params;
 
-		const videos = await this.videoRepository.getLastPlayedVideos(userId, count);
+		const [lastPlayedVideos, mostPlayedVideos] = await Promise.all([
+			this.videoRepository.getLastPlayedVideos(userId, count),
+			this.videoRepository.getMostPlayedVideos(userId, count),
+		]);
 
-		return videos.map(VideoCompactDto.create);
+		return {
+			lastPlayed: lastPlayedVideos.map(VideoCompactDto.create),
+			mostPlayed: mostPlayedVideos.map(VideoCompactDto.create),
+		};
 	}
 }

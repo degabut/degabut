@@ -11,6 +11,7 @@ import { SearchInteractionCommand } from "../interactions/SearchInteractionComma
 @injectable()
 export class RecommendationCommand implements ICommand {
 	public readonly name = "recommend";
+	public readonly aliases = ["recommendation"];
 	public readonly description = "Show songs recommendation";
 
 	constructor(
@@ -20,11 +21,13 @@ export class RecommendationCommand implements ICommand {
 		private searchInteractionCommand: SearchInteractionCommand
 	) {}
 
-	public async execute({ message }: CommandExecuteProps): Promise<void> {
+	public async execute({ message }: CommandExecuteProps): Promise<unknown> {
 		const adapter = new GetRecommendationAdapter({ count: 10 });
 		const videos = await this.getRecommendation.execute(adapter, {
 			userId: message.author.id,
 		});
+
+		if (!videos.length) return await message.reply("No recommendation found");
 
 		const buttons = videos.map((v, i) =>
 			videoToMessageButton(v, i, this.searchInteractionCommand.name)

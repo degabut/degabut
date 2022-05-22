@@ -5,6 +5,7 @@ import {
 	VoiceConnectionDisconnectReason,
 	VoiceConnectionStatus,
 } from "@discordjs/voice";
+import { DiscordClient } from "@modules/discord/DiscordClient";
 import { Queue } from "@modules/queue/entities/Queue";
 import { Track } from "@modules/queue/entities/Track";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
@@ -19,7 +20,10 @@ type CreateQueueParams = {
 
 @injectable()
 export class QueueService {
-	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {}
+	constructor(
+		@inject(QueueRepository) private queueRepository: QueueRepository,
+		@inject(DiscordClient) private client: DiscordClient
+	) {}
 
 	public createQueue({ guildId, voiceChannel, textChannel }: CreateQueueParams): Queue {
 		const queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
@@ -64,6 +68,11 @@ export class QueueService {
 					queue.readyLock = false;
 					queue.processQueue();
 				}
+			} else if (newState.status === VoiceConnectionStatus.Ready) {
+				const voiceChannel =
+					this.client.user &&
+					queue.voiceChannel.guild.members.resolve(this.client.user.id)?.voice.channel;
+				if (voiceChannel) queue.voiceChannel = voiceChannel;
 			}
 		});
 

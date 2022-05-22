@@ -80,7 +80,7 @@ export class Queue extends EventEmitter {
 	}
 
 	public async processQueue(): Promise<void> {
-		if (this.readyLock) return;
+		if (this.readyLock || this.nowPlaying) return;
 
 		this.nowPlaying = this.tracks[0];
 		if (!this.nowPlaying) return;
@@ -89,7 +89,7 @@ export class Queue extends EventEmitter {
 		this.history.splice(10);
 
 		this.nowPlaying.removeAllListeners();
-		this.nowPlaying.on("finish", () => {
+		this.nowPlaying.once("finish", () => {
 			if (this.loopType === LoopType.Song) return this.play();
 
 			const previous = this.tracks.shift();
@@ -99,7 +99,7 @@ export class Queue extends EventEmitter {
 			this.emit("trackEnd");
 			this.processQueue();
 		});
-		this.nowPlaying.on("start", () => {
+		this.nowPlaying.once("start", () => {
 			if (!this.nowPlaying) return;
 			this.emit("trackStart");
 		});

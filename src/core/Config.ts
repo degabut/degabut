@@ -8,7 +8,10 @@ export interface ConfigProps {
 	discordOAuthClientId?: string;
 	discordOAuthClientSecret?: string;
 	discordOAuthRedirectUri?: string;
-	postgresDatabaseUrl?: string;
+	postgresDatabase: string;
+	postgresUser: string;
+	postgresPassword: string;
+	postgresHost: string;
 }
 
 @injectable()
@@ -20,7 +23,10 @@ export class Config {
 	readonly discordOAuthClientId?: string;
 	readonly discordOAuthClientSecret?: string;
 	readonly discordOAuthRedirectUri?: string;
-	readonly postgresDatabaseUrl?: string;
+	readonly postgresDatabase: string;
+	readonly postgresUser: string;
+	readonly postgresPassword: string;
+	readonly postgresHost: string;
 
 	constructor(props: ConfigProps) {
 		this.prefix = props.prefix;
@@ -30,10 +36,22 @@ export class Config {
 		this.discordOAuthClientId = props.discordOAuthClientId;
 		this.discordOAuthClientSecret = props.discordOAuthClientSecret;
 		this.discordOAuthRedirectUri = props.discordOAuthRedirectUri;
-		this.postgresDatabaseUrl = props.postgresDatabaseUrl;
+		this.postgresDatabase = props.postgresDatabase;
+		this.postgresUser = props.postgresUser;
+		this.postgresPassword = props.postgresPassword;
+		this.postgresHost = props.postgresHost;
 
-		if (!this.prefix) throw new Error("Missing config: PREFIX");
-		if (!this.token) throw new Error("Missing config: TOKEN");
+		const required = [
+			"prefix",
+			"token",
+			"postgresDatabase",
+			"postgresUser",
+			"postgresPassword",
+			"postgresHost",
+		] as const;
+
+		const missing = required.filter((key) => !(key in props) || !props[key]);
+		if (missing.length) throw new Error(`Missing config properties: ${missing.join(", ")}`);
 
 		if (
 			this.apiServer &&

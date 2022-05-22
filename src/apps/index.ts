@@ -29,7 +29,10 @@ export const run = async (): Promise<void> => {
 		discordOAuthClientId: process.env.DISCORD_OAUTH_CLIENT_ID,
 		discordOAuthClientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET,
 		discordOAuthRedirectUri: process.env.DISCORD_OAUTH_REDIRECT_URI,
-		postgresDatabaseUrl: process.env.POSTGRES_DATABASE_URL,
+		postgresDatabase: process.env.POSTGRES_DB as string,
+		postgresUser: process.env.POSTGRES_USER as string,
+		postgresPassword: process.env.POSTGRES_PASSWORD as string,
+		postgresHost: process.env.POSTGRES_HOST as string,
 	};
 
 	container.register(Config, { useValue: new Config(config) });
@@ -42,9 +45,17 @@ export const run = async (): Promise<void> => {
 	//#endregion
 
 	//region Db
+
+	const [host, port] = config.postgresHost.split(":");
 	const knex = Knex({
 		client: "pg",
-		connection: config.postgresDatabaseUrl,
+		connection: {
+			user: config.postgresUser,
+			password: config.postgresPassword,
+			database: config.postgresDatabase,
+			host: host,
+			port: +(port || 5432),
+		},
 	});
 	Model.knex(knex);
 	container.register("knex", { useValue: knex });

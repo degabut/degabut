@@ -1,6 +1,7 @@
 import { DiscordClient } from "@modules/discord/DiscordClient";
 import dotenv from "dotenv";
 import Knex from "knex";
+import { Model } from "objection";
 import { container } from "tsyringe";
 import { Config, ConfigProps } from "../core";
 import { createApi } from "./api/api";
@@ -13,7 +14,7 @@ import {
 } from "./di";
 import { initDiscord } from "./discord/discord";
 
-export const run = (): void => {
+export const run = async (): Promise<void> => {
 	//#region Config
 	dotenv.config();
 
@@ -43,6 +44,7 @@ export const run = (): void => {
 		client: "pg",
 		connection: config.postgresDatabaseUrl,
 	});
+	Model.knex(knex);
 	container.register("knex", { useValue: knex });
 	//#endregion
 

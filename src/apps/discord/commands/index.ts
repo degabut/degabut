@@ -5,6 +5,7 @@ export * from "./LyricCommand";
 export * from "./NowPlayingCommand";
 export * from "./PlayCommand";
 export * from "./QueueCommand";
+export * from "./RecommendationCommand";
 export * from "./RelatedCommand";
 export * from "./RemoveCommand";
 export * from "./SearchCommand";

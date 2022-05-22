@@ -6,6 +6,9 @@
 
 - `TOKEN`: your Discord bot token
 - `PREFIX`: command prefix detected by the bot
+- `POSTGRES_DB`: postgres database name
+- `POSTGRES_USER`: postgres user name
+- `POSTGRES_PASSWORD`: postgres password
 
 ## Run
 
@@ -20,6 +23,9 @@ Alternatively, create a `.env` file containing:
 ```env
 PREFIX=!
 TOKEN=xyz
+POSTGRES_DB=degabut
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
 ```
 
 and run

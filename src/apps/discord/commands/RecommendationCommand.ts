@@ -39,7 +39,8 @@ export class RecommendationCommand implements ICommand {
 		);
 
 		const components = [new MessageActionRow({ components: buttons.slice(0, 5) })];
-		if (buttons.length > 5) new MessageActionRow({ components: buttons.slice(5, 10) });
+		if (buttons.length > 5)
+			components.push(new MessageActionRow({ components: buttons.slice(5, 10) }));
 
 		await message.reply({
 			embeds: [new MessageEmbed({ fields: videos.map(videoToEmbedField) })],

@@ -28,7 +28,7 @@ export class RecommendationCommand implements ICommand {
 		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, { userId });
 
 		const filteredLastPlayed = lastPlayed.filter((v) => !mostPlayed.find((l) => l.id === v.id));
-		const slicedMostPlayed = mostPlayed.slice(0, Math.max(5, 10 - filteredLastPlayed.length));
+		const slicedMostPlayed = mostPlayed.slice(0, Math.max(7, 10 - filteredLastPlayed.length));
 		const slicedLastPlayed = filteredLastPlayed.slice(0, 10 - slicedMostPlayed.length);
 
 		const videos = [...slicedLastPlayed, ...slicedMostPlayed];

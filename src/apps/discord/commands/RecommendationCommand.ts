@@ -23,9 +23,9 @@ export class RecommendationCommand implements ICommand {
 
 	public async execute({ message }: CommandExecuteProps): Promise<unknown> {
 		const adapter = new GetRecommendationAdapter({ count: 5 });
-		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, {
-			userId: message.author.id,
-		});
+
+		const userId = message.mentions.users.first()?.id || message.author.id;
+		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, { userId });
 
 		const filteredLastPlayed = lastPlayed.filter((v) => !mostPlayed.find((l) => l.id === v.id));
 		const slicedMostPlayed = mostPlayed.slice(0, Math.max(5, 10 - filteredLastPlayed.length));

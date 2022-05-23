@@ -1,6 +1,6 @@
 {
 	"name": "degabut.js",
-	"version": "1.1.4",
+	"version": "1.1.5",
 	"description": "",
 	"engines": {
 		"node": ">=16.14.0"

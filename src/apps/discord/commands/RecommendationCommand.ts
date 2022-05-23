@@ -11,7 +11,7 @@ import { SearchInteractionCommand } from "../interactions/SearchInteractionComma
 @injectable()
 export class RecommendationCommand implements ICommand {
 	public readonly name = "recommend";
-	public readonly aliases = ["recommendation"];
+	public readonly aliases = ["recommendation", "recommendations"];
 	public readonly description = "Show songs recommendation";
 
 	constructor(

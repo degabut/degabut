@@ -21,10 +21,10 @@ export class VideoRepository {
 					.from(UserPlayHistoryModel.tableName)
 					.distinctOn("video_id")
 					.where({ user_id: userId })
-					.limit(count)
 					.as("user_play_history");
 			})
 			.orderBy("played_at", "desc")
+			.limit(count)
 			.withGraphFetched("video")
 			.withGraphFetched("video.channel");
 

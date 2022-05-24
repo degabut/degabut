@@ -13,7 +13,7 @@ export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 	}
 
 	public async run(params: RemoveTrackParams, { userId }: IUseCaseContext): Promise<Response> {
-		const { guildId, index } = params;
+		const { guildId, index, trackId } = params;
 
 		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new Error("Queue not found");
@@ -21,7 +21,7 @@ export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 			throw new Error("User not in voice channel");
 		}
 
-		const removed = queue.remove(index || queue.tracks.length - 1);
+		const removed = queue.remove(trackId || index || queue.tracks.length - 1);
 
 		return removed;
 	}

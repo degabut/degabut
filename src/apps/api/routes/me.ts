@@ -25,8 +25,8 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		asHandler(AddQueueTrackController)
 	);
 
-	app.post(
-		"/queue/tracks/order",
+	app.patch(
+		"/queue/tracks/:id/order",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(ChangeTrackOrderController)
 	);

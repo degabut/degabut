@@ -3,6 +3,7 @@ import Joi from "joi";
 
 export interface ChangeTrackOrderParams {
 	guildId?: string;
+	trackId: string;
 	from: number;
 	to: number;
 }
@@ -14,7 +15,10 @@ export class ChangeTrackOrderAdapter extends UseCaseAdapter<ChangeTrackOrderPara
 
 	static SCHEMA = Joi.object<ChangeTrackOrderParams>({
 		guildId: Joi.string(),
-		from: Joi.number().required().min(1),
+		trackId: Joi.string(),
+		from: Joi.number().min(1),
 		to: Joi.number().required().min(1),
-	}).required();
+	})
+		.required()
+		.xor("trackId", "from");
 }

@@ -47,14 +47,25 @@ export class Queue extends EventEmitter {
 		if (!this.nowPlaying) this.processQueue();
 	}
 
-	public changeTrackOrder(fromIndex: number, toIndex: number): void {
+	public changeTrackOrder(from: number | string, toIndex: number): void {
+		const fromIndex =
+			typeof from === "number" ? from : this.tracks.findIndex((track) => track.id === from);
+
+		if (fromIndex === 0) throw new Error("Can't move currently playing track");
+
 		const track = this.tracks[fromIndex];
 		if (!track) return; // TODO handle error
+
 		this.tracks.splice(fromIndex, 1);
 		this.tracks.splice(toIndex, 0, track);
 	}
 
-	public remove(index: number): Track | null {
+	public remove(indexOrId: number | string): Track | null {
+		const index =
+			typeof indexOrId === "number"
+				? indexOrId
+				: this.tracks.findIndex((track) => track.id === indexOrId);
+
 		const [removed] = this.tracks.splice(index, 1);
 		if (index === 0) this.audioPlayer.stop();
 		return removed;

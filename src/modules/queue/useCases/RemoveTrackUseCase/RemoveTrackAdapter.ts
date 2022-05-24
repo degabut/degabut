@@ -3,7 +3,8 @@ import Joi from "joi";
 
 export type RemoveTrackParams = {
 	guildId: string;
-	index?: number;
+	index: number;
+	trackId: string;
 };
 
 export class RemoveTrackAdapter extends UseCaseAdapter<RemoveTrackParams> {
@@ -14,5 +15,8 @@ export class RemoveTrackAdapter extends UseCaseAdapter<RemoveTrackParams> {
 	static SCHEMA = Joi.object<RemoveTrackParams>({
 		guildId: Joi.string().required(),
 		index: Joi.number().min(0).failover(0),
-	}).required();
+		trackId: Joi.string(),
+	})
+		.required()
+		.xor("trackId", "index");
 }

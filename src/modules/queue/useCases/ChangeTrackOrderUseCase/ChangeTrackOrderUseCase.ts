@@ -12,7 +12,7 @@ export class ChangeTrackOrderUseCase extends UseCase<ChangeTrackOrderParams, Res
 	}
 
 	public async run(params: ChangeTrackOrderParams, { userId }: IUseCaseContext): Promise<void> {
-		const { from, to, guildId } = params;
+		const { trackId, from, to, guildId } = params;
 
 		const queue = guildId
 			? this.queueRepository.get(guildId)
@@ -22,6 +22,6 @@ export class ChangeTrackOrderUseCase extends UseCase<ChangeTrackOrderParams, Res
 			throw new Error("User not in voice channel");
 		}
 
-		queue.changeTrackOrder(from, to);
+		queue.changeTrackOrder(trackId || from, to);
 	}
 }

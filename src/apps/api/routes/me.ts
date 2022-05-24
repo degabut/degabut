@@ -4,6 +4,7 @@ import { AddQueueTrackController } from "../controllers/me/AddQueueTrackControll
 import { ChangeTrackOrderController } from "../controllers/me/ChangeTrackOrderController";
 import { GetQueueController } from "../controllers/me/GetQueueController";
 import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
+import { RemoveTrackController } from "../controllers/me/RemoveTrackController";
 import { VerifyTokenMiddleware } from "../middlewares/VerifyTokenMiddleware";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
@@ -23,6 +24,12 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		"/queue/tracks",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(AddQueueTrackController)
+	);
+
+	app.delete(
+		"/queue/tracks/:id",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(RemoveTrackController)
 	);
 
 	app.patch(

@@ -15,7 +15,9 @@ export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 	public async run(params: RemoveTrackParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { guildId, index, trackId } = params;
 
-		const queue = this.queueRepository.get(guildId);
+		const queue = guildId
+			? this.queueRepository.get(guildId)
+			: this.queueRepository.getByUserId(userId);
 		if (!queue) throw new Error("Queue not found");
 		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
 			throw new Error("User not in voice channel");

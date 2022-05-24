@@ -7,7 +7,7 @@ export interface ChangeLoopTypeParams {
 	loopType?: LoopType;
 }
 
-export class ChangeLoopTypeAdapters extends UseCaseAdapter<ChangeLoopTypeParams> {
+export class ChangeLoopTypeAdapter extends UseCaseAdapter<ChangeLoopTypeParams> {
 	constructor(params: Partial<ChangeLoopTypeParams>) {
 		super(params);
 	}

@@ -1,6 +1,6 @@
 import { LoopType } from "@modules/queue/entities/Queue";
 import {
-	ChangeLoopTypeAdapters,
+	ChangeLoopTypeAdapter,
 	ChangeLoopTypeUseCase,
 } from "@modules/queue/useCases/ChangeLoopTypeUseCase";
 import { inject, injectable } from "tsyringe";
@@ -14,7 +14,7 @@ export class LoopCommand implements ICommand {
 	constructor(@inject(ChangeLoopTypeUseCase) private changeLoopType: ChangeLoopTypeUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		const adapter = new ChangeLoopTypeAdapters({
+		const adapter = new ChangeLoopTypeAdapter({
 			guildId: message.guild?.id,
 			loopType: LoopType.Song,
 		});

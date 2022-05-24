@@ -3,6 +3,7 @@ export * from "./LoopCommand";
 export * from "./LoopQueueCommand";
 export * from "./LyricCommand";
 export * from "./NowPlayingCommand";
+export * from "./OrderCommand";
 export * from "./PlayCommand";
 export * from "./QueueCommand";
 export * from "./RecommendationCommand";

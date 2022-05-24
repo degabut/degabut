@@ -6,6 +6,7 @@ import { QueueService } from "@modules/queue/services/QueueService";
 import { AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
 import { AutoAddTrackUseCase } from "@modules/queue/useCases/AutoAddTrackUseCase";
 import { ChangeLoopTypeUseCase } from "@modules/queue/useCases/ChangeLoopTypeUseCase";
+import { ChangeTrackOrderUseCase } from "@modules/queue/useCases/ChangeTrackOrderUseCase";
 import { DisconnectUseCase } from "@modules/queue/useCases/DisconnectUseCase";
 import { GetNowPlayingLyricUseCase } from "@modules/queue/useCases/GetNowPlayingLyricUseCase";
 import { GetNowPlayingUseCase } from "@modules/queue/useCases/GetNowPlayingUseCase";
@@ -28,6 +29,7 @@ const useCases = [
 	GetRelatedUseCase,
 	GetUserQueueUseCase,
 	RemoveTrackUseCase,
+	ChangeTrackOrderUseCase,
 	SkipTrackUseCase,
 	ToggleAutoplayUseCase,
 ];

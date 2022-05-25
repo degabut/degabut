@@ -14,9 +14,9 @@ export class RemoveTrackAdapter extends UseCaseAdapter<RemoveTrackParams> {
 
 	static SCHEMA = Joi.object<RemoveTrackParams>({
 		guildId: Joi.string(),
-		index: Joi.number().min(0).failover(0),
+		index: Joi.number().min(0).failover(0).allow(0),
 		trackId: Joi.string(),
 	})
 		.required()
-		.xor("trackId", "index");
+		.nand("trackId", "index");
 }

@@ -15,7 +15,7 @@ export class RemoveCommand implements ICommand {
 
 		const adapter = new RemoveTrackAdapter({
 			guildId: message.guild?.id,
-			index: index ? index - 1 : undefined,
+			index: !Number.isNaN(index) ? index - 1 : undefined,
 		});
 		const removed = await this.removeTrack.execute(adapter, { userId: message.author.id });
 

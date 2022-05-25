@@ -23,7 +23,7 @@ export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 			throw new Error("User not in voice channel");
 		}
 
-		const removed = queue.remove(trackId || index || queue.tracks.length - 1);
+		const removed = queue.remove(trackId || (index ?? queue.tracks.length - 1));
 
 		return removed;
 	}

@@ -66,8 +66,14 @@ export class Queue extends EventEmitter {
 				? indexOrId
 				: this.tracks.findIndex((track) => track.id === indexOrId);
 
-		const [removed] = this.tracks.splice(index, 1);
-		if (index === 0) this.audioPlayer.stop();
+		let removed: Track | null;
+		if (index === 0) {
+			removed = this.nowPlaying;
+			this.audioPlayer.stop();
+		} else {
+			removed = this.tracks.splice(index, 1)[0];
+		}
+
 		return removed;
 	}
 

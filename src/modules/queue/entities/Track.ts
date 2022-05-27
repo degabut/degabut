@@ -25,7 +25,13 @@ export class Track extends EventEmitter {
 	}
 
 	public async createAudioSource(): Promise<AudioResource<Track>> {
-		const stream = ytdl(this.video.id, { filter: "audioonly" });
+		const stream = ytdl(this.video.id, {
+			filter: "audioonly",
+			highWaterMark: 1 << 62,
+			liveBuffer: 1 << 62,
+			dlChunkSize: 0,
+			quality: "highestaudio",
+		});
 		const resource = createAudioResource<Track>(stream, { metadata: this });
 
 		return resource;

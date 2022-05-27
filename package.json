@@ -32,12 +32,12 @@
 		"libsodium-wrappers": "0.7.9",
 		"objection": "3.0.1",
 		"pg": "8.7.3",
-		"play-dl": "1.8.9",
 		"qs": "6.10.3",
 		"reflect-metadata": "0.1.13",
 		"tsyringe": "4.6.0",
 		"uuidv4": "6.2.13",
-		"youtubei": "0.0.1-rc.35"
+		"youtubei": "0.0.1-rc.35",
+		"ytdl-core": "4.11.0"
 	},
 	"devDependencies": {
 		"@types/qs": "6.9.7",

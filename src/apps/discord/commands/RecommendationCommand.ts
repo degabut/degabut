@@ -2,7 +2,7 @@ import {
 	GetRecommendationAdapter,
 	GetRecommendationUseCase,
 } from "@modules/user/useCases/GetRecommendationUseCase";
-import { videoToEmbedField, videoToMessageButton } from "@utils";
+import { shuffle, videoToEmbedField, videoToMessageButton } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
@@ -27,8 +27,12 @@ export class RecommendationCommand implements ICommand {
 		const userId = message.mentions.users.first()?.id || message.author.id;
 		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, { userId });
 
-		const filteredLastPlayed = lastPlayed.filter((v) => !mostPlayed.find((l) => l.id === v.id));
-		const slicedMostPlayed = mostPlayed.slice(0, Math.max(7, 10 - filteredLastPlayed.length));
+		const filteredLastPlayed = shuffle(lastPlayed).filter(
+			(v) => !mostPlayed.find((l) => l.id === v.id)
+		);
+		const slicedMostPlayed = shuffle(
+			mostPlayed.slice(0, Math.max(7, 10 - filteredLastPlayed.length))
+		);
 		const slicedLastPlayed = filteredLastPlayed.slice(0, 10 - slicedMostPlayed.length);
 
 		const videos = [...slicedLastPlayed, ...slicedMostPlayed];

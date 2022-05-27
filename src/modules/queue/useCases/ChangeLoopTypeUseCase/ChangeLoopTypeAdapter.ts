@@ -13,7 +13,7 @@ export class ChangeLoopTypeAdapter extends UseCaseAdapter<ChangeLoopTypeParams> 
 	}
 
 	static SCHEMA = Joi.object<ChangeLoopTypeParams>({
-		guildId: Joi.string().required(),
+		guildId: Joi.string().optional(),
 		loopType: Joi.string().valid(...Object.values(LoopType)),
 	}).required();
 }

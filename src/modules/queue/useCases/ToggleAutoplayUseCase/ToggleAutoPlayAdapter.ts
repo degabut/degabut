@@ -1,16 +1,16 @@
 import { UseCaseAdapter } from "@core";
 import Joi from "joi";
 
-export type ToggleAutoPlayParams = {
-	guildId: string;
+export type ToggleAutoplayParams = {
+	guildId?: string;
 };
 
-export class ToggleAutoPlayAdapter extends UseCaseAdapter<ToggleAutoPlayParams> {
-	constructor(params: Partial<ToggleAutoPlayParams>) {
+export class ToggleAutoplayAdapter extends UseCaseAdapter<ToggleAutoplayParams> {
+	constructor(params: Partial<ToggleAutoplayParams>) {
 		super(params);
 	}
 
-	static SCHEMA = Joi.object<ToggleAutoPlayParams>({
-		guildId: Joi.string().required(),
+	static SCHEMA = Joi.object<ToggleAutoplayParams>({
+		guildId: Joi.string().optional(),
 	}).required();
 }

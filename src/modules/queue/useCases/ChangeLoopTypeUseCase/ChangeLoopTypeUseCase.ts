@@ -15,7 +15,9 @@ export class ChangeLoopTypeUseCase extends UseCase<ChangeLoopTypeParams, Respons
 	public async run(params: ChangeLoopTypeParams, { userId }: IUseCaseContext): Promise<Response> {
 		const { loopType, guildId } = params;
 
-		const queue = this.queueRepository.get(guildId);
+		const queue = guildId
+			? this.queueRepository.get(guildId)
+			: this.queueRepository.getByUserId(userId);
 		if (!queue) throw new Error("Queue not found");
 		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
 			throw new Error("User not in voice channel");

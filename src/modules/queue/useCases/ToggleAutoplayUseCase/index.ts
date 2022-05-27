@@ -1,2 +1,2 @@
-export * from "./ToggleAutoPlayAdapter";
+export * from "./ToggleAutoplayAdapter";
 export * from "./ToggleAutoplayUseCase";

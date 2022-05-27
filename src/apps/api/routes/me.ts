@@ -1,10 +1,12 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { asHandler } from "../api";
 import { AddQueueTrackController } from "../controllers/me/AddQueueTrackController";
+import { ChangeLoopTypeController } from "../controllers/me/ChangeLoopTypeController";
 import { ChangeTrackOrderController } from "../controllers/me/ChangeTrackOrderController";
 import { GetQueueController } from "../controllers/me/GetQueueController";
 import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
 import { RemoveTrackController } from "../controllers/me/RemoveTrackController";
+import { ToggleAutoplayController } from "../controllers/me/ToggleAutoplayController";
 import { VerifyTokenMiddleware } from "../middlewares/VerifyTokenMiddleware";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
@@ -18,6 +20,18 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		"/queue",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(GetQueueController)
+	);
+
+	app.patch(
+		"/queue/loop-type",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(ChangeLoopTypeController)
+	);
+
+	app.patch(
+		"/queue/autoplay",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(ToggleAutoplayController)
 	);
 
 	app.post(

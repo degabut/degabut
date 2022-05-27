@@ -121,10 +121,7 @@ export class Queue extends EventEmitter {
 			this.emit("trackStart");
 		});
 		this.nowPlaying.on("error", () => {
-			// this.history.shift();
-			// if (this.nowPlaying) this.tracks.unshift(this.nowPlaying);
-			this.nowPlaying = null;
-			this.processQueue();
+			this.skip();
 			/* TODO handle error */
 		});
 

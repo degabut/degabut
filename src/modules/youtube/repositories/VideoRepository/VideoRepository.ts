@@ -31,16 +31,24 @@ export class VideoRepository {
 		return results.map((r) => VideoRepositoryMapper.toDomainEntity(r.video as VideoModel));
 	}
 
-	public async getMostPlayedVideos(userId: string, count: number): Promise<VideoCompact[]> {
+	public async getMostPlayedVideos(
+		userId: string,
+		options: { from?: Date; to?: Date; count?: number } = {}
+	): Promise<VideoCompact[]> {
 		const results = await UserPlayHistoryModel.query()
 			.select("video_id")
 			.count("video_id as count")
 			.where({ user_id: userId })
 			.groupBy("user_play_history.video_id")
 			.orderBy("count", "desc")
-			.limit(count)
 			.withGraphFetched("video")
-			.withGraphFetched("video.channel");
+			.withGraphFetched("video.channel")
+			.modify((builder) => {
+				const { from, to, count } = options;
+				if (from) builder.where("played_at", ">=", from);
+				if (to) builder.where("played_at", "<=", to);
+				if (count) builder.limit(count);
+			});
 
 		return results.map((r) => VideoRepositoryMapper.toDomainEntity(r.video as VideoModel));
 	}

@@ -22,11 +22,14 @@ export class GetRecommendationUseCase extends UseCase<GetRecommendationParams, R
 		params: GetRecommendationParams,
 		{ userId }: IUseCaseContext
 	): Promise<Response> {
-		const { count } = params;
+		const { lastPlayedCount, mostPlayedCount } = params;
+
+		const from = new Date();
+		from.setDate(from.getDate() - 30);
 
 		const [lastPlayedVideos, mostPlayedVideos] = await Promise.all([
-			this.videoRepository.getLastPlayedVideos(userId, count),
-			this.videoRepository.getMostPlayedVideos(userId, count),
+			this.videoRepository.getLastPlayedVideos(userId, lastPlayedCount),
+			this.videoRepository.getMostPlayedVideos(userId, { count: mostPlayedCount, from }),
 		]);
 
 		return {

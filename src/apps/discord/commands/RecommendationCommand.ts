@@ -22,7 +22,7 @@ export class RecommendationCommand implements ICommand {
 	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<unknown> {
-		const adapter = new GetRecommendationAdapter({ count: 5 });
+		const adapter = new GetRecommendationAdapter({ lastPlayedCount: 5, mostPlayedCount: 5 });
 
 		const userId = message.mentions.users.first()?.id || message.author.id;
 		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, { userId });

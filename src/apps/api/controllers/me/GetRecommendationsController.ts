@@ -18,7 +18,10 @@ export class GetRecommendationsController extends Controller {
 	}
 
 	async run({ query }: IRequest<unknown, unknown, Query>): Promise<void> {
-		const adapter = new GetRecommendationAdapter({ count: query.count });
+		const adapter = new GetRecommendationAdapter({
+			lastPlayedCount: query.count,
+			mostPlayedCount: query.count,
+		});
 		const recommendations = await this.getRecommendation.execute(adapter, { userId: this.user.id });
 		this.status(ResponseStatus.OK).send(recommendations);
 	}

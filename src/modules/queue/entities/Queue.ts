@@ -103,7 +103,7 @@ export class Queue extends EventEmitter {
 		if (!this.nowPlaying) return;
 
 		this.history.unshift(this.nowPlaying);
-		this.history.splice(10);
+		this.history.splice(25);
 
 		this.nowPlaying.removeAllListeners();
 		this.nowPlaying.once("finish", () => {

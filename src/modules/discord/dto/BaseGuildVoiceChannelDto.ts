@@ -9,6 +9,9 @@ export class BaseGuildVoiceChannelDto {
 	public id!: string;
 
 	@Expose()
+	public name!: string;
+
+	@Expose()
 	@CollectionType(GuildMemberDto)
 	public members!: GuildMemberDto[];
 

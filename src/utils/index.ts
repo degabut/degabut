@@ -1,5 +1,6 @@
 import { Video } from "@modules/youtube/entities/Video";
 import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
+import { Transform } from "class-transformer";
 import { EmbedField, MessageButton } from "discord.js";
 
 export const secondToTime = (seconds: number): string => {
@@ -47,4 +48,15 @@ export const shuffle = <T>(array: T[]): T[] => {
 		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
 	}
 	return shuffled;
+};
+
+export const CollectionType = (
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	dto: { create: (v: any) => unknown },
+	accessor?: string
+): PropertyDecorator => {
+	return Transform(({ obj, key }) => {
+		const value = accessor ? obj[accessor] : obj[key];
+		return [...value.values()].map(dto.create);
+	});
 };

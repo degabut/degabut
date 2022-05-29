@@ -77,14 +77,6 @@ export class Queue extends EventEmitter {
 		return removed;
 	}
 
-	public skip(): Track | undefined {
-		if (!this.nowPlaying) return;
-		const skipped = this.nowPlaying;
-		// this will triggers `finish` event on nowPlaying
-		this.audioPlayer.stop(true);
-		return skipped;
-	}
-
 	public stop(): void {
 		this.readyLock = true;
 		this.audioPlayer.stop(true);

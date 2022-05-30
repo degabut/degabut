@@ -19,9 +19,12 @@ export class VerifyTokenMiddleware extends Controller {
 		if (!accessToken) return this.status(ResponseStatus.UNAUTHORIZED).send();
 
 		const adapter = new GetUserAdapter({ accessToken });
-		const user = await this.getUser.execute(adapter);
-		if (!user) return this.status(ResponseStatus.UNAUTHORIZED).send();
-
-		this.user = user;
+		try {
+			const user = await this.getUser.execute(adapter);
+			if (!user) return this.status(ResponseStatus.UNAUTHORIZED).send();
+			this.user = user;
+		} catch {
+			return this.status(ResponseStatus.UNAUTHORIZED).send();
+		}
 	}
 }

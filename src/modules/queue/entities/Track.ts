@@ -15,6 +15,7 @@ export class Track extends EventEmitter {
 	public readonly id: string;
 	public readonly video: VideoCompact;
 	public readonly requestedBy: GuildMember;
+	public playedAt: Date | null;
 
 	constructor(props: ConstructorProps) {
 		super();
@@ -22,6 +23,7 @@ export class Track extends EventEmitter {
 		this.id = v4();
 		this.video = props.video;
 		this.requestedBy = props.requestedBy;
+		this.playedAt = null;
 	}
 
 	public async createAudioSource(): Promise<AudioResource<Track>> {

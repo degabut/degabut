@@ -110,6 +110,7 @@ export class Queue extends EventEmitter {
 		});
 		this.nowPlaying.once("start", () => {
 			if (!this.nowPlaying) return;
+			this.nowPlaying.playedAt = new Date();
 			this.emit("trackStart");
 		});
 		this.nowPlaying.on("error", () => {

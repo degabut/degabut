@@ -45,7 +45,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 			if (!queue) {
 				// create queue if doesn't exists
 				if (!textChannel || !voiceChannel) throw new Error("Queue not found");
-				queue = this.queueService.createQueue({ guildId, voiceChannel, textChannel });
+				queue = await this.queueService.createQueue({ guildId, voiceChannel, textChannel });
 				queue.on("trackEnd", () => queue && this.emit(OnTrackEndEvent, { queue }));
 				queue.on("trackStart", () => queue && this.emit(OnTrackStartEvent, { queue }));
 			} else if (!requestedBy || !queue.voiceChannel.members.get(requestedBy.id)) {

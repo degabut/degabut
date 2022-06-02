@@ -8,7 +8,7 @@ import {
 import { DiscordClient } from "@modules/discord/DiscordClient";
 import { Queue } from "@modules/queue/entities/Queue";
 import { Track } from "@modules/queue/entities/Track";
-import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
+import { BaseGuildTextChannel, BaseGuildVoiceChannel, ClientUser } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { QueueRepository } from "../repositories/QueueRepository";
 
@@ -25,7 +25,20 @@ export class QueueService {
 		@inject(DiscordClient) private client: DiscordClient
 	) {}
 
-	public createQueue({ guildId, voiceChannel, textChannel }: CreateQueueParams): Queue {
+	public async createQueue({
+		guildId,
+		voiceChannel,
+		textChannel,
+	}: CreateQueueParams): Promise<Queue> {
+		const guild = await this.client.guilds.fetch(guildId);
+		const botGuildMember = await guild.members.fetch((this.client.user as ClientUser).id);
+
+		const canJoin =
+			botGuildMember.permissionsIn(voiceChannel.id).has("CONNECT") &&
+			(!voiceChannel.userLimit || voiceChannel.members.size < voiceChannel.userLimit);
+
+		if (!canJoin) throw new Error("Bot does not have permission to join voice channel");
+
 		const queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
 		this.initQueueConnection(queue);
 		return queue;

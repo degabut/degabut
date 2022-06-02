@@ -1,4 +1,4 @@
-import { UseCase } from "@core";
+import { BadRequestError, UseCase } from "@core";
 import { DiscordOAuthProvider } from "@modules/discord/providers/DiscordOAuthProvider";
 import { inject, injectable } from "tsyringe";
 import { GetAccessTokenParams } from "./GetAccessTokenAdapter";
@@ -15,7 +15,7 @@ export class GetAccessTokenUseCase extends UseCase<GetAccessTokenParams, Respons
 		const { code } = params;
 
 		const token = await this.discordOAuthProvider.getAccessToken(code);
-		if (!token) throw new Error("Invalid Access Token.");
+		if (!token) throw new BadRequestError("Invalid Access Token.");
 
 		return token;
 	}

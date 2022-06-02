@@ -1,3 +1,4 @@
+import { BadRequestError, ForbiddenError, NotFoundError } from "@core";
 import { APIUser } from "discord-api-types/v9";
 
 export enum ResponseStatus {
@@ -39,8 +40,19 @@ export abstract class Controller<Body = unknown, Params = unknown, Query = unkno
 	}
 
 	async execute(request: IRequest<Body, Params, Query>): Promise<IResponse> {
-		await this.run(request);
-		return { status: this.responseStatus, body: this.responseBody };
+		try {
+			await this.run(request);
+			return { status: this.responseStatus, body: this.responseBody };
+		} catch (err) {
+			const response: IResponse = {
+				status: ResponseStatus.INTERNAL_SERVER_ERROR,
+				body: err,
+			};
+			if (err instanceof NotFoundError) response.status = ResponseStatus.NOT_FOUND;
+			if (err instanceof BadRequestError) response.status = ResponseStatus.BAD_REQUEST;
+			if (err instanceof ForbiddenError) response.status = ResponseStatus.FORBIDDEN;
+			return response;
+		}
 	}
 
 	abstract run(request: IRequest<Body, Params, Query>): Promise<unknown>;

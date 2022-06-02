@@ -1,3 +1,4 @@
+import { BadRequestError } from "@core";
 import { AudioPlayer, createAudioPlayer, VoiceConnection } from "@discordjs/voice";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import { EventEmitter } from "events";
@@ -51,7 +52,7 @@ export class Queue extends EventEmitter {
 		const fromIndex =
 			typeof from === "number" ? from : this.tracks.findIndex((track) => track.id === from);
 
-		if (fromIndex === 0) throw new Error("Can't move currently playing track");
+		if (fromIndex === 0) throw new BadRequestError("Can't move currently playing track");
 
 		const track = this.tracks[fromIndex];
 		if (!track) return; // TODO handle error

@@ -1,4 +1,4 @@
-import { IUseCaseContext, UseCase } from "@core";
+import { ForbiddenError, IUseCaseContext, NotFoundError, UseCase } from "@core";
 import { Track } from "@modules/queue/entities/Track";
 import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { inject, injectable } from "tsyringe";
@@ -19,9 +19,9 @@ export class GetQueueTracksUseCase extends UseCase<GetQueueTracksParams, Respons
 		const { guildId, page, perPage } = params;
 
 		const queue = this.queueRepository.get(guildId);
-		if (!queue) throw new Error("Queue not found");
+		if (!queue) throw new NotFoundError("Queue not found");
 		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
-			throw new Error("User not in voice channel");
+			throw new ForbiddenError("User not in voice channel");
 		}
 
 		const start = (page - 1) * perPage;

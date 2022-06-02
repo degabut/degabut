@@ -1,4 +1,4 @@
-import { IUseCaseContext, UseCase } from "@core";
+import { BadRequestError, ForbiddenError, IUseCaseContext, NotFoundError, UseCase } from "@core";
 import { TrackDto } from "@modules/queue/dto/TrackDto";
 import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
 import { VideoCompactDto } from "@modules/youtube/dto/VideoCompactDto";
@@ -25,13 +25,13 @@ export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
 		const { guildId } = params;
 
 		const queue = this.queueRepository.get(guildId);
-		if (!queue) throw new Error("Queue not found");
+		if (!queue) throw new NotFoundError("Queue not found");
 		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
-			throw new Error("User not in voice channel");
+			throw new ForbiddenError("User not in voice channel");
 		}
 
 		const target = queue.nowPlaying || queue.history[0];
-		if (!target) throw new Error("No song is playing");
+		if (!target) throw new BadRequestError("No song is playing");
 
 		const video = await this.youtubeProvider.getVideo(target.video.id);
 		if (!video) throw new Error("Video not found");

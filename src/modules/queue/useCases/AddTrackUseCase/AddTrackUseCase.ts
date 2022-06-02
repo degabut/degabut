@@ -1,4 +1,4 @@
-import { IUseCaseContext, UseCase } from "@core";
+import { BadRequestError, ForbiddenError, IUseCaseContext, NotFoundError, UseCase } from "@core";
 import {
 	GetGuildMemberAdapter,
 	GetGuildMemberUseCase,
@@ -44,12 +44,13 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 
 			if (!queue) {
 				// create queue if doesn't exists
-				if (!textChannel || !voiceChannel) throw new Error("Queue not found");
+				if (!textChannel || !voiceChannel)
+					throw new BadRequestError("Text and voice channel are required to create queue");
 				queue = await this.queueService.createQueue({ guildId, voiceChannel, textChannel });
 				queue.on("trackEnd", () => queue && this.emit(OnTrackEndEvent, { queue }));
 				queue.on("trackStart", () => queue && this.emit(OnTrackStartEvent, { queue }));
 			} else if (!requestedBy || !queue.voiceChannel.members.get(requestedBy.id)) {
-				throw new Error("User not in voice channel");
+				throw new ForbiddenError("User not in voice channel");
 			}
 		} else {
 			// if guildId is not passed, get queue by userId
@@ -57,13 +58,13 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 			requestedBy = queue?.voiceChannel.members.get(userId);
 		}
 
-		if (!queue) throw new Error("Queue not found");
+		if (!queue) throw new NotFoundError("Queue not found");
 		if (!requestedBy) throw new Error("User not found");
 
 		const [video] = keyword
 			? await this.youtubeProvider.searchVideo(keyword)
 			: [await this.youtubeProvider.getVideo(id)];
-		if (!video) throw new Error("Video not found");
+		if (!video) throw new BadRequestError("Video not found");
 
 		const track = new Track({
 			video,

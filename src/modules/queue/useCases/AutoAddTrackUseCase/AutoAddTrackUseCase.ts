@@ -1,4 +1,4 @@
-import { UseCase } from "@core";
+import { BadRequestError, UseCase } from "@core";
 import { Track } from "@modules/queue/entities/Track";
 import { OnTrackAddEvent } from "@modules/queue/events/OnTrackAddEvent";
 import { DIYoutubeProvider, IYoutubeProvider } from "@modules/youtube/providers/IYoutubeProvider";
@@ -17,7 +17,7 @@ export class AutoAddTrackUseCase extends UseCase<AutoAddTrackParams, Response> {
 		const { queue } = params;
 
 		const lastSong = queue.history[0];
-		if (!lastSong) throw new Error("No last song found");
+		if (!lastSong) throw new BadRequestError("No last song found");
 
 		const video = await this.youtubeProvider.getVideo(lastSong.video.id);
 		if (!video) return;

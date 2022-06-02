@@ -1,4 +1,4 @@
-import { UseCase } from "@core";
+import { NotFoundError, UseCase } from "@core";
 import { Lyric } from "@modules/lyric/entities/Lyric";
 import { ILyricProvider } from "@modules/lyric/providers/ILyricProvider";
 import { LyricProvider } from "@modules/lyric/providers/LyricProvider";
@@ -17,7 +17,7 @@ export class GetLyricUseCase extends UseCase<GetLyricParams, Response> {
 		const { keyword } = params;
 
 		const lyric = await this.lyricProvider.getLyric(keyword);
-		if (!lyric) throw new Error("Lyric not found");
+		if (!lyric) throw new NotFoundError("Lyric not found");
 
 		return lyric;
 	}

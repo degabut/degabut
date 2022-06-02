@@ -1,3 +1,4 @@
+import { BadRequestError } from "@core";
 import {
 	AudioPlayerStatus,
 	AudioResource,
@@ -37,7 +38,7 @@ export class QueueService {
 			botGuildMember.permissionsIn(voiceChannel.id).has("CONNECT") &&
 			(!voiceChannel.userLimit || voiceChannel.members.size < voiceChannel.userLimit);
 
-		if (!canJoin) throw new Error("Bot does not have permission to join voice channel");
+		if (!canJoin) throw new BadRequestError("Bot does not have permission to join voice channel");
 
 		const queue = this.queueRepository.create({ guildId, voiceChannel, textChannel });
 		this.initQueueConnection(queue);

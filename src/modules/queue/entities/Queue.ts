@@ -133,4 +133,8 @@ export class Queue extends EventEmitter {
 			this.processQueue();
 		}
 	}
+
+	public hasMember(userId: string): boolean {
+		return this.voiceChannel.members.some((m) => m.id === userId);
+	}
 }

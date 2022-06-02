@@ -16,9 +16,7 @@ export class DisconnectUseCase extends UseCase<DisconnectParams, Response> {
 
 		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new NotFoundError("Queue not found");
-		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
-			throw new ForbiddenError("User not in voice channel");
-		}
+		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
 		queue.stop();
 		this.queueRepository.delete(guildId);

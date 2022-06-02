@@ -26,9 +26,7 @@ export class GetRelatedUseCase extends UseCase<GetRelatedParams, Response> {
 
 		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new NotFoundError("Queue not found");
-		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
-			throw new ForbiddenError("User not in voice channel");
-		}
+		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
 		const target = queue.nowPlaying || queue.history[0];
 		if (!target) throw new BadRequestError("No song is playing");

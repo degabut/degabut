@@ -20,9 +20,7 @@ export class GetQueueTracksUseCase extends UseCase<GetQueueTracksParams, Respons
 
 		const queue = this.queueRepository.get(guildId);
 		if (!queue) throw new NotFoundError("Queue not found");
-		if (!queue.voiceChannel.members.find((m) => m.id === userId)) {
-			throw new ForbiddenError("User not in voice channel");
-		}
+		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
 		const start = (page - 1) * perPage;
 		const end = start + perPage;

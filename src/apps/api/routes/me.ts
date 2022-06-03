@@ -36,7 +36,7 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 	);
 
 	app.patch(
-		"/queue/autoplay",
+		"/queue/shuffle",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(ToggleShuffleController)
 	);

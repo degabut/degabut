@@ -44,8 +44,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 
 			if (!queue) {
 				// create queue if doesn't exists
-				if (!textChannel || !voiceChannel)
-					throw new BadRequestError("Text and voice channel are required to create queue");
+				if (!textChannel || !voiceChannel) throw new BadRequestError("User not in a voice channel");
 				queue = await this.queueService.createQueue({ guildId, voiceChannel, textChannel });
 				queue.on("trackEnd", () => queue && this.emit(OnTrackEndEvent, { queue }));
 				queue.on("trackStart", () => queue && this.emit(OnTrackStartEvent, { queue }));

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import Knex from "knex";
 import { Model } from "objection";
 import path from "path";
+import pg from "pg";
 import { container } from "tsyringe";
 import { Config, ConfigProps } from "../core";
 import { createApi } from "./api/api";
@@ -37,6 +38,10 @@ export const run = async (): Promise<void> => {
 	//#endregion
 
 	//#region Db
+	pg.types.setTypeParser(pg.types.builtins.INT8, (v: string) => parseInt(v));
+	pg.types.setTypeParser(pg.types.builtins.FLOAT8, (v: string) => parseFloat(v));
+	pg.types.setTypeParser(pg.types.builtins.NUMERIC, (v: string) => parseFloat(v));
+
 	const [host, port] = config.postgresHost.split(":");
 	const knex = Knex({
 		client: "pg",
@@ -82,7 +87,7 @@ export const run = async (): Promise<void> => {
 
 	//#region Api
 	if (config.apiServer) {
-		const api = createApi(config);
+		const api = createApi();
 		api.listen(8080, "0.0.0.0", (_, address) => {
 			console.log(`API Ready (${address})`);
 		});

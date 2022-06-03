@@ -16,8 +16,8 @@ export class ChangeTrackOrderAdapter extends UseCaseAdapter<ChangeTrackOrderPara
 	static SCHEMA = Joi.object<ChangeTrackOrderParams>({
 		guildId: Joi.string(),
 		trackId: Joi.string(),
-		from: Joi.number().min(1),
-		to: Joi.number().required().min(1),
+		from: Joi.number().min(0),
+		to: Joi.number().required().min(0),
 	})
 		.required()
 		.xor("trackId", "from");

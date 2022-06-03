@@ -110,8 +110,6 @@ export class QueueService {
 		const fromIndex =
 			typeof from === "number" ? from : queue.tracks.findIndex((track) => track.id === from);
 
-		if (fromIndex === 0) throw new BadRequestError("Can't move currently playing track");
-
 		const track = queue.tracks[fromIndex];
 		if (!track) return; // TODO handle error
 

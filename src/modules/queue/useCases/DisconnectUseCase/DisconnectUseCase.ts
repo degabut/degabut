@@ -1,5 +1,6 @@
 import { ForbiddenError, IUseCaseContext, NotFoundError, UseCase } from "@core";
 import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
+import { QueueService } from "@modules/queue/services/QueueService";
 import { inject, injectable } from "tsyringe";
 import { DisconnectParams } from "./DisconnectAdapter";
 
@@ -7,7 +8,13 @@ type Response = void;
 
 @injectable()
 export class DisconnectUseCase extends UseCase<DisconnectParams, Response> {
-	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
+	constructor(
+		@inject(QueueRepository)
+		private queueRepository: QueueRepository,
+
+		@inject(QueueService)
+		private queueService: QueueService
+	) {
 		super();
 	}
 
@@ -18,7 +25,7 @@ export class DisconnectUseCase extends UseCase<DisconnectParams, Response> {
 		if (!queue) throw new NotFoundError("Queue not found");
 		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
-		queue.stop();
+		this.queueService.stopQueue(queue);
 		this.queueRepository.delete(guildId);
 	}
 }

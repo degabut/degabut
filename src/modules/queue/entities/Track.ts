@@ -1,10 +1,8 @@
-import { AudioResource, createAudioResource } from "@discordjs/voice";
 import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
 import { secondToTime } from "@utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";
 import { v4 } from "uuid";
-import ytdl from "ytdl-core";
 
 interface ConstructorProps {
 	video: VideoCompact;
@@ -24,19 +22,6 @@ export class Track extends EventEmitter {
 		this.video = props.video;
 		this.requestedBy = props.requestedBy;
 		this.playedAt = null;
-	}
-
-	public async createAudioSource(): Promise<AudioResource<Track>> {
-		const stream = ytdl(this.video.id, {
-			filter: "audioonly",
-			highWaterMark: 1 << 62,
-			liveBuffer: 1 << 62,
-			dlChunkSize: 0,
-			quality: "highestaudio",
-		});
-		const resource = createAudioResource<Track>(stream, { metadata: this });
-
-		return resource;
 	}
 
 	public get url(): string {

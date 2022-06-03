@@ -72,7 +72,7 @@ export class AddTrackUseCase extends UseCase<AddTrackParams, AddTrackResponse> {
 		});
 
 		const isPlayedImmediately = !queue.nowPlaying;
-		queue.addTrack(track);
+		this.queueService.addQueueTrack(queue, track);
 		this.emit(OnTrackAddEvent, { queue, track, isPlayedImmediately });
 
 		return TrackDto.create(track);

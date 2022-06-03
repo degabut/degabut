@@ -1,5 +1,6 @@
 import { ForbiddenError, IUseCaseContext, NotFoundError, UseCase } from "@core";
 import { QueueRepository } from "@modules/queue/repositories/QueueRepository";
+import { QueueService } from "@modules/queue/services/QueueService";
 import { inject, injectable } from "tsyringe";
 import { ChangeTrackOrderParams } from "./ChangeTrackOrderAdapter";
 
@@ -7,7 +8,13 @@ type Response = void;
 
 @injectable()
 export class ChangeTrackOrderUseCase extends UseCase<ChangeTrackOrderParams, Response> {
-	constructor(@inject(QueueRepository) private queueRepository: QueueRepository) {
+	constructor(
+		@inject(QueueRepository)
+		private queueRepository: QueueRepository,
+
+		@inject(QueueService)
+		private queueService: QueueService
+	) {
 		super();
 	}
 
@@ -20,6 +27,6 @@ export class ChangeTrackOrderUseCase extends UseCase<ChangeTrackOrderParams, Res
 		if (!queue) throw new NotFoundError("Queue not found");
 		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
-		queue.changeTrackOrder(trackId || from, to);
+		this.queueService.changeQueueTrackOrder(queue, trackId || from, to);
 	}
 }

@@ -139,7 +139,10 @@ export class QueueService {
 	public stopQueue(queue: Queue): void {
 		queue.readyLock = true;
 		queue.audioPlayer.stop(true);
-		queue.voiceConnection.disconnect();
+		if (queue.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) {
+			queue.voiceConnection.destroy();
+		}
+		this.queueRepository.delete(queue.textChannel.guild.id);
 	}
 
 	public toggleQueueAutoplay(queue: Queue): boolean {
@@ -162,7 +165,7 @@ export class QueueService {
 					try {
 						await entersState(queue.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
 					} catch {
-						queue.voiceConnection.destroy();
+						this.stopQueue(queue);
 					}
 				} else if (queue.voiceConnection.rejoinAttempts < 5) {
 					await new Promise((r) =>
@@ -170,7 +173,7 @@ export class QueueService {
 					);
 					queue.voiceConnection.rejoin();
 				} else {
-					queue.voiceConnection.destroy();
+					this.stopQueue(queue);
 				}
 			} else if (newState.status === VoiceConnectionStatus.Destroyed) {
 				this.stopQueue(queue);
@@ -184,7 +187,7 @@ export class QueueService {
 					await entersState(queue.voiceConnection, VoiceConnectionStatus.Ready, 20_000);
 				} catch {
 					if (queue.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed)
-						queue.voiceConnection.destroy();
+						this.stopQueue(queue);
 				} finally {
 					queue.readyLock = false;
 					this.processQueue(queue);

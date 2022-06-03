@@ -26,6 +26,5 @@ export class DisconnectUseCase extends UseCase<DisconnectParams, Response> {
 		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
 		this.queueService.stopQueue(queue);
-		this.queueRepository.delete(guildId);
 	}
 }

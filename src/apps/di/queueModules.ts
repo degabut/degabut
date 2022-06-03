@@ -17,6 +17,7 @@ import { GetUserQueueUseCase } from "@modules/queue/useCases/GetUserQueueUseCase
 import { JoinUseCase } from "@modules/queue/useCases/JoinUseCase";
 import { RemoveTrackUseCase } from "@modules/queue/useCases/RemoveTrackUseCase";
 import { ToggleAutoplayUseCase } from "@modules/queue/useCases/ToggleAutoplayUseCase";
+import { ToggleShuffleUseCase } from "@modules/queue/useCases/ToggleShuffleUseCase";
 import { container } from "tsyringe";
 
 const useCases = [
@@ -33,6 +34,7 @@ const useCases = [
 	RemoveTrackUseCase,
 	ChangeTrackOrderUseCase,
 	ToggleAutoplayUseCase,
+	ToggleShuffleUseCase,
 ];
 
 const events = [OnTrackAddEvent, OnTrackEndEvent];

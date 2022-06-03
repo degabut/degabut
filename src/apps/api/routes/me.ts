@@ -7,6 +7,7 @@ import { GetQueueController } from "../controllers/me/GetQueueController";
 import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
 import { RemoveTrackController } from "../controllers/me/RemoveTrackController";
 import { ToggleAutoplayController } from "../controllers/me/ToggleAutoplayController";
+import { ToggleShuffleController } from "../controllers/me/ToggleShuffleController";
 import { VerifyTokenMiddleware } from "../middlewares/VerifyTokenMiddleware";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
@@ -32,6 +33,12 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		"/queue/autoplay",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(ToggleAutoplayController)
+	);
+
+	app.patch(
+		"/queue/autoplay",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(ToggleShuffleController)
 	);
 
 	app.post(

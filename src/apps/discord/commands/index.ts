@@ -11,6 +11,7 @@ export * from "./RecommendationCommand";
 export * from "./RelatedCommand";
 export * from "./RemoveCommand";
 export * from "./SearchCommand";
+export * from "./ShuffleCommand";
 export * from "./SkipCommand";
 export * from "./StopCommand";
 export * from "./TogetherCommand";

@@ -50,6 +50,12 @@ export const shuffle = <T>(array: T[]): T[] => {
 	return shuffled;
 };
 
+export const randomInt = (min: number, max: number): number => {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 export const CollectionType = (
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	dto: { create: (v: any) => unknown },

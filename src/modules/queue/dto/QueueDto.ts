@@ -17,7 +17,14 @@ export class QueueDto {
 	public autoplay!: boolean;
 
 	@Expose()
+	public shuffle!: boolean;
+
+	@Expose()
 	public loopType!: LoopType;
+
+	@Expose()
+	@Type(() => TrackDto)
+	public nowPlaying!: TrackDto;
 
 	@Expose()
 	@Type(() => BaseGuildVoiceChannelDto)

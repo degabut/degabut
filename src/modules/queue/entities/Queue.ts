@@ -26,6 +26,8 @@ export class Queue extends EventEmitter {
 	public loopType: LoopType;
 	public autoplay: boolean;
 	public readyLock: boolean;
+	public shuffle: boolean;
+	public shuffleHistoryIds: string[];
 
 	constructor(props: ConstructorProps) {
 		super();
@@ -39,6 +41,8 @@ export class Queue extends EventEmitter {
 		this.loopType = LoopType.Disabled;
 		this.autoplay = false;
 		this.readyLock = false;
+		this.shuffle = false;
+		this.shuffleHistoryIds = [];
 		this.audioPlayer = createAudioPlayer();
 	}
 

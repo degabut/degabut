@@ -9,6 +9,7 @@ import {
 import { DiscordClient } from "@modules/discord/DiscordClient";
 import { LoopType, Queue } from "@modules/queue/entities/Queue";
 import { Track } from "@modules/queue/entities/Track";
+import { randomInt } from "@utils";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, ClientUser } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { QueueRepository } from "../repositories/QueueRepository";
@@ -50,7 +51,23 @@ export class QueueService {
 	public processQueue(queue: Queue): void {
 		if (queue.readyLock || queue.nowPlaying) return;
 
-		queue.nowPlaying = queue.tracks[0];
+		let nextIndex = 0;
+		if (queue.shuffle) {
+			if (queue.loopType === LoopType.Queue) {
+				let unplayedTracks = queue.tracks.filter((t) => !queue.shuffleHistoryIds.includes(t.id));
+				if (!unplayedTracks.length) {
+					unplayedTracks = queue.tracks;
+					queue.shuffleHistoryIds = [];
+				}
+				const randomUnplayedTrack = unplayedTracks[randomInt(0, unplayedTracks.length - 1)];
+				nextIndex = queue.tracks.findIndex((t) => t.id === randomUnplayedTrack.id);
+				queue.shuffleHistoryIds.push(randomUnplayedTrack.id);
+			} else {
+				nextIndex = randomInt(0, queue.tracks.length - 1);
+			}
+		}
+
+		queue.nowPlaying = queue.tracks[nextIndex];
 		if (!queue.nowPlaying) return;
 
 		queue.history.unshift(queue.nowPlaying);
@@ -60,8 +77,11 @@ export class QueueService {
 		queue.nowPlaying.once("finish", () => {
 			if (queue.loopType === LoopType.Song) return this.playQueue(queue);
 
-			const previous = queue.tracks.shift();
-			if (queue.loopType === LoopType.Queue && previous) queue.tracks.push(previous);
+			const trackIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
+			const [previous] = queue.tracks.splice(trackIndex, 1);
+			if (queue.loopType === LoopType.Queue && previous) {
+				queue.tracks.splice(trackIndex > 0 ? trackIndex : queue.tracks.length, 0, previous);
+			}
 
 			queue.nowPlaying = null;
 			queue.emit("trackEnd");
@@ -125,6 +145,11 @@ export class QueueService {
 	public toggleQueueAutoplay(queue: Queue): boolean {
 		queue.autoplay = !queue.autoplay;
 		return queue.autoplay;
+	}
+
+	public toggleShuffle(queue: Queue): boolean {
+		queue.shuffle = !queue.shuffle;
+		return queue.shuffle;
 	}
 
 	private initQueueConnection(queue: Queue): void {

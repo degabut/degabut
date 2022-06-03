@@ -10,7 +10,7 @@ export class SkipCommand implements ICommand {
 	constructor(@inject(RemoveTrackUseCase) private removeTrack: RemoveTrackUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		const adapter = new RemoveTrackAdapter({ index: 0, guildId: message.guild?.id });
+		const adapter = new RemoveTrackAdapter({ isNowPlaying: true, guildId: message.guild?.id });
 		await this.removeTrack.execute(adapter, { userId: message.author.id });
 	}
 }

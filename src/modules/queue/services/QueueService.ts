@@ -48,59 +48,6 @@ export class QueueService {
 		return queue;
 	}
 
-	public processQueue(queue: Queue): void {
-		if (queue.readyLock || queue.nowPlaying) return;
-
-		let nextIndex = 0;
-		if (queue.shuffle) {
-			if (queue.loopType === LoopType.Queue) {
-				let unplayedTracks = queue.tracks.filter((t) => !queue.shuffleHistoryIds.includes(t.id));
-				if (!unplayedTracks.length) {
-					unplayedTracks = queue.tracks;
-					queue.shuffleHistoryIds = [];
-				}
-				const randomUnplayedTrack = unplayedTracks[randomInt(0, unplayedTracks.length - 1)];
-				nextIndex = queue.tracks.findIndex((t) => t.id === randomUnplayedTrack.id);
-				queue.shuffleHistoryIds.push(randomUnplayedTrack.id);
-			} else {
-				nextIndex = randomInt(0, queue.tracks.length - 1);
-			}
-		}
-
-		queue.nowPlaying = queue.tracks[nextIndex];
-		if (!queue.nowPlaying) return;
-
-		queue.history.unshift(queue.nowPlaying);
-		queue.history.splice(25);
-
-		queue.nowPlaying.removeAllListeners();
-		queue.nowPlaying.once("finish", () => {
-			if (queue.loopType === LoopType.Song) return this.playQueue(queue);
-
-			const trackIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
-			const [previous] = queue.tracks.splice(trackIndex, 1);
-			if (queue.loopType === LoopType.Queue && previous) {
-				queue.tracks.splice(trackIndex > 0 ? trackIndex : queue.tracks.length, 0, previous);
-			}
-
-			queue.nowPlaying = null;
-			queue.emit("trackEnd");
-			this.processQueue(queue);
-		});
-		queue.nowPlaying.once("start", () => {
-			if (!queue.nowPlaying) return;
-			queue.nowPlaying.playedAt = new Date();
-			queue.emit("trackStart");
-		});
-		queue.nowPlaying.on("error", () => {
-			queue.nowPlaying = null;
-			this.processQueue(queue);
-			/* TODO handle error */
-		});
-
-		this.playQueue(queue);
-	}
-
 	public addQueueTrack(queue: Queue, track: Track): void {
 		queue.tracks.push(track);
 		if (!queue.nowPlaying) this.processQueue(queue);
@@ -117,19 +64,18 @@ export class QueueService {
 		queue.tracks.splice(toIndex, 0, track);
 	}
 
-	public removeTrack(queue: Queue, indexOrId: number | string): Track | null {
-		const index =
-			typeof indexOrId === "number"
-				? indexOrId
-				: queue.tracks.findIndex((track) => track.id === indexOrId);
+	public removeTrack(queue: Queue, opts: number | string | boolean): Track | null {
+		let index: number;
+		if (typeof opts === "number") index = opts;
+		else if (typeof opts === "string") index = queue.tracks.findIndex((track) => track.id === opts);
+		else if (opts) index = queue.tracks.findIndex((track) => track.id === queue.nowPlaying?.id);
+		else throw new BadRequestError("Invalid remove track options");
 
-		let removed: Track | null;
-		if (index === 0) {
-			removed = queue.nowPlaying;
-			queue.audioPlayer.stop();
-		} else {
-			removed = queue.tracks.splice(index, 1)[0];
-		}
+		const removed = queue.tracks.at(index);
+		if (!removed) return null;
+
+		if (removed.id === queue.nowPlaying?.id) queue.audioPlayer.stop();
+		else queue.tracks.splice(index, 1);
 
 		return removed;
 	}
@@ -151,6 +97,61 @@ export class QueueService {
 	public toggleShuffle(queue: Queue): boolean {
 		queue.shuffle = !queue.shuffle;
 		return queue.shuffle;
+	}
+
+	private processQueue(queue: Queue): void {
+		if (queue.readyLock || queue.nowPlaying) return;
+
+		let nextIndex = 0;
+		if (queue.shuffle && queue.loopType !== LoopType.Song) {
+			if (queue.loopType === LoopType.Queue) {
+				let unplayedTracks = queue.tracks.filter((t) => !queue.shuffleHistoryIds.includes(t.id));
+				if (!unplayedTracks.length) {
+					unplayedTracks = queue.tracks;
+					queue.shuffleHistoryIds = [];
+				}
+				const randomUnplayedTrack = unplayedTracks[randomInt(0, unplayedTracks.length - 1)];
+				if (!randomUnplayedTrack) return;
+
+				nextIndex = queue.tracks.findIndex((t) => t.id === randomUnplayedTrack.id);
+				queue.shuffleHistoryIds.push(randomUnplayedTrack.id);
+			} else {
+				nextIndex = randomInt(0, queue.tracks.length - 1);
+			}
+		}
+
+		queue.nowPlaying = queue.tracks[nextIndex];
+		if (!queue.nowPlaying) return;
+
+		queue.history.unshift(queue.nowPlaying);
+		queue.history.splice(25);
+
+		queue.nowPlaying.removeAllListeners();
+		queue.nowPlaying.on("finish", () => {
+			if (queue.loopType === LoopType.Song) return this.playQueue(queue);
+
+			const trackIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
+			const [previous] = queue.tracks.splice(trackIndex, 1);
+			if (queue.loopType === LoopType.Queue && previous) {
+				queue.tracks.splice(trackIndex > 0 ? trackIndex : queue.tracks.length, 0, previous);
+			}
+
+			queue.nowPlaying = null;
+			queue.emit("trackEnd");
+			this.processQueue(queue);
+		});
+		queue.nowPlaying.on("start", () => {
+			if (!queue.nowPlaying) return;
+			queue.nowPlaying.playedAt = new Date();
+			queue.emit("trackStart");
+		});
+		queue.nowPlaying.on("error", () => {
+			queue.nowPlaying = null;
+			this.processQueue(queue);
+			/* TODO handle error */
+		});
+
+		this.playQueue(queue);
 	}
 
 	private initQueueConnection(queue: Queue): void {

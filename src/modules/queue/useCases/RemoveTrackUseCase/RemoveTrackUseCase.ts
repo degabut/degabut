@@ -21,7 +21,7 @@ export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 	}
 
 	public async run(params: RemoveTrackParams, { userId }: IUseCaseContext): Promise<Response> {
-		const { guildId, index, trackId } = params;
+		const { guildId, index, trackId, isNowPlaying } = params;
 
 		const queue = guildId
 			? this.queueRepository.get(guildId)
@@ -32,7 +32,7 @@ export class RemoveTrackUseCase extends UseCase<RemoveTrackParams, Response> {
 		const nowPlaying = queue.nowPlaying;
 		const removed = this.queueService.removeTrack(
 			queue,
-			trackId || (index ?? queue.tracks.length - 1)
+			isNowPlaying || trackId || (index ?? queue.tracks.length - 1)
 		);
 
 		if (removed) {

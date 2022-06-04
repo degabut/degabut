@@ -16,6 +16,7 @@ import { GetRelatedUseCase } from "@modules/queue/useCases/GetRelatedUseCase";
 import { GetUserQueueUseCase } from "@modules/queue/useCases/GetUserQueueUseCase";
 import { JoinUseCase } from "@modules/queue/useCases/JoinUseCase";
 import { RemoveTrackUseCase } from "@modules/queue/useCases/RemoveTrackUseCase";
+import { SetPauseUseCase } from "@modules/queue/useCases/SetPauseUseCase";
 import { ToggleAutoplayUseCase } from "@modules/queue/useCases/ToggleAutoplayUseCase";
 import { ToggleShuffleUseCase } from "@modules/queue/useCases/ToggleShuffleUseCase";
 import { container } from "tsyringe";
@@ -33,6 +34,7 @@ const useCases = [
 	JoinUseCase,
 	RemoveTrackUseCase,
 	ChangeTrackOrderUseCase,
+	SetPauseUseCase,
 	ToggleAutoplayUseCase,
 	ToggleShuffleUseCase,
 ];

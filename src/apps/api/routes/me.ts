@@ -5,9 +5,11 @@ import { ChangeLoopTypeController } from "../controllers/me/ChangeLoopTypeContro
 import { ChangeTrackOrderController } from "../controllers/me/ChangeTrackOrderController";
 import { GetQueueController } from "../controllers/me/GetQueueController";
 import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
+import { PauseQueueController } from "../controllers/me/PauseQueueController";
 import { RemoveTrackController } from "../controllers/me/RemoveTrackController";
 import { ToggleAutoplayController } from "../controllers/me/ToggleAutoplayController";
 import { ToggleShuffleController } from "../controllers/me/ToggleShuffleController";
+import { UnpauseQueueController } from "../controllers/me/UnpauseQueueController";
 import { VerifyTokenMiddleware } from "../middlewares/VerifyTokenMiddleware";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
@@ -39,6 +41,18 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		"/queue/shuffle",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(ToggleShuffleController)
+	);
+
+	app.post(
+		"/queue/pause",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(PauseQueueController)
+	);
+
+	app.post(
+		"/queue/unpause",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(UnpauseQueueController)
 	);
 
 	app.post(

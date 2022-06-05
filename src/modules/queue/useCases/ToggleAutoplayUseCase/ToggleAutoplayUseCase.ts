@@ -27,6 +27,8 @@ export class ToggleAutoplayUseCase extends UseCase<ToggleAutoplayParams, Respons
 		if (!queue) throw new NotFoundError("Queue not found");
 		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
-		return this.queueService.toggleQueueAutoplay(queue);
+		queue.autoplay = !queue.autoplay;
+
+		return queue.autoplay;
 	}
 }

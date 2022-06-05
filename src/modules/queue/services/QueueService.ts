@@ -57,7 +57,7 @@ export class QueueService {
 		const fromIndex =
 			typeof from === "number" ? from : queue.tracks.findIndex((track) => track.id === from);
 
-		const track = queue.tracks[fromIndex];
+		const track = queue.tracks.at(fromIndex);
 		if (!track) return; // TODO handle error
 
 		queue.tracks.splice(fromIndex, 1);
@@ -89,67 +89,70 @@ export class QueueService {
 		this.queueRepository.delete(queue.textChannel.guild.id);
 	}
 
-	public toggleQueueAutoplay(queue: Queue): boolean {
-		queue.autoplay = !queue.autoplay;
-		return queue.autoplay;
-	}
-
-	public toggleShuffle(queue: Queue): boolean {
-		queue.shuffle = !queue.shuffle;
-		return queue.shuffle;
-	}
-
 	private processQueue(queue: Queue): void {
-		if (queue.readyLock || queue.nowPlaying) return;
+		if (queue.readyLock) return;
 
-		let nextIndex = 0;
-		if (queue.shuffle && queue.loopType !== LoopType.Song) {
-			if (queue.loopType === LoopType.Queue) {
-				let unplayedTracks = queue.tracks.filter((t) => !queue.shuffleHistoryIds.includes(t.id));
-				if (!unplayedTracks.length) {
-					unplayedTracks = queue.tracks;
-					queue.shuffleHistoryIds = [];
-				}
-				const randomUnplayedTrack = unplayedTracks[randomInt(0, unplayedTracks.length - 1)];
-				if (!randomUnplayedTrack) return;
-
-				nextIndex = queue.tracks.findIndex((t) => t.id === randomUnplayedTrack.id);
-				queue.shuffleHistoryIds.push(randomUnplayedTrack.id);
-			} else {
-				nextIndex = randomInt(0, queue.tracks.length - 1);
-			}
+		const nowPlayingIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
+		queue.nowPlaying = null;
+		if (queue.loopType === LoopType.Disabled && nowPlayingIndex >= 0) {
+			queue.tracks.splice(nowPlayingIndex, 1);
 		}
 
-		queue.nowPlaying = queue.tracks[nextIndex];
-		if (!queue.nowPlaying) return;
+		let nextIndex = 0;
+		switch (queue.loopType) {
+			case LoopType.Song:
+				nextIndex = nowPlayingIndex;
+				break;
+			case LoopType.Queue:
+				if (queue.shuffle) {
+					let unplayedTracks = queue.tracks.filter((t) => !queue.shuffleHistoryIds.includes(t.id));
+					if (!unplayedTracks.length) {
+						unplayedTracks = queue.tracks;
+						queue.shuffleHistoryIds = [];
+					}
+					const randomUnplayedTrack = unplayedTracks.at(randomInt(0, unplayedTracks.length - 1));
+					if (randomUnplayedTrack) {
+						nextIndex = queue.tracks.findIndex((t) => t.id === randomUnplayedTrack.id);
+					}
+				} else {
+					nextIndex = nowPlayingIndex + 1;
+				}
+				break;
+			default:
+				nextIndex = queue.shuffle ? randomInt(0, queue.tracks.length - 1) : nowPlayingIndex;
+				break;
+		}
 
-		queue.history.unshift(queue.nowPlaying);
-		queue.history.splice(25);
+		queue.nowPlaying = queue.tracks.at(nextIndex) || queue.tracks.at(0) || null;
+		if (!queue.nowPlaying) return;
 
 		queue.nowPlaying.removeAllListeners();
 		queue.nowPlaying.on("finish", () => {
-			if (queue.loopType === LoopType.Song) return this.playQueue(queue);
-			if (queue.loopType !== LoopType.Queue) {
-				const nowPlayingIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
-				queue.tracks.splice(nowPlayingIndex, 1);
-			}
-
-			queue.nowPlaying = null;
 			queue.emit("trackEnd");
+			if (queue.shuffle && queue.nowPlaying) queue.shuffleHistoryIds.push(queue.nowPlaying.id);
 			this.processQueue(queue);
 		});
 		queue.nowPlaying.on("start", () => {
 			if (!queue.nowPlaying) return;
 			queue.nowPlaying.playedAt = new Date();
+			queue.history.unshift(queue.nowPlaying);
+			queue.history.splice(25);
 			queue.emit("trackStart");
 		});
-		queue.nowPlaying.on("error", () => {
-			queue.nowPlaying = null;
-			this.processQueue(queue);
-			/* TODO handle error */
-		});
+		queue.nowPlaying.on("error", () => this.processQueue(queue));
 
 		this.playQueue(queue);
+	}
+
+	private playQueue(queue: Queue): void {
+		if (!queue.nowPlaying) return;
+		try {
+			const resource = this.trackService.createAudioSource(queue.nowPlaying);
+			queue.audioPlayer.play(resource);
+		} catch (error) {
+			queue.nowPlaying.emit("error", error);
+			this.processQueue(queue);
+		}
 	}
 
 	private initQueueConnection(queue: Queue): void {
@@ -214,16 +217,5 @@ export class QueueService {
 		//#endregion
 
 		queue.voiceConnection.subscribe(queue.audioPlayer);
-	}
-
-	private playQueue(queue: Queue): void {
-		if (!queue.nowPlaying) return;
-		try {
-			const resource = this.trackService.createAudioSource(queue.nowPlaying);
-			queue.audioPlayer.play(resource);
-		} catch (error) {
-			queue.nowPlaying.emit("error", error);
-			this.processQueue(queue);
-		}
 	}
 }

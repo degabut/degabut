@@ -27,6 +27,8 @@ export class ToggleShuffleUseCase extends UseCase<ToggleShuffleParams, Response>
 		if (!queue) throw new NotFoundError("Queue not found");
 		if (!queue.hasMember(userId)) throw new ForbiddenError("User not in voice channel");
 
-		return this.queueService.toggleShuffle(queue);
+		queue.shuffle = !queue.shuffle;
+
+		return queue.shuffle;
 	}
 }

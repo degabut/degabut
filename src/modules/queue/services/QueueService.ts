@@ -129,11 +129,9 @@ export class QueueService {
 		queue.nowPlaying.removeAllListeners();
 		queue.nowPlaying.on("finish", () => {
 			if (queue.loopType === LoopType.Song) return this.playQueue(queue);
-
-			const trackIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
-			const [previous] = queue.tracks.splice(trackIndex, 1);
-			if (queue.loopType === LoopType.Queue && previous) {
-				queue.tracks.splice(trackIndex > 0 ? trackIndex : queue.tracks.length, 0, previous);
+			if (queue.loopType !== LoopType.Queue) {
+				const nowPlayingIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
+				queue.tracks.splice(nowPlayingIndex, 1);
 			}
 
 			queue.nowPlaying = null;

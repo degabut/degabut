@@ -1,5 +1,5 @@
 import { VideoCompact } from "@modules/youtube/entities/VideoCompact";
-import { secondToTime } from "@utils";
+import { CommonUtils } from "@utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { EventEmitter } from "events";
 import { v4 } from "uuid";
@@ -29,7 +29,7 @@ export class Track extends EventEmitter {
 	}
 
 	public get embed(): MessageEmbed {
-		const fields = [{ name: "Duration", value: secondToTime(this.video.duration) }];
+		const fields = [{ name: "Duration", value: CommonUtils.secondToTime(this.video.duration) }];
 		const descriptions: string[] = [];
 		if (this.video.channel) descriptions.push(`**${this.video.channel.name}**`);
 		if (this.requestedBy) descriptions.push(`Requested by <@!${this.requestedBy.id}>`);

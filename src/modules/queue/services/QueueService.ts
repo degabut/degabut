@@ -9,7 +9,7 @@ import {
 import { DiscordClient } from "@modules/discord/DiscordClient";
 import { LoopType, Queue } from "@modules/queue/entities/Queue";
 import { Track } from "@modules/queue/entities/Track";
-import { pickRankedRandom, randomInt } from "@utils";
+import { ArrayUtils, RandomUtils } from "@utils";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, ClientUser } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { QueueRepository } from "../repositories/QueueRepository";
@@ -107,7 +107,9 @@ export class QueueService {
 				nextIndex = queue.shuffle ? this.getShuffledTrackIndex(queue) : nowPlayingIndex + 1;
 				break;
 			default:
-				nextIndex = queue.shuffle ? randomInt(0, queue.tracks.length - 1) : nowPlayingIndex;
+				nextIndex = queue.shuffle
+					? RandomUtils.randomInt(0, queue.tracks.length - 1)
+					: nowPlayingIndex;
 				break;
 		}
 
@@ -158,7 +160,7 @@ export class QueueService {
 		let randomTrack: Track | undefined;
 
 		if (!queue.previousShuffleHistoryIds.length) {
-			randomTrack = unplayedTracks.at(randomInt(0, unplayedTracks.length - 1));
+			randomTrack = unplayedTracks.at(RandomUtils.randomInt(0, unplayedTracks.length - 1));
 		} else {
 			const randomTracks = unplayedTracks.sort((a, b) => {
 				return (
@@ -167,7 +169,7 @@ export class QueueService {
 				);
 			});
 			console.log(randomTracks.map((t) => t.video.title));
-			randomTrack = pickRankedRandom(randomTracks);
+			randomTrack = ArrayUtils.pickRankedRandom(randomTracks);
 		}
 
 		return randomTrack ? queue.tracks.findIndex((t) => t.id === randomTrack?.id) : 0;

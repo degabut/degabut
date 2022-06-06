@@ -2,7 +2,7 @@ import {
 	SearchVideoAdapter,
 	SearchVideoUseCase,
 } from "@modules/youtube/useCases/SearchVideoUseCase";
-import { videoToEmbedField, videoToMessageButton } from "@utils";
+import { DiscordUtils } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
@@ -30,11 +30,11 @@ export class SearchCommand implements ICommand {
 		const splicedVideos = videos.slice(0, 10);
 
 		const buttons = splicedVideos.map((v, i) =>
-			videoToMessageButton(v, i, this.searchInteractionCommand.name)
+			DiscordUtils.videoToMessageButton(v, i, this.searchInteractionCommand.name)
 		);
 
 		await message.reply({
-			embeds: [new MessageEmbed({ fields: splicedVideos.map(videoToEmbedField) })],
+			embeds: [new MessageEmbed({ fields: splicedVideos.map(DiscordUtils.videoToEmbedField) })],
 			components: [
 				new MessageActionRow({ components: buttons.slice(0, 5) }),
 				new MessageActionRow({ components: buttons.slice(5, 10) }),

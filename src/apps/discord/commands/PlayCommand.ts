@@ -1,5 +1,5 @@
 import { AddTrackAdapter, AddTrackUseCase } from "@modules/queue/useCases/AddTrackUseCase";
-import { extractYoutubeVideoId } from "@utils";
+import { CommonUtils } from "@utils";
 import { TextChannel } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
@@ -14,7 +14,7 @@ export class PlayCommand implements ICommand {
 
 	public async execute({ message, args }: CommandExecuteProps): Promise<void> {
 		const keyword = args.join(" ");
-		const videoId = extractYoutubeVideoId(keyword);
+		const videoId = CommonUtils.extractYoutubeVideoId(keyword);
 
 		const adapter = new AddTrackAdapter({
 			guildId: message.guild?.id,

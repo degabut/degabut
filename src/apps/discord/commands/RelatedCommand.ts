@@ -1,5 +1,5 @@
 import { GetRelatedAdapter, GetRelatedUseCase } from "@modules/queue/useCases/GetRelatedUseCase";
-import { videoToEmbedField, videoToMessageButton } from "@utils";
+import { DiscordUtils } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
@@ -18,11 +18,11 @@ export class RelatedCommand implements ICommand {
 			userId: message.author.id,
 		});
 
-		const buttons = videos.map((v, i) => videoToMessageButton(v, i, "related"));
+		const buttons = videos.map((v, i) => DiscordUtils.videoToMessageButton(v, i, "related"));
 
 		await message.reply({
 			content: `⭐ **Songs related with ${target?.video.title}**`,
-			embeds: [new MessageEmbed({ fields: videos.map(videoToEmbedField) })],
+			embeds: [new MessageEmbed({ fields: videos.map(DiscordUtils.videoToEmbedField) })],
 			components: [
 				new MessageActionRow({ components: buttons.slice(0, 5) }),
 				new MessageActionRow({ components: buttons.slice(5, 10) }),

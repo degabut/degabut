@@ -49,6 +49,7 @@ export class QueueService {
 	}
 
 	public addQueueTrack(queue: Queue, track: Track): void {
+		if (queue.tracks.length >= 250) throw new BadRequestError("Queue is full");
 		queue.tracks.push(track);
 		if (!queue.nowPlaying) this.processQueue(queue);
 	}

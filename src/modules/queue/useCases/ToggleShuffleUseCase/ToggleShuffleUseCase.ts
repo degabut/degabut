@@ -29,6 +29,11 @@ export class ToggleShuffleUseCase extends UseCase<ToggleShuffleParams, Response>
 
 		queue.shuffle = !queue.shuffle;
 
+		if (!queue.shuffle) {
+			queue.shuffleHistoryIds = [];
+			queue.previousShuffleHistoryIds = [];
+		}
+
 		return queue.shuffle;
 	}
 }

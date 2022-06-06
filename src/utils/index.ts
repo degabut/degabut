@@ -56,6 +56,21 @@ export const randomInt = (min: number, max: number): number => {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+export const pickRankedRandom = <T>(arr: T[]): T | undefined => {
+	const n = (Math.pow(arr.length, 2) + arr.length) / 2;
+
+	const chances = arr.map((_, i) => (i + 1) / n).reverse();
+	const oneBasedChances = chances.map((c, i, arr) => {
+		const totalPrev = arr.slice(0, i).reduce((p, c) => p + c, 0);
+		return c + totalPrev;
+	});
+
+	const random = Math.random();
+	const index = oneBasedChances.findIndex((c) => c > random);
+
+	return arr[index >= 0 ? index : 0];
+};
+
 export const CollectionType = (
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	dto: { create: (v: any) => unknown },

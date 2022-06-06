@@ -29,6 +29,7 @@ export class Queue extends EventEmitter {
 	public isPaused: boolean;
 	public shuffle: boolean;
 	public shuffleHistoryIds: string[];
+	public previousShuffleHistoryIds: string[];
 
 	constructor(props: ConstructorProps) {
 		super();
@@ -45,6 +46,7 @@ export class Queue extends EventEmitter {
 		this.shuffle = false;
 		this.isPaused = false;
 		this.shuffleHistoryIds = [];
+		this.previousShuffleHistoryIds = [];
 		this.audioPlayer = createAudioPlayer();
 	}
 

@@ -169,7 +169,6 @@ export class QueueService {
 					queue.previousShuffleHistoryIds.findIndex((id) => id === b.id)
 				);
 			});
-			console.log(randomTracks.map((t) => t.video.title));
 			randomTrack = ArrayUtils.pickRankedRandom(randomTracks);
 		}
 

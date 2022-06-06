@@ -46,7 +46,6 @@ export class QueueCommand implements ICommand {
 			description: `Showing page **${page}** / **${Math.ceil(totalLength / perPage)}**`,
 			fields: tracks.map((track, index) => {
 				let name = `${start + index + 1}. ${track.video.title}`;
-				console.log(track.id);
 				if (track.id === nowPlaying?.id) name = `__${name}__`;
 
 				return {

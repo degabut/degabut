@@ -12,13 +12,7 @@ type Data = {
 
 @injectable()
 export class OnTrackRemoveEvent extends EventHandler<Data> {
-	public async run({ queue, track, isNowPlaying, removedBy }: Data): Promise<void> {
-		if (isNowPlaying) {
-			await queue.textChannel.send(`⏭ **<@!${removedBy}> skipped ${track.video.title}**`);
-		} else {
-			await queue.textChannel.send(
-				`🚮 **<@!${removedBy}> removed ${track.video.title} from queue**`
-			);
-		}
+	public async run({ queue, track, removedBy }: Data): Promise<void> {
+		await queue.textChannel.send(`🚮 **<@!${removedBy}> removed ${track.video.title} from queue**`);
 	}
 }

@@ -6,6 +6,7 @@ import { ChangeTrackOrderController } from "../controllers/me/ChangeTrackOrderCo
 import { GetQueueController } from "../controllers/me/GetQueueController";
 import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
 import { PauseQueueController } from "../controllers/me/PauseQueueController";
+import { PlayTrackController } from "../controllers/me/PlayTrackController";
 import { RemoveQueueTracksController } from "../controllers/me/RemoveQueueTracksController";
 import { RemoveTrackController } from "../controllers/me/RemoveTrackController";
 import { SkipController } from "../controllers/me/SkipController";
@@ -79,6 +80,12 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		"/queue/tracks/:id",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(RemoveTrackController)
+	);
+
+	app.post(
+		"/queue/tracks/:id/play",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(PlayTrackController)
 	);
 
 	app.patch(

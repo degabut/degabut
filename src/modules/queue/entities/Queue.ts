@@ -18,8 +18,8 @@ export enum LoopType {
 export class Queue extends EventEmitter {
 	public readonly audioPlayer: AudioPlayer;
 	public readonly voiceConnection: VoiceConnection;
-	public readonly tracks: Track[];
-	public readonly history: Track[];
+	public tracks: Track[];
+	public history: Track[];
 	public textChannel: BaseGuildTextChannel;
 	public voiceChannel: BaseGuildVoiceChannel;
 	public nowPlaying: Track | null;

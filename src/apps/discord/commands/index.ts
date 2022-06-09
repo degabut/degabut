@@ -1,4 +1,6 @@
 export * from "./AutoplayCommand";
+export * from "./ClearAllCommand";
+export * from "./ClearCommand";
 export * from "./JoinCommand";
 export * from "./LoopCommand";
 export * from "./LoopQueueCommand";

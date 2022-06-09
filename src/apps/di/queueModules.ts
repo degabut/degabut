@@ -16,6 +16,7 @@ import { GetQueueTracksUseCase } from "@modules/queue/useCases/GetQueueTracksUse
 import { GetRelatedUseCase } from "@modules/queue/useCases/GetRelatedUseCase";
 import { GetUserQueueUseCase } from "@modules/queue/useCases/GetUserQueueUseCase";
 import { JoinUseCase } from "@modules/queue/useCases/JoinUseCase";
+import { PlayTrackUseCase } from "@modules/queue/useCases/PlayTrackUseCase";
 import { RemoveTrackUseCase } from "@modules/queue/useCases/RemoveTrackUseCase";
 import { SetPauseUseCase } from "@modules/queue/useCases/SetPauseUseCase";
 import { SkipUseCase } from "@modules/queue/useCases/SkipUseCase";
@@ -39,6 +40,7 @@ const useCases = [
 	ChangeTrackOrderUseCase,
 	SetPauseUseCase,
 	SkipUseCase,
+	PlayTrackUseCase,
 	ToggleAutoplayUseCase,
 	ToggleShuffleUseCase,
 ];

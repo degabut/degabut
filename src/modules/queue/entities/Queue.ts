@@ -23,6 +23,7 @@ export class Queue extends EventEmitter {
 	public textChannel: BaseGuildTextChannel;
 	public voiceChannel: BaseGuildVoiceChannel;
 	public nowPlaying: Track | null;
+	public nextTrack: Track | null;
 	public loopType: LoopType;
 	public autoplay: boolean;
 	public readyLock: boolean;
@@ -37,6 +38,7 @@ export class Queue extends EventEmitter {
 		this.voiceConnection = props.voiceConnection;
 		this.voiceChannel = props.voiceChannel;
 		this.textChannel = props.textChannel;
+		this.nextTrack = null;
 		this.nowPlaying = null;
 		this.tracks = [];
 		this.history = [];

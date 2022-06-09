@@ -72,13 +72,21 @@ export class QueueService {
 		else if (opts) index = queue.tracks.findIndex((track) => track.id === queue.nowPlaying?.id);
 		else throw new BadRequestError("Invalid remove track options");
 
-		const removed = queue.tracks.at(index);
-		if (!removed) return null;
+		const toBeRemoved = queue.tracks.at(index);
+		if (!toBeRemoved) return null;
 
-		if (removed.id === queue.nowPlaying?.id) queue.audioPlayer.stop();
-		else queue.tracks.splice(index, 1);
+		queue.nextTrack = queue.tracks[index + 1] || null;
+		queue.tracks.splice(index, 1);
+		if (toBeRemoved.id === queue.nowPlaying?.id) queue.audioPlayer.stop(true);
 
-		return removed;
+		return toBeRemoved;
+	}
+
+	public skipTrack(queue: Queue): Track | null {
+		const track = queue.nowPlaying;
+		if (!track) return null;
+		queue.audioPlayer.stop(true);
+		return track;
 	}
 
 	public stopQueue(queue: Queue): void {
@@ -100,18 +108,25 @@ export class QueueService {
 		}
 
 		let nextIndex = 0;
-		switch (queue.loopType) {
-			case LoopType.Song:
-				nextIndex = nowPlayingIndex;
-				break;
-			case LoopType.Queue:
-				nextIndex = queue.shuffle ? this.getShuffledTrackIndex(queue) : nowPlayingIndex + 1;
-				break;
-			default:
-				nextIndex = queue.shuffle
-					? RandomUtils.randomInt(0, queue.tracks.length - 1)
-					: nowPlayingIndex;
-				break;
+
+		if (queue.nextTrack) {
+			const index = queue.tracks.findIndex((t) => t.id === queue.nextTrack?.id);
+			nextIndex = Math.max(index, 0);
+			queue.nextTrack = null;
+		} else {
+			switch (queue.loopType) {
+				case LoopType.Song:
+					nextIndex = Math.max(nowPlayingIndex, 0);
+					break;
+				case LoopType.Queue:
+					nextIndex = queue.shuffle ? this.getShuffledTrackIndex(queue) : nowPlayingIndex + 1;
+					break;
+				default:
+					nextIndex = queue.shuffle
+						? RandomUtils.randomInt(0, queue.tracks.length - 1)
+						: nowPlayingIndex;
+					break;
+			}
 		}
 
 		queue.nowPlaying = queue.tracks.at(nextIndex) || queue.tracks.at(0) || null;

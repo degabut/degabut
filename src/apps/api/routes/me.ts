@@ -7,6 +7,7 @@ import { GetQueueController } from "../controllers/me/GetQueueController";
 import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
 import { PauseQueueController } from "../controllers/me/PauseQueueController";
 import { RemoveTrackController } from "../controllers/me/RemoveTrackController";
+import { SkipController } from "../controllers/me/SkipController";
 import { ToggleAutoplayController } from "../controllers/me/ToggleAutoplayController";
 import { ToggleShuffleController } from "../controllers/me/ToggleShuffleController";
 import { UnpauseQueueController } from "../controllers/me/UnpauseQueueController";
@@ -53,6 +54,12 @@ const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 		"/queue/unpause",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
 		asHandler(UnpauseQueueController)
+	);
+
+	app.post(
+		"/queue/skip",
+		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
+		asHandler(SkipController)
 	);
 
 	app.post(

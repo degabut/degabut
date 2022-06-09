@@ -20,5 +20,5 @@ export class RemoveTrackAdapter extends UseCaseAdapter<RemoveTrackParams> {
 		isNowPlaying: Joi.boolean(),
 	})
 		.required()
-		.nand("trackId", "index", "nowPlaying");
+		.xor("trackId", "index", "nowPlaying");
 }

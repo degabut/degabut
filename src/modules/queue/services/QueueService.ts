@@ -72,10 +72,13 @@ export class QueueService {
 		else if (opts) index = queue.tracks.findIndex((track) => track.id === queue.nowPlaying?.id);
 		else throw new BadRequestError("Invalid remove track options");
 
-		const toBeRemoved = queue.tracks.at(index);
+		const toBeRemoved = queue.tracks[index];
 		if (!toBeRemoved) return null;
 
-		queue.nextTrack = queue.tracks[index + 1] || null;
+		if (toBeRemoved.id === queue.nowPlaying?.id && !queue.shuffle) {
+			queue.nextTrack = queue.tracks[index + 1] || null;
+		}
+
 		queue.tracks.splice(index, 1);
 		if (toBeRemoved.id === queue.nowPlaying?.id) queue.audioPlayer.stop(true);
 

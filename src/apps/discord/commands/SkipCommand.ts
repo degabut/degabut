@@ -1,5 +1,4 @@
-import { RemoveTrackAdapter } from "@modules/queue/useCases/RemoveTrackUseCase";
-import { SkipUseCase } from "@modules/queue/useCases/SkipUseCase";
+import { SkipAdapter, SkipUseCase } from "@modules/queue/useCases/SkipUseCase";
 import { inject, injectable } from "tsyringe";
 import { CommandExecuteProps, ICommand } from "../core/ICommand";
 
@@ -11,7 +10,7 @@ export class SkipCommand implements ICommand {
 	constructor(@inject(SkipUseCase) private skip: SkipUseCase) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<void> {
-		const adapter = new RemoveTrackAdapter({ isNowPlaying: true, guildId: message.guild?.id });
+		const adapter = new SkipAdapter({ guildId: message.guild?.id });
 		await this.skip.execute(adapter, { userId: message.author.id });
 	}
 }

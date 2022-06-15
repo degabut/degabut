@@ -22,6 +22,6 @@ export class AddQueueTrackController extends Controller<Body, Params> {
 		const track = await this.addTrack.execute(adapter, { userId: this.user.id });
 
 		if (!track) return this.status(ResponseStatus.BAD_REQUEST);
-		this.status(ResponseStatus.NO_CONTENT);
+		this.status(ResponseStatus.OK).send(track);
 	}
 }

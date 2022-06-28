@@ -1,6 +1,7 @@
 import { EventHandler } from "@core";
 import { Queue } from "@modules/queue/entities/Queue";
 import { Track } from "@modules/queue/entities/Track";
+import { MessageEmbed } from "discord.js";
 import { injectable } from "tsyringe";
 
 type Data = {
@@ -13,6 +14,12 @@ type Data = {
 @injectable()
 export class OnTrackRemoveEvent extends EventHandler<Data> {
 	public async run({ queue, track, removedBy }: Data): Promise<void> {
-		await queue.textChannel.send(`🚮 **<@!${removedBy}> removed ${track.video.title} from queue**`);
+		const embed = new MessageEmbed({
+			description: `🚮 **<@!${removedBy}> removed ${track.video.title} from queue**`,
+		});
+
+		await queue.textChannel.send({
+			embeds: [embed],
+		});
 	}
 }

@@ -21,6 +21,8 @@ export class VideoRepository {
 					.from(UserPlayHistoryModel.tableName)
 					.distinctOn("video_id")
 					.where({ user_id: userId })
+					.orderBy("video_id")
+					.orderBy("played_at", "desc")
 					.as("user_play_history");
 			})
 			.orderBy("played_at", "desc")

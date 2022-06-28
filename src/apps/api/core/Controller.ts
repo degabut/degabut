@@ -1,5 +1,6 @@
 import { BadRequestError, ForbiddenError, NotFoundError } from "@core";
 import { APIUser } from "discord-api-types/v9";
+import { ValidationError } from "joi";
 
 export enum ResponseStatus {
 	OK = 200,
@@ -49,7 +50,8 @@ export abstract class Controller<Body = unknown, Params = unknown, Query = unkno
 				body: err,
 			};
 			if (err instanceof NotFoundError) response.status = ResponseStatus.NOT_FOUND;
-			if (err instanceof BadRequestError) response.status = ResponseStatus.BAD_REQUEST;
+			if (err instanceof BadRequestError || err instanceof ValidationError)
+				response.status = ResponseStatus.BAD_REQUEST;
 			if (err instanceof ForbiddenError) response.status = ResponseStatus.FORBIDDEN;
 			return response;
 		}

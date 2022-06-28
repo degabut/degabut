@@ -4,7 +4,7 @@ import { AddQueueTrackController } from "../controllers/me/AddQueueTrackControll
 import { ChangeLoopTypeController } from "../controllers/me/ChangeLoopTypeController";
 import { ChangeTrackOrderController } from "../controllers/me/ChangeTrackOrderController";
 import { GetQueueController } from "../controllers/me/GetQueueController";
-import { GetRecommendationsController } from "../controllers/me/GetRecommendationsController";
+import { GetVideoHistoryController } from "../controllers/me/GetVideoHistoryController";
 import { PauseQueueController } from "../controllers/me/PauseQueueController";
 import { PlayTrackController } from "../controllers/me/PlayTrackController";
 import { RemoveQueueTracksController } from "../controllers/me/RemoveQueueTracksController";
@@ -17,9 +17,9 @@ import { VerifyTokenMiddleware } from "../middlewares/VerifyTokenMiddleware";
 
 const registerRoutes: FastifyPluginCallback = (app, _, done) => {
 	app.get(
-		"/videos/recommendations",
+		"/videos",
 		{ preHandler: [asHandler(VerifyTokenMiddleware)] },
-		asHandler(GetRecommendationsController)
+		asHandler(GetVideoHistoryController)
 	);
 
 	app.get(

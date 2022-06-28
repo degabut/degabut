@@ -1,7 +1,11 @@
 import {
-	GetRecommendationAdapter,
-	GetRecommendationUseCase,
-} from "@modules/user/useCases/GetRecommendationUseCase";
+	GetLastPlayedAdapter,
+	GetLastPlayedUseCase,
+} from "@modules/user/useCases/GetLastPlayedUseCase";
+import {
+	GetMostPlayedAdapter,
+	GetMostPlayedUseCase,
+} from "@modules/user/useCases/GetMostPlayedUseCase";
 import { ArrayUtils, DiscordUtils } from "@utils";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { inject, injectable } from "tsyringe";
@@ -15,17 +19,23 @@ export class RecommendationCommand implements ICommand {
 	public readonly description = "Show songs recommendation";
 
 	constructor(
-		@inject(GetRecommendationUseCase)
-		private getRecommendation: GetRecommendationUseCase,
+		@inject(GetLastPlayedUseCase)
+		private getLastPlayed: GetLastPlayedUseCase,
+		@inject(GetMostPlayedUseCase)
+		private getMostPlayed: GetMostPlayedUseCase,
 		@inject(SearchInteractionCommand)
 		private searchInteractionCommand: SearchInteractionCommand
 	) {}
 
 	public async execute({ message }: CommandExecuteProps): Promise<unknown> {
-		const adapter = new GetRecommendationAdapter({ lastPlayedCount: 5, mostPlayedCount: 5 });
-
 		const userId = message.mentions.users.first()?.id || message.author.id;
-		const { lastPlayed, mostPlayed } = await this.getRecommendation.execute(adapter, { userId });
+		const lastPlayedAdapter = new GetLastPlayedAdapter({ count: 5 });
+		const mostPlayedAdapter = new GetMostPlayedAdapter({ count: 5 });
+
+		const [lastPlayed, mostPlayed] = await Promise.all([
+			this.getLastPlayed.execute(lastPlayedAdapter, { userId }),
+			this.getMostPlayed.execute(mostPlayedAdapter, { userId }),
+		]);
 
 		const filteredLastPlayed = ArrayUtils.shuffle(lastPlayed).filter(
 			(v) => !mostPlayed.find((l) => l.id === v.id)

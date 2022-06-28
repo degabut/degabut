@@ -2,6 +2,8 @@
 
 `Degabut` is a Discord bot with music functionalities.
 
+[Examples](https://github.com/degabut/examples)
+
 ## Environment Variables
 
 - `TOKEN`: your Discord bot token

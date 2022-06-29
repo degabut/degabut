@@ -29,12 +29,13 @@ export class RecommendationCommand implements ICommand {
 
 	public async execute({ message }: CommandExecuteProps): Promise<unknown> {
 		const userId = message.mentions.users.first()?.id || message.author.id;
-		const lastPlayedAdapter = new GetLastPlayedAdapter({ count: 5 });
-		const mostPlayedAdapter = new GetMostPlayedAdapter({ count: 5 });
+		const context = { userId: message.author.id };
+		const lastPlayedAdapter = new GetLastPlayedAdapter({ count: 5, userId });
+		const mostPlayedAdapter = new GetMostPlayedAdapter({ count: 5, userId });
 
 		const [lastPlayed, mostPlayed] = await Promise.all([
-			this.getLastPlayed.execute(lastPlayedAdapter, { userId }),
-			this.getMostPlayed.execute(mostPlayedAdapter, { userId }),
+			this.getLastPlayed.execute(lastPlayedAdapter, context),
+			this.getMostPlayed.execute(mostPlayedAdapter, context),
 		]);
 
 		const filteredLastPlayed = ArrayUtils.shuffle(lastPlayed).filter(

@@ -4,6 +4,7 @@ import { constructor } from "tsyringe/dist/typings/types";
 import { Controller } from "./core/Controller";
 import { registerAuthRoutes } from "./routes/auth";
 import { registerMeRoutes } from "./routes/me";
+import { registerUsersRoutes } from "./routes/users";
 import { registerVideosRoutes } from "./routes/videos";
 
 export const asHandler = (Controller: constructor<Controller>): RouteHandler => {
@@ -29,6 +30,7 @@ export const createApi = (): FastifyInstance => {
 	registerMeRoutes(app);
 	registerAuthRoutes(app);
 	registerVideosRoutes(app);
+	registerUsersRoutes(app);
 
 	return app;
 };

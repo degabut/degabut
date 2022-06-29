@@ -9,6 +9,10 @@ import {
 import { inject, injectable } from "tsyringe";
 import { Controller, IRequest, ResponseStatus } from "../../core/Controller";
 
+type Params = {
+	id: string;
+};
+
 type Query =
 	| {
 			last: string;
@@ -27,10 +31,13 @@ export class GetVideoHistoryController extends Controller {
 		super();
 	}
 
-	async run({ query }: IRequest<unknown, unknown, Query>): Promise<void> {
+	async run({ query, params }: IRequest<unknown, Params, Query>): Promise<void> {
+		const targetUserId = params.id === "me" ? this.user.id : params.id;
+
 		if ("last" in query) {
 			const adapter = new GetLastPlayedAdapter({
 				count: +query.last,
+				userId: targetUserId,
 			});
 			const videos = await this.getLastPlayed.execute(adapter, { userId: this.user.id });
 			this.status(ResponseStatus.OK).send(videos);
@@ -38,6 +45,7 @@ export class GetVideoHistoryController extends Controller {
 			const adapter = new GetMostPlayedAdapter({
 				count: +query.count,
 				days: +query.days,
+				userId: targetUserId,
 			});
 			const videos = await this.getMostPlayed.execute(adapter, { userId: this.user.id });
 			this.status(ResponseStatus.OK).send(videos);

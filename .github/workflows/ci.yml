@@ -1,0 +1,46 @@
+name: ci
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Compile
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.14"
+
+      - uses: pnpm/action-setup@v2.0.1
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+      - run: | 
+          pnpm i
+          pnpm build
+          rm -r node_modules
+          pnpm i --prod
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Get Version
+        run: |
+          VERSION=$(echo $(grep '"version"' package.json | cut -d '"' -f 4 | head -n 1))
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "VERSION=$VERSION"
+      - name: Build and Push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: "${{ secrets.DOCKER_HUB_USERNAME }}/degabut:latest,${{ secrets.DOCKER_HUB_USERNAME }}/degabut:${{env.VERSION}}"

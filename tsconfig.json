@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "useDefineForClassFields": true,
+    "paths": {
+      "@api": ["./src/api"],
+      "@api/*": ["./src/api/*"],
+      "@apps": ["./src/apps"],
+      "@apps/*": ["./src/apps/*"],
+      "@common": ["./src/common"],
+      "@common/*": ["./src/common/*"],
+      "@database": ["./src/database"],
+      "@database/*": ["./src/database/*"],
+      "@discord": ["./src/discord"],
+      "@discord/*": ["./src/discord/*"],
+      "@discord-bot": ["./src/discord-bot"],
+      "@discord-bot/*": ["./src/discord-bot/*"],
+      "@queue": ["./src/queue"],
+      "@queue/*": ["./src/queue/*"],
+      "@youtube": ["./src/youtube"],
+      "@youtube/*": ["./src/youtube/*"]
+    }
+  }
+}

@@ -14,5 +14,5 @@ export class GetVideoQuery extends Query<GetVideoResult> {
 }
 
 export const GetVideoParamSchema = Joi.object<GetVideoQuery>({
-  id: Joi.number().required(),
+  id: Joi.string().required(),
 }).required();

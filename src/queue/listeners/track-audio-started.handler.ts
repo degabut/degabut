@@ -1,3 +1,4 @@
+import { TrackAudioStartedEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { UserPlayHistory } from "@youtube/entities";
 import {
@@ -6,17 +7,15 @@ import {
   VideoRepository,
 } from "@youtube/repositories";
 
-import { TrackStartedEvent } from "../events";
-
-@EventsHandler(TrackStartedEvent)
-export class TrackStartedHandler implements IEventHandler<TrackStartedEvent> {
+@EventsHandler(TrackAudioStartedEvent)
+export class TrackAudioStartedHandler implements IEventHandler<TrackAudioStartedEvent> {
   constructor(
     private readonly userPlayHistoryRepository: UserPlayHistoryRepository,
     private readonly videoRepository: VideoRepository,
     private readonly channelRepository: ChannelRepository,
   ) {}
 
-  public async handle({ track }: TrackStartedEvent): Promise<void> {
+  public async handle({ track }: TrackAudioStartedEvent): Promise<void> {
     const queue = track.queue;
     const { nowPlaying } = queue;
     if (!nowPlaying) return;

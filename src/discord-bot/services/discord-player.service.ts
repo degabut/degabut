@@ -1,5 +1,5 @@
 import { QueuePlayer } from "@discord-bot/entities/queue-player";
-import { VoiceReadyEvent } from "@discord-bot/events";
+import { TrackAudioEndedEvent, TrackAudioStartedEvent, VoiceReadyEvent } from "@discord-bot/events";
 import { VoiceDestroyedEvent } from "@discord-bot/events/voice-destroyed.event";
 import { PlayerRepository } from "@discord-bot/repositories";
 import { InjectDiscordClient } from "@discord-nestjs/core";
@@ -16,7 +16,6 @@ import {
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
 import { Track } from "@queue/entities";
-import { TrackEndedEvent, TrackStartedEvent } from "@queue/events";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, Client, ClientUser, Guild } from "discord.js";
 
 type CreatePlayerParams = {
@@ -111,10 +110,10 @@ export class DiscordPlayerService {
       ) {
         const track = (oldState.resource as AudioResource<Track>).metadata;
         // TODO use own event
-        this.eventBus.publish(new TrackEndedEvent({ track }));
+        this.eventBus.publish(new TrackAudioEndedEvent({ track }));
       } else if (newState.status === AudioPlayerStatus.Playing) {
         const track = (newState.resource as AudioResource<Track>).metadata;
-        this.eventBus.publish(new TrackStartedEvent({ track }));
+        this.eventBus.publish(new TrackAudioStartedEvent({ track }));
       }
     });
 

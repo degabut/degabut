@@ -1,6 +1,9 @@
+import { TrackAudioSkippedEvent } from "@discord-bot/events";
+import { PlayerRepository } from "@discord-bot/repositories";
+import { AudioPlayerStatus } from "@discordjs/voice";
 import { Injectable } from "@nestjs/common";
-import { CommandBus } from "@nestjs/cqrs";
-import { SkipCommand } from "@queue/commands";
+import { EventBus } from "@nestjs/cqrs";
+import { Track } from "@queue/entities";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
@@ -11,15 +14,20 @@ import { IPrefixCommand } from "../interfaces";
   name: "skip",
 })
 export class SkipPrefixCommand implements IPrefixCommand {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly eventBus: EventBus,
+    private readonly playerRepository: PlayerRepository,
+  ) {}
 
   public async handler(message: Message): Promise<void> {
-    if (!message.guild) return;
+    if (!message.guild || !message.member) return;
 
-    const command = new SkipCommand({
-      guildId: message.guild.id,
-      userId: message.author.id,
-    });
-    await this.commandBus.execute(command);
+    const player = this.playerRepository.getByGuildId(message.guild.id);
+
+    if (!player || player.audioPlayer.state.status !== AudioPlayerStatus.Playing) return;
+
+    const track = player.audioPlayer.state.resource.metadata as Track;
+    player.audioPlayer.stop();
+    this.eventBus.publish(new TrackAudioSkippedEvent({ track, skippedBy: message.member }));
   }
 }

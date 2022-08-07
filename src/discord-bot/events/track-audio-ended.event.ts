@@ -1,9 +1,9 @@
 import { Track } from "@queue/entities";
 
-export class TrackStartedEvent {
+export class TrackAudioEndedEvent {
   public readonly track!: Track;
 
-  constructor(params: TrackStartedEvent) {
+  constructor(params: TrackAudioEndedEvent) {
     Object.assign(this, params);
   }
 }

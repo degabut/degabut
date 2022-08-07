@@ -43,9 +43,9 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     if (queue.tracks.length >= 250) throw new BadRequestException("Queue is full");
 
     queue.tracks.push(track);
-    if (!queue.nowPlaying) this.queueService.processQueue(queue);
-
     this.eventBus.publish(new TrackAddedEvent({ track, isPlayedImmediately }));
+
+    if (!queue.nowPlaying) this.queueService.processQueue(queue);
 
     return track.id;
   }

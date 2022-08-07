@@ -1,8 +1,12 @@
-import { TrackAudioEndedEvent, TrackAudioSkippedEvent } from "@discord-bot/events";
+import {
+  TrackAudioEndedEvent,
+  TrackAudioErrorEvent,
+  TrackAudioSkippedEvent,
+} from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueueService } from "@queue/services";
 
-@EventsHandler(TrackAudioEndedEvent, TrackAudioSkippedEvent)
+@EventsHandler(TrackAudioEndedEvent, TrackAudioSkippedEvent, TrackAudioErrorEvent)
 export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEvent> {
   constructor(private readonly queueService: QueueService) {}
 

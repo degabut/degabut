@@ -1,5 +1,10 @@
 import { QueuePlayer } from "@discord-bot/entities/queue-player";
-import { TrackAudioEndedEvent, TrackAudioStartedEvent, VoiceReadyEvent } from "@discord-bot/events";
+import {
+  TrackAudioEndedEvent,
+  TrackAudioErrorEvent,
+  TrackAudioStartedEvent,
+  VoiceReadyEvent,
+} from "@discord-bot/events";
 import { VoiceDestroyedEvent } from "@discord-bot/events/voice-destroyed.event";
 import { PlayerRepository } from "@discord-bot/repositories";
 import { InjectDiscordClient } from "@discord-nestjs/core";
@@ -109,7 +114,6 @@ export class DiscordPlayerService {
         oldState.status !== AudioPlayerStatus.Idle
       ) {
         const track = (oldState.resource as AudioResource<Track>).metadata;
-        // TODO use own event
         this.eventBus.publish(new TrackAudioEndedEvent({ track }));
       } else if (newState.status === AudioPlayerStatus.Playing) {
         const track = (newState.resource as AudioResource<Track>).metadata;
@@ -117,9 +121,10 @@ export class DiscordPlayerService {
       }
     });
 
-    player.audioPlayer.on("error", (error) => {
-      // TODO handle error
-      // (error.resource as AudioResource<Track>).metadata.emit("error", error);
+    player.audioPlayer.on("error", () => {
+      if (player.audioPlayer.state.status !== AudioPlayerStatus.Playing) return;
+      const track = player.audioPlayer.state.resource.metadata as Track;
+      this.eventBus.publish(new TrackAudioErrorEvent({ track }));
     });
 
     player.voiceConnection.subscribe(player.audioPlayer);

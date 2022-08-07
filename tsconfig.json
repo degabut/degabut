@@ -30,6 +30,8 @@
       "@database/*": ["./src/database/*"],
       "@discord-bot": ["./src/discord-bot"],
       "@discord-bot/*": ["./src/discord-bot/*"],
+      "@events": ["./src/events"],
+      "@events/*": ["./src/events/*"],
       "@queue": ["./src/queue"],
       "@queue/*": ["./src/queue/*"],
       "@youtube": ["./src/youtube"],

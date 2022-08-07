@@ -31,6 +31,8 @@
     "@nestjs/core": "^8.0.0",
     "@nestjs/cqrs": "^9.0.1",
     "@nestjs/platform-fastify": "^9.0.8",
+    "@nestjs/platform-ws": "^9.0.8",
+    "@nestjs/websockets": "^9.0.8",
     "@willsoto/nestjs-objection": "^8.1.0",
     "class-transformer": "^0.5.1",
     "discord.js": "^14.1.1",

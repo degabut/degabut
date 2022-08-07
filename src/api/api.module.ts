@@ -1,10 +1,19 @@
-import { Module } from "@nestjs/common";
+import { AuthModule } from "@auth/auth.module";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 
-import { HealthController, UsersController, VideosController } from "./controllers";
+import { AuthController, HealthController, UsersController, VideosController } from "./controllers";
+import { AuthMiddleware } from "./middlewares";
 
 @Module({
-  imports: [CqrsModule],
-  controllers: [HealthController, UsersController, VideosController],
+  imports: [CqrsModule, AuthModule],
+  controllers: [AuthController, HealthController, UsersController, VideosController],
 })
-export class ApiModule {}
+export class ApiModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: "/auth", method: RequestMethod.POST })
+      .forRoutes({ path: "/*", method: RequestMethod.ALL });
+  }
+}

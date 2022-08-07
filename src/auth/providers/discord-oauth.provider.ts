@@ -28,7 +28,7 @@ export class DiscordOAuthProvider {
     this.botToken = config.botToken;
   }
 
-  async getAccessToken(code: string): Promise<string | undefined> {
+  async getAccessToken(code: string): Promise<string> {
     const response = await this.httpService.axiosRef.post<RESTPostOAuth2AccessTokenResult>(
       "/oauth2/token",
       new URLSearchParams({

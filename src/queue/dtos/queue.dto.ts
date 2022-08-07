@@ -1,7 +1,7 @@
-import { BaseGuildVoiceChannelDto } from "@discord/dtos";
+import { BaseGuildVoiceChannelDto } from "@discord-bot/dtos";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
-import { LoopType, Queue } from "../entities/Queue";
+import { LoopType, Queue } from "../entities";
 import { TrackDto } from "./track.dto";
 
 @Exclude()

@@ -1,22 +1,21 @@
-import { DiscordBotModule } from "@discord-bot/discord-bot.module";
 import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { DiscordOAuthConfigModule } from "./config";
-import { DiscordOAuthProvider } from "./providers";
+import { DiscordOAuthConfigModule, JwtAuthConfigModule } from "./config";
+import { DiscordOAuthProvider, JwtAuthProvider } from "./providers";
 import { Queries } from "./queries";
 
 @Module({
   imports: [
     ConfigModule,
+    JwtAuthConfigModule,
     DiscordOAuthConfigModule,
-    DiscordBotModule,
     HttpModule.register({
       baseURL: "https://discord.com/api/v9",
     }),
   ],
-  providers: [DiscordOAuthProvider, ...Queries],
-  exports: [DiscordOAuthProvider],
+  providers: [DiscordOAuthProvider, JwtAuthProvider, ...Queries],
+  exports: [JwtAuthProvider],
 })
-export class DiscordModule {}
+export class AuthModule {}

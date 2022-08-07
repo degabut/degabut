@@ -1,8 +1,8 @@
-import { GuildMemberDto } from "@discord/dtos";
+import { GuildMemberDto } from "@discord-bot/dtos";
 import { VideoCompactDto } from "@youtube/dtos";
 import { Exclude, Expose, plainToInstance, Transform, Type } from "class-transformer";
 
-import { Track } from "../entities/Track";
+import { Track } from "../entities";
 
 @Exclude()
 export class TrackDto {

@@ -1,5 +1,4 @@
 import { DiscordBotModule } from "@discord-bot/discord-bot.module";
-import { DiscordModule } from "@discord/discord.module";
 import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 import { YoutubeModule } from "@youtube/youtube.module";
@@ -11,7 +10,7 @@ import { QueueRepository } from "./repositories";
 import { QueueService } from "./services";
 
 @Module({
-  imports: [CqrsModule, YoutubeModule, DiscordBotModule, DiscordModule],
+  imports: [CqrsModule, YoutubeModule, DiscordBotModule],
   providers: [QueueRepository, QueueService, ...Commands, ...Queries, ...Listeners],
 })
 export class QueueModule {}

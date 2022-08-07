@@ -20,7 +20,7 @@ export const ValidateParams = (...schemas: Schema[]): MethodDecorator<(...args: 
         if (result.error) throw new BadRequestException(result.error.message);
         validatedArgs.push(result.value);
       }
-      method?.call(this, ...validatedArgs);
+      return method?.call(this, ...validatedArgs);
     } as any;
 
     return descriptor;

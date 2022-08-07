@@ -2,13 +2,6 @@ import { MethodDecorator } from "@common/interfaces";
 import { BadRequestException } from "@nestjs/common";
 import { Schema } from "joi";
 
-export const PREFIX_COMMAND = "PREFIX_COMMAND";
-
-export type PrefixCommandOptions = {
-  name: string;
-  aliases?: string[];
-};
-
 export const ValidateParams = (...schemas: Schema[]): MethodDecorator<(...args: any[]) => any> => {
   return (t, p, descriptor) => {
     const method = descriptor.value;

@@ -15,9 +15,9 @@ export class SetPauseHandler implements IInferredCommandHandler<SetPauseCommand>
 
   @ValidateParams(SetPauseParamSchema)
   public async execute(params: SetPauseCommand): Promise<SetPauseResult> {
-    const { guildId, isPaused } = params;
+    const { voiceChannelId, isPaused } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     queue.isPaused = isPaused;

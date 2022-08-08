@@ -8,7 +8,7 @@ export class QueueProcessedHandler implements IEventHandler<QueueProcessedEvent>
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ queue }: QueueProcessedEvent) {
-    const player = this.playerRepository.getByGuildId(queue.guildId);
+    const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 
     if (!queue.nowPlaying) player.audioPlayer.stop();

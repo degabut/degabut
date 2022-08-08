@@ -15,12 +15,12 @@ export class RemovePrefixCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(message: Message, args: string[]): Promise<void> {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
     const index = +args[0];
 
     const command = new RemoveTrackCommand({
-      guildId: message.guild.id,
+      voiceChannelId: message.member.voice.channelId,
       userId: message.author.id,
       index: !Number.isNaN(index) ? index - 1 : undefined,
     });

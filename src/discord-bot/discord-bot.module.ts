@@ -1,5 +1,5 @@
-import { DiscordModule, Once } from "@discord-nestjs/core";
-import { Logger, Module } from "@nestjs/common";
+import { DiscordModule } from "@discord-nestjs/core";
+import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { DiscoveryModule } from "@nestjs/core";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -8,6 +8,7 @@ import { GatewayIntentBits } from "discord.js";
 
 import { Commands } from "./commands";
 import { DiscordBotConfigModule } from "./config";
+import { DiscordBotGateway } from "./discord-bot.gateway";
 import { Explorers } from "./explorers";
 import { Interactions } from "./interactions";
 import { Listeners } from "./listeners";
@@ -41,6 +42,7 @@ import { DiscordBotService, QueuePlayerService } from "./services";
     YoutubeModule,
   ],
   providers: [
+    DiscordBotGateway,
     DiscordBotService,
     QueuePlayerService,
     QueuePlayerRepository,
@@ -52,11 +54,4 @@ import { DiscordBotService, QueuePlayerService } from "./services";
   ],
   exports: [DiscordModule, DiscordBotService, QueuePlayerService],
 })
-export class DiscordBotModule {
-  private readonly logger = new Logger(DiscordBotModule.name);
-
-  @Once("ready")
-  onReady() {
-    this.logger.log("Discord bot ready");
-  }
-}
+export class DiscordBotModule {}

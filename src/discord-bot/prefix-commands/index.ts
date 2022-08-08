@@ -3,7 +3,6 @@ import { ClearPrefixCommand } from "./clear.prefix-command";
 import { JoinPrefixCommand } from "./join.prefix-command";
 import { LoopQueuePrefixCommand } from "./loop-queue.prefix-command";
 import { LoopPrefixCommand } from "./loop.prefix-command";
-import { LyricPrefixCommand } from "./lyric.prefix-command";
 import { NowPlayingPrefixCommand } from "./now-playing.prefix-command";
 import { OrderPrefixCommand } from "./order.prefix-command";
 import { PausePrefixCommand } from "./pause.prefix-command";
@@ -25,7 +24,6 @@ export * from "./index";
 export * from "./join.prefix-command";
 export * from "./loop-queue.prefix-command";
 export * from "./loop.prefix-command";
-export * from "./lyric.prefix-command";
 export * from "./now-playing.prefix-command";
 export * from "./order.prefix-command";
 export * from "./pause.prefix-command";
@@ -48,7 +46,6 @@ export const PrefixCommands = [
   JoinPrefixCommand,
   LoopQueuePrefixCommand,
   LoopPrefixCommand,
-  LyricPrefixCommand,
   NowPlayingPrefixCommand,
   OrderPrefixCommand,
   PausePrefixCommand,

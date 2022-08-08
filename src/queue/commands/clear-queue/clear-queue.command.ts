@@ -3,7 +3,7 @@ import * as Joi from "joi";
 
 export class ClearQueueCommand extends Command {
   removeNowPlaying?: boolean;
-  guildId!: string;
+  voiceChannelId!: string;
 
   constructor(params: ClearQueueCommand) {
     super();
@@ -12,6 +12,6 @@ export class ClearQueueCommand extends Command {
 }
 
 export const ClearQueueParamSchema = Joi.object<ClearQueueCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   removeNowPlaying: Joi.boolean(),
 }).required();

@@ -3,16 +3,16 @@ import { Queue } from "@queue/entities";
 export class QueueRepository {
   private readonly queues: Map<string, Queue> = new Map();
 
-  public getByGuildId(guildId: string): Queue | undefined {
-    return this.queues.get(guildId);
+  public getByVoiceChannelId(voiceChannelId: string): Queue | undefined {
+    return this.queues.get(voiceChannelId);
   }
 
-  public deleteByGuildId(guildId: string): void {
-    this.queues.delete(guildId);
+  public deleteByVoiceChannelId(voiceChannelId: string): void {
+    this.queues.delete(voiceChannelId);
   }
 
   public save(queue: Queue): Queue {
-    this.queues.set(queue.guildId, queue);
+    this.queues.set(queue.voiceChannelId, queue);
     return queue;
   }
 }

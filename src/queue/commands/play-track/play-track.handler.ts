@@ -15,9 +15,9 @@ export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackComman
 
   @ValidateParams(PlayTrackParamSchema)
   public async execute(params: PlayTrackCommand): Promise<string> {
-    const { guildId, index, trackId } = params;
+    const { voiceChannelId, index, trackId } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     const track = index ? queue.tracks[index] : queue.tracks.find((t) => t.id === trackId);

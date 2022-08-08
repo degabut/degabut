@@ -20,9 +20,9 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
 
   @ValidateParams(AddTrackParamSchema)
   public async execute(params: AddTrackCommand): Promise<AddTrackResult> {
-    const { keyword, videoId, requestedBy, guildId } = params;
+    const { keyword, videoId, requestedBy, voiceChannelId } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     const video = keyword

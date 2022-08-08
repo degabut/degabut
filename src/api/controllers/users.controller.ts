@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
-import { GetQueueQuery } from "@queue/queries";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@youtube/queries";
 
 @Controller("users")
@@ -27,8 +26,9 @@ export class UsersController {
         );
   }
 
-  @Get("/me/queue")
-  getQueue() {
-    return this.queryBus.execute(new GetQueueQuery({ guildId: "me" }));
-  }
+  // TODO implement queue controller
+  // @Get("/me/queue")
+  // getQueue() {
+  //   return this.queryBus.execute(new GetQueueQuery({ guildId: "me" }));
+  // }
 }

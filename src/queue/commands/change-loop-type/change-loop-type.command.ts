@@ -5,7 +5,7 @@ import * as Joi from "joi";
 export type ChangeLoopTypeResult = LoopType;
 
 export class ChangeLoopTypeCommand extends Command<ChangeLoopTypeResult> {
-  guildId!: string;
+  voiceChannelId!: string;
   loopType?: LoopType;
 
   constructor(params: ChangeLoopTypeCommand) {
@@ -15,6 +15,6 @@ export class ChangeLoopTypeCommand extends Command<ChangeLoopTypeResult> {
 }
 
 export const ChangeLoopTypeParamSchema = Joi.object<ChangeLoopTypeCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   loopType: Joi.string().valid(...Object.values(LoopType)),
 }).required();

@@ -21,9 +21,9 @@ export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCo
 
   @ValidateParams(RemoveTrackParamSchema)
   public async execute(params: RemoveTrackCommand): Promise<RemoveTrackResult> {
-    const { userId, guildId, index, trackId, isNowPlaying } = params;
+    const { userId, voiceChannelId, index, trackId, isNowPlaying } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     const nowPlaying = queue.nowPlaying;

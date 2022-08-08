@@ -5,7 +5,7 @@ export type RemoveTrackResult = string | null;
 
 export class RemoveTrackCommand extends Command<RemoveTrackResult> {
   userId!: string;
-  guildId!: string;
+  voiceChannelId!: string;
   index?: number;
   trackId?: string;
   isNowPlaying?: boolean;
@@ -17,7 +17,7 @@ export class RemoveTrackCommand extends Command<RemoveTrackResult> {
 }
 
 export const RemoveTrackParamSchema = Joi.object<RemoveTrackCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   index: Joi.number().min(0).failover(0).allow(0),
   trackId: Joi.string(),
   isNowPlaying: Joi.boolean(),

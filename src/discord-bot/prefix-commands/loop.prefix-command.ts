@@ -15,10 +15,10 @@ export class LoopPrefixCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(message: Message): Promise<PrefixCommandResult> {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
     const command = new ChangeLoopTypeCommand({
-      guildId: message.guild.id,
+      voiceChannelId: message.member.voice.channelId,
       loopType: LoopType.Song,
     });
 

@@ -10,7 +10,7 @@ export class TrackAddedHandler implements IEventHandler<TrackAddedEvent> {
   public async handle({ track, isPlayedImmediately }: TrackAddedEvent): Promise<void> {
     if (isPlayedImmediately) return;
 
-    const player = this.playerRepository.getByGuildId(track.queue.guildId);
+    const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 
     await player.textChannel.send({

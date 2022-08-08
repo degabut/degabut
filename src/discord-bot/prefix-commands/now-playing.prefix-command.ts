@@ -16,9 +16,9 @@ export class NowPlayingPrefixCommand implements IPrefixCommand {
   constructor(private readonly queryBus: QueryBus) {}
 
   public async handler(message: Message): Promise<void> {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
-    const query = new GetQueueQuery({ guildId: message.guild.id });
+    const query = new GetQueueQuery({ voiceChannelId: message.member.voice.channelId });
     const queue = await this.queryBus.execute(query);
 
     const track = queue?.nowPlaying;

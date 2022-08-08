@@ -2,7 +2,7 @@ import { Command } from "@common/cqrs";
 import * as Joi from "joi";
 
 export class ChangeTrackOrderCommand extends Command {
-  guildId!: string;
+  voiceChannelId!: string;
   trackId?: string;
   from?: number;
   to!: number;
@@ -14,7 +14,7 @@ export class ChangeTrackOrderCommand extends Command {
 }
 
 export const ChangeTrackOrderParamSchema = Joi.object<ChangeTrackOrderCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   trackId: Joi.string(),
   from: Joi.number().min(0),
   to: Joi.number().required().min(0),

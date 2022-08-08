@@ -1,8 +1,8 @@
-import { BaseGuildVoiceChannelDto } from "@discord-bot/dtos";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
 import { LoopType, Queue } from "../entities";
 import { TrackDto } from "./track.dto";
+import { VoiceChannelDto } from "./voice-channel.dto";
 
 @Exclude()
 export class QueueDto {
@@ -31,8 +31,8 @@ export class QueueDto {
   public nowPlaying!: TrackDto;
 
   @Expose()
-  @Type(() => BaseGuildVoiceChannelDto)
-  public voiceChannel!: BaseGuildVoiceChannelDto;
+  @Type(() => VoiceChannelDto)
+  public voiceChannel!: VoiceChannelDto;
 
   public static create(entity: Queue): QueueDto {
     return plainToInstance(QueueDto, entity);

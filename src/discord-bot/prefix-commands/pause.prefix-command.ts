@@ -14,10 +14,10 @@ export class PausePrefixCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(message: Message): Promise<void> {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
     const command = new SetPauseCommand({
-      guildId: message.guild?.id,
+      voiceChannelId: message.member.voice.channelId,
       isPaused: true,
     });
     await this.commandBus.execute(command);

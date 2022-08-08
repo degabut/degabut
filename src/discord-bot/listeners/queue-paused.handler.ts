@@ -7,7 +7,7 @@ export class QueuePausedHandler implements IEventHandler<QueuePausedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ queue }: QueuePausedEvent) {
-    const player = this.playerRepository.getByGuildId(queue.guildId);
+    const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 
     if (queue.isPaused) player.audioPlayer.pause();

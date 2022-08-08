@@ -7,6 +7,6 @@ export class VoiceDestroyedHandler implements IEventHandler<VoiceDestroyedEvent>
   constructor(private readonly queueRepository: QueueRepository) {}
 
   public async handle({ player }: VoiceDestroyedEvent): Promise<void> {
-    this.queueRepository.deleteByGuildId(player.guild.id);
+    this.queueRepository.deleteByVoiceChannelId(player.voiceChannel.id);
   }
 }

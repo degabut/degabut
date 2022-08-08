@@ -15,9 +15,9 @@ export class ToggleAutoplayHandler implements IInferredCommandHandler<ToggleAuto
 
   @ValidateParams(ToggleAutoplayParamSchema)
   public async execute(params: ToggleAutoplayCommand): Promise<ToggleAutoplayResult> {
-    const { guildId } = params;
+    const { voiceChannelId } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     queue.autoplay = !queue.autoplay;

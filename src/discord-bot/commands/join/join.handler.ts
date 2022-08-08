@@ -4,7 +4,7 @@ import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { QueuePlayerService } from "@discord-bot/services";
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { Client, ClientUser } from "discord.js";
 
@@ -24,7 +24,7 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
     const { voiceChannel, textChannel } = params;
 
     if (voiceChannel.guildId !== textChannel.guildId) {
-      throw new BadRequestException("Invalid guild");
+      throw new InternalServerErrorException("Invalid guild");
     }
 
     if (this.playerRepository.getByGuildId(voiceChannel.guildId)) {

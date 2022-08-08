@@ -15,9 +15,9 @@ export class ChangeTrackOrderHandler implements IInferredCommandHandler<ChangeTr
 
   @ValidateParams(ChangeTrackOrderParamSchema)
   public async execute(params: ChangeTrackOrderCommand): Promise<void> {
-    const { trackId, from, to, guildId } = params;
+    const { trackId, from, to, voiceChannelId } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     const fromIndex = from ? from : queue.tracks.findIndex((track) => track.id === trackId);

@@ -10,6 +10,6 @@ export class StopHandler implements IInferredCommandHandler<StopCommand> {
 
   @ValidateParams(StopParamSchema)
   public async execute(params: StopCommand): Promise<void> {
-    this.playerService.stopPlayer(params.guildId);
+    this.playerService.stopPlayer(params.voiceChannelId);
   }
 }

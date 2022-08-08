@@ -33,7 +33,7 @@ export class QueuePlayerService {
   public stopPlayer(playerOrId: string | QueuePlayer): void {
     let player: QueuePlayer | undefined;
     if (typeof playerOrId === "string") {
-      player = this.playerRepository.getByGuildId(playerOrId);
+      player = this.playerRepository.getByVoiceChannelId(playerOrId);
     } else {
       player = playerOrId;
     }
@@ -44,7 +44,7 @@ export class QueuePlayerService {
       player.voiceConnection.destroy();
     }
     player.audioPlayer.stop(true);
-    this.playerRepository.deleteByGuildId(player.guild.id);
+    this.playerRepository.deleteByVoiceChannelId(player.voiceChannel.id);
   }
 
   public initPlayerConnection(player: QueuePlayer): void {

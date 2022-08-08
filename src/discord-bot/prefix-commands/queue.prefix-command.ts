@@ -15,13 +15,13 @@ export class QueuePrefixCommand implements IPrefixCommand {
   constructor(private readonly queryBus: QueryBus) {}
 
   public async handler(message: Message, args: string[]): Promise<PrefixCommandResult> {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
     const page = Number(args.shift() || 1);
     const perPage = 10;
 
     const query = new GetQueueQuery({
-      guildId: message.guild.id,
+      voiceChannelId: message.member.voice.channelId,
     });
 
     const queue = await this.queryBus.execute(query);

@@ -17,14 +17,18 @@ export class PlayButtonInteraction implements IButtonInteraction {
   ): Promise<ButtonInteractionResult> {
     if (!interaction.isButton()) return;
 
-    if (!(interaction.member instanceof GuildMember) || !interaction.guild) {
+    if (
+      !(interaction.member instanceof GuildMember) ||
+      !interaction.guild ||
+      !interaction.member.voice.channelId
+    ) {
       await interaction.deferUpdate();
       return;
     }
 
     const command = new AddTrackCommand({
       videoId: args.id,
-      guildId: interaction.guild.id,
+      voiceChannelId: interaction.member.voice.channelId,
       requestedBy: interaction.member.id,
     });
 

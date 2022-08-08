@@ -7,7 +7,7 @@ export class AddTrackCommand extends Command<AddTrackResult> {
   public readonly keyword?: string;
   public readonly videoId?: string;
   public readonly requestedBy!: string;
-  public readonly guildId!: string;
+  public readonly voiceChannelId!: string;
 
   constructor(params: AddTrackCommand) {
     super();
@@ -18,7 +18,7 @@ export class AddTrackCommand extends Command<AddTrackResult> {
 export const AddTrackParamSchema = Joi.object<AddTrackCommand>({
   keyword: Joi.string(),
   videoId: Joi.string(),
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   requestedBy: Joi.string().required(),
 })
   .required()

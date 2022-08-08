@@ -8,7 +8,7 @@ export class TrackAudioSkippedHandler implements IEventHandler<TrackAudioSkipped
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ track, skippedBy }: TrackAudioSkippedEvent): Promise<void> {
-    const player = this.playerRepository.getByGuildId(track.queue.guildId);
+    const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 
     const embed = new EmbedBuilder({

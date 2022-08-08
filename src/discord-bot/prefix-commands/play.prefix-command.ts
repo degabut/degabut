@@ -16,13 +16,13 @@ export class PlayPrefixCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
   async handler(message: Message, args: string[]) {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
     const keyword = args.join(" ");
     const videoId = YoutubeUtil.extractYoutubeVideoId(keyword);
 
     const adapter = new AddTrackCommand({
-      guildId: message.guild?.id,
+      voiceChannelId: message.member.voice.channelId,
       videoId: videoId || undefined,
       keyword: videoId ? undefined : keyword,
       requestedBy: message.author.id,

@@ -11,7 +11,7 @@ export class GetQueueHandler implements IInferredQueryHandler<GetQueueQuery> {
 
   @ValidateParams(GetQueueParamSchema)
   public async execute(params: GetQueueQuery): Promise<GetQueueResult> {
-    const queue = this.queueRepository.getByGuildId(params.guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(params.voiceChannelId);
 
     return queue ? QueueDto.create(queue) : null;
   }

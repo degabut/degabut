@@ -15,9 +15,9 @@ export class ToggleShuffleHandler implements IInferredCommandHandler<ToggleShuff
 
   @ValidateParams(ToggleShuffleParamSchema)
   public async execute(params: ToggleShuffleCommand): Promise<ToggleShuffleResult> {
-    const { guildId } = params;
+    const { voiceChannelId } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     queue.shuffle = !queue.shuffle;

@@ -5,7 +5,7 @@ import * as Joi from "joi";
 export type GetQueueResult = QueueDto | null;
 
 export class GetQueueQuery extends Query<GetQueueResult> {
-  guildId!: string;
+  voiceChannelId!: string;
 
   constructor(params: GetQueueQuery) {
     super();
@@ -14,5 +14,5 @@ export class GetQueueQuery extends Query<GetQueueResult> {
 }
 
 export const GetQueueParamSchema = Joi.object<GetQueueQuery>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
 }).required();

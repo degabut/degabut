@@ -16,9 +16,9 @@ export class ChangeLoopTypeHandler implements IInferredCommandHandler<ChangeLoop
 
   @ValidateParams(ChangeLoopTypeParamSchema)
   public async execute(params: ChangeLoopTypeCommand): Promise<ChangeLoopTypeResult> {
-    const { loopType, guildId } = params;
+    const { loopType, voiceChannelId } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     if (!loopType) queue.loopType = LoopType.Disabled;

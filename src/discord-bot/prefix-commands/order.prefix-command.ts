@@ -15,13 +15,13 @@ export class OrderPrefixCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(message: Message, args: string[]): Promise<void> {
-    if (!message.guild) return;
+    if (!message.member?.voice.channelId) return;
 
     const from = +args[0] - 1;
     const to = +args[1] - 1;
 
     const command = new ChangeTrackOrderCommand({
-      guildId: message.guild.id,
+      voiceChannelId: message.member.voice.channelId,
       from,
       to,
     });

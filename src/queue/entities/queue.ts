@@ -1,7 +1,9 @@
 import { Track } from "./track";
+import { VoiceChannel } from "./voice-channel";
 
 interface ConstructorProps {
   guildId: string;
+  voiceChannel: VoiceChannel;
 }
 
 export enum LoopType {
@@ -11,6 +13,7 @@ export enum LoopType {
 }
 
 export class Queue {
+  public readonly voiceChannelId: string;
   public readonly guildId: string;
   public tracks: Track[];
   public history: Track[];
@@ -22,8 +25,10 @@ export class Queue {
   public shuffle: boolean;
   public shuffleHistoryIds: string[];
   public previousShuffleHistoryIds: string[];
+  public voiceChannel: VoiceChannel;
 
   constructor(props: ConstructorProps) {
+    this.voiceChannelId = props.voiceChannel.id;
     this.guildId = props.guildId;
     this.nextTrack = null;
     this.nowPlaying = null;
@@ -35,5 +40,6 @@ export class Queue {
     this.isPaused = false;
     this.shuffleHistoryIds = [];
     this.previousShuffleHistoryIds = [];
+    this.voiceChannel = props.voiceChannel;
   }
 }

@@ -8,7 +8,7 @@ export class TrackRemovedHandler implements IEventHandler<TrackRemovedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ track, removedBy, isNowPlaying }: TrackRemovedEvent): Promise<void> {
-    const player = this.playerRepository.getByGuildId(track.queue.guildId);
+    const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 
     const embed = new EmbedBuilder({

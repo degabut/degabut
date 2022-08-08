@@ -15,9 +15,9 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
 
   @ValidateParams(ClearQueueParamSchema)
   public async execute(params: ClearQueueCommand): Promise<void> {
-    const { guildId, removeNowPlaying } = params;
+    const { voiceChannelId, removeNowPlaying } = params;
 
-    const queue = this.queueRepository.getByGuildId(guildId);
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
     queue.tracks = queue.tracks.filter((t) => t.id === queue.nowPlaying?.id);

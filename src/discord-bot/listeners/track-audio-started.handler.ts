@@ -8,7 +8,7 @@ export class TrackAudioStartedHandler implements IEventHandler<TrackAudioStarted
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ track }: TrackAudioStartedEvent) {
-    const player = this.playerRepository.getByGuildId(track.queue.guildId);
+    const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 
     await player.textChannel.send({

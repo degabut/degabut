@@ -2,7 +2,7 @@ import { Command } from "@common/cqrs";
 import * as Joi from "joi";
 
 export class PlayTrackCommand extends Command<string> {
-  guildId!: string;
+  voiceChannelId!: string;
   index!: number;
   trackId!: string;
 
@@ -13,7 +13,7 @@ export class PlayTrackCommand extends Command<string> {
 }
 
 export const PlayTrackParamSchema = Joi.object<PlayTrackCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   index: Joi.number().min(0).failover(0).allow(0),
   trackId: Joi.string(),
 })

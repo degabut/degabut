@@ -4,7 +4,7 @@ import * as Joi from "joi";
 export type ToggleAutoplayResult = boolean;
 
 export class ToggleAutoplayCommand extends Command<ToggleAutoplayResult> {
-  guildId!: string;
+  voiceChannelId!: string;
 
   constructor(params: ToggleAutoplayCommand) {
     super();
@@ -13,5 +13,5 @@ export class ToggleAutoplayCommand extends Command<ToggleAutoplayResult> {
 }
 
 export const ToggleAutoplayParamSchema = Joi.object<ToggleAutoplayCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
 }).required();

@@ -4,7 +4,7 @@ import * as Joi from "joi";
 export type ToggleShuffleResult = boolean;
 
 export class ToggleShuffleCommand extends Command<ToggleShuffleResult> {
-  guildId!: string;
+  voiceChannelId!: string;
 
   constructor(params: ToggleShuffleCommand) {
     super();
@@ -13,5 +13,5 @@ export class ToggleShuffleCommand extends Command<ToggleShuffleResult> {
 }
 
 export const ToggleShuffleParamSchema = Joi.object<ToggleShuffleCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
 }).required();

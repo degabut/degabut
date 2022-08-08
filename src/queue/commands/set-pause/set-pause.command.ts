@@ -4,7 +4,7 @@ import * as Joi from "joi";
 export type SetPauseResult = boolean;
 
 export class SetPauseCommand extends Command<SetPauseResult> {
-  guildId!: string;
+  voiceChannelId!: string;
   isPaused!: boolean;
 
   constructor(params: SetPauseCommand) {
@@ -14,6 +14,6 @@ export class SetPauseCommand extends Command<SetPauseResult> {
 }
 
 export const SetPauseParamSchema = Joi.object<SetPauseCommand>({
-  guildId: Joi.string().required(),
+  voiceChannelId: Joi.string().required(),
   isPaused: Joi.boolean().required(),
 }).required();

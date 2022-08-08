@@ -6,7 +6,7 @@ import {
   VoiceReadyEvent,
 } from "@discord-bot/events";
 import { VoiceDestroyedEvent } from "@discord-bot/events/voice-destroyed.event";
-import { PlayerRepository } from "@discord-bot/repositories";
+import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import {
   AudioPlayerStatus,
@@ -22,12 +22,12 @@ import { Track } from "@queue/entities";
 import { Client } from "discord.js";
 
 @Injectable()
-export class DiscordPlayerService {
+export class QueuePlayerService {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
     private readonly eventBus: EventBus,
-    private readonly playerRepository: PlayerRepository,
+    private readonly playerRepository: QueuePlayerRepository,
   ) {}
 
   public stopPlayer(playerOrId: string | QueuePlayer): void {

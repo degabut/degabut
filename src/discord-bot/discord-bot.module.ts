@@ -12,8 +12,8 @@ import { Explorers } from "./explorers";
 import { Interactions } from "./interactions";
 import { Listeners } from "./listeners";
 import { PrefixCommands } from "./prefix-commands";
-import { PlayerRepository } from "./repositories";
-import { DiscordBotService, DiscordPlayerService } from "./services";
+import { QueuePlayerRepository } from "./repositories";
+import { DiscordBotService, QueuePlayerService } from "./services";
 
 @Module({
   imports: [
@@ -42,15 +42,15 @@ import { DiscordBotService, DiscordPlayerService } from "./services";
   ],
   providers: [
     DiscordBotService,
-    DiscordPlayerService,
-    PlayerRepository,
+    QueuePlayerService,
+    QueuePlayerRepository,
     ...Explorers,
     ...Commands,
     ...PrefixCommands,
     ...Interactions,
     ...Listeners,
   ],
-  exports: [DiscordModule, DiscordBotService, DiscordPlayerService],
+  exports: [DiscordModule, DiscordBotService, QueuePlayerService],
 })
 export class DiscordBotModule {
   private readonly logger = new Logger(DiscordBotModule.name);

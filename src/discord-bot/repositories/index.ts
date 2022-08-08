@@ -1,1 +1,1 @@
-export * from "./player.repositories";
+export * from "./queue-player.repositories";

@@ -1,4 +1,4 @@
-import { PlayerRepository } from "@discord-bot/repositories";
+import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import { BaseGuildVoiceChannel, Client, VoiceChannel } from "discord.js";
 
@@ -7,7 +7,7 @@ export class DiscordBotService {
     @InjectDiscordClient()
     private readonly client: Client,
 
-    private readonly playerRepository: PlayerRepository,
+    private readonly playerRepository: QueuePlayerRepository,
   ) {}
 
   public async getGuildMemberId(guildId: string, userId: string): Promise<string> {

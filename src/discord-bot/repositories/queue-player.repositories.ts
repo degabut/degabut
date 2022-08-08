@@ -1,6 +1,6 @@
 import { QueuePlayer } from "@discord-bot/entities";
 
-export class PlayerRepository {
+export class QueuePlayerRepository {
   private readonly players: Map<string, QueuePlayer> = new Map();
 
   public getByGuildId(guildId: string): QueuePlayer | undefined {

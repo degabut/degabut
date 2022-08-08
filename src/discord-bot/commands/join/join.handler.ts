@@ -1,7 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { QueuePlayer } from "@discord-bot/entities";
-import { PlayerRepository } from "@discord-bot/repositories";
-import { DiscordPlayerService } from "@discord-bot/services";
+import { QueuePlayerRepository } from "@discord-bot/repositories";
+import { QueuePlayerService } from "@discord-bot/services";
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { BadRequestException } from "@nestjs/common";
@@ -15,16 +15,20 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
-    private readonly playerRepository: PlayerRepository,
-    private readonly playerService: DiscordPlayerService,
+    private readonly playerRepository: QueuePlayerRepository,
+    private readonly playerService: QueuePlayerService,
   ) {}
 
   @ValidateParams(JoinParamSchema)
   public async execute(params: JoinCommand): Promise<void> {
     const { voiceChannel, textChannel } = params;
 
-    if (this.playerRepository.getByGuildId(voiceChannel.guild.id)) {
-      throw new Error("Already Exists");
+    if (voiceChannel.guildId !== textChannel.guildId) {
+      throw new BadRequestException("Invalid guild");
+    }
+
+    if (this.playerRepository.getByGuildId(voiceChannel.guildId)) {
+      throw new BadRequestException("Queue Already Exists");
     }
 
     const clientUser = this.client.user as ClientUser;

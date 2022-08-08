@@ -1,5 +1,5 @@
 import { TrackAudioSkippedEvent } from "@discord-bot/events";
-import { PlayerRepository } from "@discord-bot/repositories";
+import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { AudioPlayerStatus } from "@discordjs/voice";
 import { Injectable } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
@@ -16,7 +16,7 @@ import { IPrefixCommand } from "../interfaces";
 export class SkipPrefixCommand implements IPrefixCommand {
   constructor(
     private readonly eventBus: EventBus,
-    private readonly playerRepository: PlayerRepository,
+    private readonly playerRepository: QueuePlayerRepository,
   ) {}
 
   public async handler(message: Message): Promise<void> {

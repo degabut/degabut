@@ -10,13 +10,9 @@ import { TimeUtil } from "./time.util";
 const numbers = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 
 export class DiscordUtil {
-  static videoToMessageButton(
-    video: Video | VideoCompact,
-    index: number,
-    idPrefix?: string,
-  ): ButtonBuilder {
+  static videoToMessageButton(video: Video | VideoCompact, index: number): ButtonBuilder {
     return new ButtonBuilder({
-      customId: `${idPrefix}/${video.id}`,
+      customId: `play/${video.id}`,
       label: video.title.length < 20 ? video.title : video.title.substring(0, 20) + "...",
       style: ButtonStyle.Success,
       emoji: numbers[index],

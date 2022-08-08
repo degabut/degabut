@@ -34,7 +34,7 @@ export class RelatedPrefixCommand implements IPrefixCommand {
     const video = await this.youtubeiProvider.getVideo(queue.nowPlaying.id);
     if (!video) return;
 
-    const buttons = video.related.map((v, i) => DiscordUtil.videoToMessageButton(v, i, "related"));
+    const buttons = video.related.map((v, i) => DiscordUtil.videoToMessageButton(v, i));
 
     await message.reply({
       content: `⭐ **Songs related with ${queue.nowPlaying.video.title}**`,

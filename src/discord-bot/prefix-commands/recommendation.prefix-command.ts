@@ -39,7 +39,7 @@ export class RecommendationPrefixCommand implements IPrefixCommand {
     const videos = [...slicedLastPlayed, ...slicedMostPlayed];
     if (!videos.length) return "No recommendation found";
 
-    const buttons = videos.map((v, i) => DiscordUtil.videoToMessageButton(v, i, `play/${v.id}`));
+    const buttons = videos.map((v, i) => DiscordUtil.videoToMessageButton(v, i));
     const components = [
       new ActionRowBuilder<MessageActionRowComponentBuilder>({ components: buttons.slice(0, 5) }),
     ];

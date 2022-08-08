@@ -29,9 +29,7 @@ export class SearchPrefixCommand implements IPrefixCommand {
     const videos = await this.youtubeiProvider.searchVideo(keyword);
     const splicedVideos = videos.slice(0, 10);
 
-    const buttons = splicedVideos.map((v, i) =>
-      DiscordUtil.videoToMessageButton(v, i, `play/${v.id}`),
-    );
+    const buttons = splicedVideos.map((v, i) => DiscordUtil.videoToMessageButton(v, i));
 
     return {
       embeds: [

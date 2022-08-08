@@ -6,6 +6,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { YoutubeModule } from "@youtube/youtube.module";
 import { GatewayIntentBits } from "discord.js";
 
+import { Commands } from "./commands";
 import { DiscordBotConfigModule } from "./config";
 import { Explorers } from "./explorers";
 import { Interactions } from "./interactions";
@@ -44,6 +45,7 @@ import { DiscordBotService, DiscordPlayerService } from "./services";
     DiscordPlayerService,
     PlayerRepository,
     ...Explorers,
+    ...Commands,
     ...PrefixCommands,
     ...Interactions,
     ...Listeners,

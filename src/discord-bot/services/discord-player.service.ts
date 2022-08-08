@@ -11,23 +11,15 @@ import { InjectDiscordClient } from "@discord-nestjs/core";
 import {
   AudioPlayerStatus,
   AudioResource,
-  DiscordGatewayAdapterCreator,
   entersState,
-  joinVoiceChannel,
   VoiceConnectionDisconnectedState,
   VoiceConnectionDisconnectReason,
   VoiceConnectionStatus,
 } from "@discordjs/voice";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
 import { Track } from "@queue/entities";
-import { BaseGuildTextChannel, BaseGuildVoiceChannel, Client, ClientUser, Guild } from "discord.js";
-
-type CreatePlayerParams = {
-  guild: Guild;
-  voiceChannel: BaseGuildVoiceChannel;
-  textChannel: BaseGuildTextChannel;
-};
+import { Client } from "discord.js";
 
 @Injectable()
 export class DiscordPlayerService {
@@ -38,40 +30,6 @@ export class DiscordPlayerService {
     private readonly playerRepository: PlayerRepository,
   ) {}
 
-  async createPlayer({ guild, voiceChannel, textChannel }: CreatePlayerParams) {
-    if (this.playerRepository.getByGuildId(guild.id)) throw new Error("Already Exists");
-
-    const clientUser = this.client.user as ClientUser;
-    const botGuildMember = await guild.members.fetch(clientUser.id);
-    const voiceChannelMemberLength = voiceChannel.members.filter(
-      (m) => m.id !== clientUser.id,
-    ).size;
-
-    const canJoin =
-      botGuildMember.permissionsIn(voiceChannel.id).has("Connect") &&
-      (!voiceChannel.userLimit || voiceChannelMemberLength < voiceChannel.userLimit);
-
-    if (!canJoin) {
-      throw new BadRequestException("Bot does not have permission to join voice channel");
-    }
-
-    const voiceConnection = joinVoiceChannel({
-      channelId: voiceChannel.id,
-      guildId: voiceChannel.guild.id,
-      adapterCreator: voiceChannel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
-    });
-
-    const player = new QueuePlayer({
-      textChannel,
-      voiceChannel,
-      voiceConnection,
-    });
-
-    this.playerRepository.save(player);
-
-    this.initQueueConnection(player);
-  }
-
   public stopPlayer(playerOrId: string | QueuePlayer): void {
     let player: QueuePlayer | undefined;
     if (typeof playerOrId === "string") {
@@ -79,7 +37,6 @@ export class DiscordPlayerService {
     } else {
       player = playerOrId;
     }
-
     if (!player) return;
 
     player.readyLock = true;
@@ -90,7 +47,7 @@ export class DiscordPlayerService {
     this.playerRepository.deleteByGuildId(player.guild.id);
   }
 
-  private initQueueConnection(player: QueuePlayer): void {
+  public initPlayerConnection(player: QueuePlayer): void {
     player.voiceConnection.on("stateChange", async (_, newState) => {
       const { status } = newState;
 

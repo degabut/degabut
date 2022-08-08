@@ -1,5 +1,6 @@
-import { DiscordPlayerService } from "@discord-bot/services";
+import { StopCommand } from "@discord-bot/commands";
 import { Injectable } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
@@ -11,13 +12,16 @@ import { IPrefixCommand } from "../interfaces";
   aliases: ["disconnect", "dc"],
 })
 export class StopPrefixCommand implements IPrefixCommand {
-  constructor(private readonly playerService: DiscordPlayerService) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(message: Message): Promise<void> {
     if (!message.guild) return;
 
-    this.playerService.stopPlayer(message.guild.id);
+    const command = new StopCommand({
+      guildId: message.guild.id,
+    });
 
+    await this.commandBus.execute(command);
     await message.react("👋🏻");
   }
 }

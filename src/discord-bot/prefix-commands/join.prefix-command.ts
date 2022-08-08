@@ -1,5 +1,6 @@
-import { DiscordPlayerService } from "@discord-bot/services";
+import { JoinCommand } from "@discord-bot/commands";
 import { Injectable } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { BaseGuildTextChannel, Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
@@ -11,7 +12,7 @@ import { IPrefixCommand } from "../interfaces";
   aliases: ["j"],
 })
 export class JoinPrefixCommand implements IPrefixCommand {
-  constructor(private readonly playerService: DiscordPlayerService) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(message: Message): Promise<void> {
     if (
@@ -22,10 +23,11 @@ export class JoinPrefixCommand implements IPrefixCommand {
       return;
     }
 
-    await this.playerService.createPlayer({
-      guild: message.guild,
-      textChannel: message.channel,
+    const command = new JoinCommand({
       voiceChannel: message.member.voice.channel,
+      textChannel: message.channel,
     });
+
+    await this.commandBus.execute(command);
   }
 }

@@ -1,3 +1,6 @@
+import { IPrefixCommand } from "@discord-bot/interfaces";
+import { Constructor } from "@nestjs/cqrs";
+
 import { ClearAllPrefixCommand } from "./clear-all.prefix-command";
 import { ClearPrefixCommand } from "./clear.prefix-command";
 import { JoinPrefixCommand } from "./join.prefix-command";
@@ -39,7 +42,7 @@ export * from "./stop.prefix-command";
 export * from "./together.prefix-command";
 export * from "./unpause.prefix-command";
 
-export const PrefixCommands = [
+export const PrefixCommands: Constructor<IPrefixCommand>[] = [
   PlayPrefixCommand,
   ClearAllPrefixCommand,
   ClearPrefixCommand,

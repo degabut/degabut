@@ -1,3 +1,5 @@
+import { Constructor, ICommandHandler } from "@nestjs/cqrs";
+
 import { AddTrackHandler } from "./add-track";
 import { ChangeLoopTypeHandler } from "./change-loop-type";
 import { ChangeTrackOrderHandler } from "./change-track-order";
@@ -18,7 +20,7 @@ export * from "./set-pause";
 export * from "./toggle-autoplay";
 export * from "./toggle-shuffle";
 
-export const Commands = [
+export const Commands: Constructor<ICommandHandler>[] = [
   AddTrackHandler,
   ChangeLoopTypeHandler,
   ChangeTrackOrderHandler,

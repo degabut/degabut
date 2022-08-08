@@ -1,6 +1,7 @@
 import { DatabaseModule } from "@database/database.module";
 import { Module } from "@nestjs/common";
 
+import { Listeners } from "./listeners";
 import { YoutubeiProvider } from "./providers";
 import { Queries } from "./queries";
 import { ChannelRepository, UserPlayHistoryRepository, VideoRepository } from "./repositories";
@@ -13,7 +14,8 @@ import { ChannelRepository, UserPlayHistoryRepository, VideoRepository } from ".
     ChannelRepository,
     UserPlayHistoryRepository,
     ...Queries,
+    ...Listeners,
   ],
-  exports: [YoutubeiProvider, VideoRepository, ChannelRepository, UserPlayHistoryRepository],
+  exports: [YoutubeiProvider],
 })
 export class YoutubeModule {}

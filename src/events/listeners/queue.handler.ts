@@ -19,8 +19,7 @@ export class QueueHandler implements IEventHandler<Events> {
   public async handle(event: Events): Promise<void> {
     const eventName = event.constructor.name
       .replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`)
-      .replace(/^\-/, "")
-      .replace(/\-event$/, "");
+      .replace(/^-(.*)-event$/, "$1");
 
     const queue = "queue" in event ? event.queue : event.track.queue;
 

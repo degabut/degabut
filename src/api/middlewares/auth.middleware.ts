@@ -13,7 +13,8 @@ export class AuthMiddleware implements NestMiddleware {
     if (!token) throw new UnauthorizedException();
 
     try {
-      this.jwtAuthProvider.verify(token);
+      const userId = this.jwtAuthProvider.verify(token);
+      req.userId = userId;
       next();
     } catch (err) {
       throw new UnauthorizedException();

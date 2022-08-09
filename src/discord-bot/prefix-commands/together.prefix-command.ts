@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand } from "../interfaces";
+import { IPrefixCommand, PrefixCommandResult } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
@@ -16,7 +16,7 @@ import { IPrefixCommand } from "../interfaces";
   aliases: ["tg", "activity"],
 })
 export class TogetherPrefixCommand implements IPrefixCommand {
-  public async handler(message: Message, args: string[]): Promise<void> {
+  public async handler(message: Message, args: string[]): Promise<PrefixCommandResult> {
     const channel = message.member?.voice.channel;
 
     const appId = args.shift();
@@ -46,9 +46,9 @@ export class TogetherPrefixCommand implements IPrefixCommand {
       ],
     });
 
-    await message.channel.send({
+    return {
       content: `**<@!${message.author.id}> has started an activity!** (${appId})`,
       components: [row],
-    });
+    };
   }
 }

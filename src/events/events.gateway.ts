@@ -16,24 +16,32 @@ import { IdentifiedWebSocket } from "./interfaces";
   cors: { origin: "*" },
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  private readonly clients = new Map<string, IdentifiedWebSocket>();
+  private readonly unidentifiedClients = new Map<string, IdentifiedWebSocket>();
+  private readonly identifiedClients = new Map<string, IdentifiedWebSocket>();
   private readonly disconnectTimeout: Record<string, NodeJS.Timeout> = {};
 
   constructor(private readonly jwtAuthProvider: JwtAuthProvider) {}
 
   handleConnection(client: IdentifiedWebSocket) {
     client.id = v4();
-    this.clients.set(client.id, client);
+    this.unidentifiedClients.set(client.id, client);
     this.disconnectTimeout[client.id] = setTimeout(() => client.close(), 5000);
   }
 
   handleDisconnect(client: IdentifiedWebSocket) {
-    this.clients.delete(client.id);
+    this.unidentifiedClients.delete(client.id);
+    if (client.userId) this.identifiedClients.delete(client.userId);
   }
 
   send(userIds: string[], event: string, data: any) {
-    const clients = [...this.clients.values()];
-    const targets = clients.filter((c) => c.userId && userIds.includes(c.userId));
+    if (!userIds.length) return;
+
+    const targets: IdentifiedWebSocket[] = [];
+
+    for (const userId of userIds) {
+      const client = this.identifiedClients.get(userId);
+      if (client) targets.push(client);
+    }
 
     const payload = JSON.stringify({
       event,
@@ -50,8 +58,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): WsResponse<{ userId: string }> | void {
     try {
       const userId = this.jwtAuthProvider.verify(data.token);
-      client.userId = userId;
       clearTimeout(this.disconnectTimeout[client.id]);
+
+      client.userId = userId;
+      this.unidentifiedClients.delete(client.id);
+      this.identifiedClients.set(userId, client);
 
       return {
         event: "identify",

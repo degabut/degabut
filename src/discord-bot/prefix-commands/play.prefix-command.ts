@@ -25,7 +25,7 @@ export class PlayPrefixCommand implements IPrefixCommand {
       voiceChannelId: message.member.voice.channelId,
       videoId: videoId || undefined,
       keyword: videoId ? undefined : keyword,
-      requestedBy: message.author.id,
+      executor: { id: message.author.id },
     });
 
     await this.commandBus.execute(adapter);

@@ -29,7 +29,7 @@ export class PlayButtonInteraction implements IButtonInteraction {
     const command = new AddTrackCommand({
       videoId: args.id,
       voiceChannelId: interaction.member.voice.channelId,
-      requestedBy: interaction.member.id,
+      executor: { id: interaction.member.id },
     });
 
     await this.commandBus.execute(command);

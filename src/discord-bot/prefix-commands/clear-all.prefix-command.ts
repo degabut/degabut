@@ -19,6 +19,7 @@ export class ClearAllPrefixCommand implements IPrefixCommand {
     const command = new ClearQueueCommand({
       voiceChannelId: message.member.voice.channelId,
       removeNowPlaying: true,
+      executor: { id: message.author.id },
     });
 
     await this.commandBus.execute(command);

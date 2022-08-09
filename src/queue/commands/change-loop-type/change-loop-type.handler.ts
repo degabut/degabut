@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { LoopType } from "@queue/entities/Queue";
 import { QueueRepository } from "@queue/repositories";
@@ -16,10 +16,11 @@ export class ChangeLoopTypeHandler implements IInferredCommandHandler<ChangeLoop
 
   @ValidateParams(ChangeLoopTypeParamSchema)
   public async execute(params: ChangeLoopTypeCommand): Promise<ChangeLoopTypeResult> {
-    const { loopType, voiceChannelId } = params;
+    const { loopType, voiceChannelId, executor } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
+    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     if (!loopType) queue.loopType = LoopType.Disabled;
     else if (queue.loopType === LoopType.Disabled) queue.loopType = loopType;

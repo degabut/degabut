@@ -21,8 +21,8 @@ export class RemovePrefixCommand implements IPrefixCommand {
 
     const command = new RemoveTrackCommand({
       voiceChannelId: message.member.voice.channelId,
-      userId: message.author.id,
       index: !Number.isNaN(index) ? index - 1 : undefined,
+      executor: { id: message.author.id },
     });
     const removed = await this.commandBus.execute(command);
 

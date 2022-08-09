@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueuePausedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
@@ -15,10 +15,11 @@ export class SetPauseHandler implements IInferredCommandHandler<SetPauseCommand>
 
   @ValidateParams(SetPauseParamSchema)
   public async execute(params: SetPauseCommand): Promise<SetPauseResult> {
-    const { voiceChannelId, isPaused } = params;
+    const { voiceChannelId, isPaused, executor } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
+    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     queue.isPaused = isPaused;
     this.eventBus.publish(new QueuePausedEvent({ queue }));

@@ -3,8 +3,8 @@ import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 import * as Joi from "joi";
 
 export class JoinCommand extends Command {
-  readonly voiceChannel!: BaseGuildVoiceChannel;
-  readonly textChannel!: BaseGuildTextChannel;
+  public readonly voiceChannel!: BaseGuildVoiceChannel;
+  public readonly textChannel!: BaseGuildTextChannel;
 
   constructor(params: JoinCommand) {
     super();

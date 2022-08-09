@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
@@ -15,10 +15,11 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
 
   @ValidateParams(ClearQueueParamSchema)
   public async execute(params: ClearQueueCommand): Promise<void> {
-    const { voiceChannelId, removeNowPlaying } = params;
+    const { voiceChannelId, removeNowPlaying, executor } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
+    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     queue.tracks = queue.tracks.filter((t) => t.id === queue.nowPlaying?.id);
     if (removeNowPlaying) this.queueService.removeTrack(queue, true);

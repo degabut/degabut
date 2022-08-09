@@ -42,4 +42,8 @@ export class Queue {
     this.previousShuffleHistoryIds = [];
     this.voiceChannel = props.voiceChannel;
   }
+
+  public hasMember(userId: string): boolean {
+    return this.voiceChannel.members.some((m) => m.id === userId);
+  }
 }

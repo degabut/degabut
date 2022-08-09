@@ -20,6 +20,7 @@ export class UnpausePrefixCommand implements IPrefixCommand {
     const command = new SetPauseCommand({
       voiceChannelId: message.member.voice.channelId,
       isPaused: false,
+      executor: { id: message.author.id },
     });
     await this.commandBus.execute(command);
   }

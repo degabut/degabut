@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { Track } from "@queue/entities";
 import { TrackAddedEvent } from "@queue/events";
@@ -20,10 +20,11 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
 
   @ValidateParams(AddTrackParamSchema)
   public async execute(params: AddTrackCommand): Promise<AddTrackResult> {
-    const { keyword, videoId, requestedBy, voiceChannelId } = params;
+    const { keyword, videoId, executor, voiceChannelId } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
+    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     const video = keyword
       ? (await this.youtubeProvider.searchVideo(keyword)).shift()
@@ -36,7 +37,7 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     const track = new Track({
       queue,
       video,
-      requestedBy,
+      requestedBy: executor.id,
     });
 
     const isPlayedImmediately = !queue.nowPlaying;

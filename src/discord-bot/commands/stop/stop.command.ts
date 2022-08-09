@@ -2,7 +2,7 @@ import { Command } from "@common/cqrs";
 import * as Joi from "joi";
 
 export class StopCommand extends Command {
-  readonly voiceChannelId!: string;
+  public readonly voiceChannelId!: string;
 
   constructor(params: StopCommand) {
     super();

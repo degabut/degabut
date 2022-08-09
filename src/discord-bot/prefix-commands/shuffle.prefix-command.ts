@@ -19,7 +19,10 @@ export class ShufflePrefixCommand implements IPrefixCommand {
   public async handler(message: Message): Promise<PrefixCommandResult> {
     if (!message.member?.voice.channelId) return;
 
-    const command = new ToggleShuffleCommand({ voiceChannelId: message.member.voice.channelId });
+    const command = new ToggleShuffleCommand({
+      voiceChannelId: message.member.voice.channelId,
+      executor: { id: message.author.id },
+    });
     const isActive = await this.commandBus.execute(command);
 
     return isActive ? "🔀 **Shuffle enabled**" : "▶ **Shuffle Disabled**";

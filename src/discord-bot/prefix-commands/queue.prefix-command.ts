@@ -22,6 +22,7 @@ export class QueuePrefixCommand implements IPrefixCommand {
 
     const query = new GetQueueQuery({
       voiceChannelId: message.member.voice.channelId,
+      executor: { id: message.author.id },
     });
 
     const queue = await this.queryBus.execute(query);

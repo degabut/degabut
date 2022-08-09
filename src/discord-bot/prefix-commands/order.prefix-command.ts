@@ -24,6 +24,7 @@ export class OrderPrefixCommand implements IPrefixCommand {
       voiceChannelId: message.member.voice.channelId,
       from,
       to,
+      executor: { id: message.author.id },
     });
 
     await this.commandBus.execute(command);

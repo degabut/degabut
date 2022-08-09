@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { TrackRemovedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
@@ -21,10 +21,11 @@ export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCo
 
   @ValidateParams(RemoveTrackParamSchema)
   public async execute(params: RemoveTrackCommand): Promise<RemoveTrackResult> {
-    const { userId, voiceChannelId, index, trackId, isNowPlaying } = params;
+    const { executor, voiceChannelId, index, trackId, isNowPlaying } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
+    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     const nowPlaying = queue.nowPlaying;
     const removed = this.queueService.removeTrack(
@@ -37,7 +38,7 @@ export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCo
         new TrackRemovedEvent({
           track: removed,
           isNowPlaying: nowPlaying?.id === removed.id,
-          removedBy: userId,
+          removedBy: executor.id,
         }),
       );
     }

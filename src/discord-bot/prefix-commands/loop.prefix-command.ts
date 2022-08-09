@@ -20,6 +20,7 @@ export class LoopPrefixCommand implements IPrefixCommand {
     const command = new ChangeLoopTypeCommand({
       voiceChannelId: message.member.voice.channelId,
       loopType: LoopType.Song,
+      executor: { id: message.author.id },
     });
 
     const loopType = await this.commandBus.execute(command);

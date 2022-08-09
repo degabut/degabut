@@ -20,6 +20,7 @@ export class LoopQueuePrefixCommand implements IPrefixCommand {
     const command = new ChangeLoopTypeCommand({
       voiceChannelId: message.member.voice.channelId,
       loopType: LoopType.Queue,
+      executor: { id: message.author.id },
     });
 
     const loopType = await this.commandBus.execute(command);

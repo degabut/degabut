@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { TrackOrderChangedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
@@ -15,10 +15,11 @@ export class ChangeTrackOrderHandler implements IInferredCommandHandler<ChangeTr
 
   @ValidateParams(ChangeTrackOrderParamSchema)
   public async execute(params: ChangeTrackOrderCommand): Promise<void> {
-    const { trackId, from, to, voiceChannelId } = params;
+    const { trackId, from, to, voiceChannelId, executor } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
+    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     const fromIndex = from ? from : queue.tracks.findIndex((track) => track.id === trackId);
 

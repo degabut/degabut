@@ -3,8 +3,8 @@ import { GuildMember } from "discord.js";
 import * as Joi from "joi";
 
 export class SkipCommand extends Command {
-  readonly voiceChannelId!: string;
-  readonly member!: GuildMember;
+  public readonly voiceChannelId!: string;
+  public readonly member!: GuildMember;
 
   constructor(params: SkipCommand) {
     super();

@@ -1,4 +1,5 @@
 import { ValidateParams } from "@common/decorators";
+import { ForbiddenException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueDto } from "@queue/dtos";
 import { QueueRepository } from "@queue/repositories";
@@ -12,7 +13,9 @@ export class GetQueueHandler implements IInferredQueryHandler<GetQueueQuery> {
   @ValidateParams(GetQueueParamSchema)
   public async execute(params: GetQueueQuery): Promise<GetQueueResult> {
     const queue = this.queueRepository.getByVoiceChannelId(params.voiceChannelId);
+    if (!queue) return null;
+    if (!queue.hasMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
 
-    return queue ? QueueDto.create(queue) : null;
+    return QueueDto.create(queue);
   }
 }

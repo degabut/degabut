@@ -16,7 +16,10 @@ export class ClearPrefixCommand implements IPrefixCommand {
   public async handler(message: Message): Promise<void> {
     if (!message.member?.voice.channelId) return;
 
-    const command = new ClearQueueCommand({ voiceChannelId: message.member.voice.channelId });
+    const command = new ClearQueueCommand({
+      voiceChannelId: message.member.voice.channelId,
+      executor: { id: message.author.id },
+    });
     await this.commandBus.execute(command);
     await message.react("🗑️");
   }

@@ -12,6 +12,17 @@ export class QueueProcessedHandler implements IEventHandler<QueueProcessedEvent>
     if (!player) return;
 
     if (!queue.nowPlaying) player.audioPlayer.stop();
-    else player.audioPlayer.play(DiscordUtil.createAudioSource(queue.nowPlaying));
+    else {
+      player.audioPlayer.play(DiscordUtil.createAudioSource(queue.nowPlaying));
+
+      try {
+        await player.textChannel.send({
+          content: "🎶 **Now Playing**",
+          embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
+        });
+      } catch {
+        // TODO handle channel not found
+      }
+    }
   }
 }

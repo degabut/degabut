@@ -17,8 +17,13 @@ export class TrackSkippedHandler implements IEventHandler<TrackSkippedEvent> {
     const embed = new EmbedBuilder({
       description: `⏭ **<@!${executor.id}> skipped ${track.video.title}**`,
     });
-    await player.textChannel.send({
-      embeds: [embed],
-    });
+
+    try {
+      await player.textChannel.send({
+        embeds: [embed],
+      });
+    } catch {
+      // TODO handle channel not found
+    }
   }
 }

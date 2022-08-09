@@ -1,6 +1,8 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Get, Param, Query, Req } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
+import { GetQueueQuery } from "@queue/queries";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@youtube/queries";
+import { FastifyRequest } from "fastify";
 
 @Controller("users")
 export class UsersController {
@@ -26,9 +28,12 @@ export class UsersController {
         );
   }
 
-  // TODO implement queue controller
-  // @Get("/me/queue")
-  // getQueue() {
-  //   return this.queryBus.execute(new GetQueueQuery({ guildId: "me" }));
-  // }
+  @Get("/me/queue")
+  getSelfQueue(@Req() req: FastifyRequest) {
+    return this.queryBus.execute(
+      new GetQueueQuery({
+        executor: { id: req.raw.userId },
+      }),
+    );
+  }
 }

@@ -4,10 +4,10 @@ import { ExecutorSchema } from "@common/schemas";
 import { QueueDto } from "@queue/dtos";
 import * as Joi from "joi";
 
-export type GetQueueResult = QueueDto | null;
+export type GetQueueResult = QueueDto;
 
 export class GetQueueQuery extends Query<GetQueueResult> implements IWithExecutor {
-  readonly voiceChannelId!: string;
+  readonly voiceChannelId?: string;
   readonly executor!: Executor;
 
   constructor(params: GetQueueQuery) {
@@ -17,6 +17,6 @@ export class GetQueueQuery extends Query<GetQueueResult> implements IWithExecuto
 }
 
 export const GetQueueParamSchema = Joi.object<GetQueueQuery>({
-  voiceChannelId: Joi.string().required(),
+  voiceChannelId: Joi.string().optional(),
   executor: ExecutorSchema,
 }).required();

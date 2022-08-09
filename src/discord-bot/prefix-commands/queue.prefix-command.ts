@@ -26,7 +26,6 @@ export class QueuePrefixCommand implements IPrefixCommand {
     });
 
     const queue = await this.queryBus.execute(query);
-    if (!queue) return;
 
     const { tracks, nowPlaying } = queue;
     const totalLength = tracks.length;

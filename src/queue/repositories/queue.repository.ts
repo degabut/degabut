@@ -11,6 +11,10 @@ export class QueueRepository {
     return [...this.queues.values()].find((q) => q.guildId === guildId);
   }
 
+  public getByUserId(userId: string): Queue | undefined {
+    return [...this.queues.values()].find((q) => q.hasMember(userId));
+  }
+
   public deleteByVoiceChannelId(voiceChannelId: string): void {
     this.queues.delete(voiceChannelId);
   }

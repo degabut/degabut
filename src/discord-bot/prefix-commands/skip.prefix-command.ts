@@ -1,6 +1,6 @@
-import { SkipCommand } from "@discord-bot/commands";
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
+import { SkipCommand } from "@queue/commands";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
@@ -18,7 +18,7 @@ export class SkipPrefixCommand implements IPrefixCommand {
 
     const command = new SkipCommand({
       voiceChannelId: message.member.voice.channelId,
-      member: message.member,
+      executor: { id: message.author.id },
     });
 
     await this.commandBus.execute(command);

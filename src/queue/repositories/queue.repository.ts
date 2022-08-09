@@ -7,6 +7,10 @@ export class QueueRepository {
     return this.queues.get(voiceChannelId);
   }
 
+  public getByGuildId(guildId: string): Queue | undefined {
+    return [...this.queues.values()].find((q) => q.guildId === guildId);
+  }
+
   public deleteByVoiceChannelId(voiceChannelId: string): void {
     this.queues.delete(voiceChannelId);
   }

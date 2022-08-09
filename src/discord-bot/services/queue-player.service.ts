@@ -3,6 +3,7 @@ import {
   TrackAudioEndedEvent,
   TrackAudioErrorEvent,
   TrackAudioStartedEvent,
+  VoiceChannelChangedEvent,
   VoiceReadyEvent,
 } from "@discord-bot/events";
 import { VoiceDestroyedEvent } from "@discord-bot/events/voice-destroyed.event";
@@ -129,7 +130,14 @@ export class QueuePlayerService {
     const voiceChannel =
       this.client.user &&
       player.voiceChannel.guild.members.resolve(this.client.user.id)?.voice.channel;
-    if (voiceChannel) player.voiceChannel = voiceChannel;
-    this.eventBus.publish(new VoiceReadyEvent({ player }));
+
+    if (!voiceChannel) return;
+
+    if (voiceChannel.id !== player.voiceChannel.id) {
+      player.voiceChannel = voiceChannel;
+      this.eventBus.publish(new VoiceChannelChangedEvent({ player }));
+    } else {
+      this.eventBus.publish(new VoiceReadyEvent({ player }));
+    }
   }
 }

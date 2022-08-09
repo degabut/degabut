@@ -13,8 +13,8 @@ export enum LoopType {
 }
 
 export class Queue {
-  public readonly voiceChannelId: string;
   public readonly guildId: string;
+  public voiceChannelId: string;
   public tracks: Track[];
   public history: Track[];
   public nowPlaying: Track | null;

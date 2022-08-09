@@ -22,8 +22,8 @@ export class QueueHandler implements IEventHandler<Events> {
       .replace(/^-(.*)-event$/, "$1");
 
     const queue = "queue" in event ? event.queue : event.track.queue;
+    const memberIds = queue.voiceChannel.members.map((m) => m.id);
 
-    // TODO get queue members
-    this.gateway.send([], eventName, QueueDto.create(queue));
+    this.gateway.send(memberIds, eventName, QueueDto.create(queue));
   }
 }

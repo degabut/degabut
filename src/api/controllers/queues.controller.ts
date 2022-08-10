@@ -5,6 +5,7 @@ import {
   ChangeLoopTypeCommand,
   ChangeTrackOrderCommand,
   ClearQueueCommand,
+  JamCommand,
   PlayTrackCommand,
   RemoveTrackCommand,
   SetPauseCommand,
@@ -149,6 +150,21 @@ export class QueuesController {
       new SetPauseCommand({
         isPaused: false,
         voiceChannelId: params.id,
+        executor: { id: req.raw.userId },
+      }),
+    );
+  }
+
+  @Post("/:id/jam")
+  async jam(
+    @Param() params: BaseParam,
+    @Body() body: { count: number },
+    @Req() req: FastifyRequest,
+  ) {
+    await this.commandBus.execute(
+      new JamCommand({
+        voiceChannelId: params.id,
+        count: body.count,
         executor: { id: req.raw.userId },
       }),
     );

@@ -4,6 +4,7 @@ import { AddTrackHandler } from "./add-track";
 import { ChangeLoopTypeHandler } from "./change-loop-type";
 import { ChangeTrackOrderHandler } from "./change-track-order";
 import { ClearQueueHandler } from "./clear-queue";
+import { JamHandler } from "./jam";
 import { PlayTrackHandler } from "./play-track";
 import { RemoveTrackHandler } from "./remove-track";
 import { SetPauseHandler } from "./set-pause";
@@ -14,6 +15,7 @@ export * from "./add-track";
 export * from "./change-loop-type";
 export * from "./change-track-order";
 export * from "./clear-queue";
+export * from "./jam";
 export * from "./play-track";
 export * from "./remove-track";
 export * from "./set-pause";
@@ -26,6 +28,7 @@ export const Commands: Constructor<ICommandHandler>[] = [
   ChangeTrackOrderHandler,
   ClearQueueHandler,
   PlayTrackHandler,
+  JamHandler,
   RemoveTrackHandler,
   SetPauseHandler,
   SkipHandler,

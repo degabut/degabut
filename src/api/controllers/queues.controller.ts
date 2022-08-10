@@ -37,19 +37,21 @@ export class QueuesController {
   }
 
   @Post("/:id/tracks")
-  addTrack(
+  async addTrack(
     @Body() body: { videoId?: string; keyword?: string },
     @Param() params: BaseParam,
     @Req() req: FastifyRequest,
   ) {
-    return this.commandBus.execute(
-      new AddTrackCommand({
-        voiceChannelId: params.id,
-        keyword: body.keyword,
-        videoId: body.videoId,
-        executor: { id: req.raw.userId },
-      }),
-    );
+    return {
+      trackId: await this.commandBus.execute(
+        new AddTrackCommand({
+          voiceChannelId: params.id,
+          keyword: body.keyword,
+          videoId: body.videoId,
+          executor: { id: req.raw.userId },
+        }),
+      ),
+    };
   }
 
   @Patch("/:id/tracks/:trackId")
@@ -131,8 +133,8 @@ export class QueuesController {
   }
 
   @Post("/:id/pause")
-  pause(@Param() params: BaseParam, @Req() req: FastifyRequest) {
-    return this.commandBus.execute(
+  async pause(@Param() params: BaseParam, @Req() req: FastifyRequest) {
+    await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: true,
         voiceChannelId: params.id,
@@ -142,8 +144,8 @@ export class QueuesController {
   }
 
   @Post("/:id/unpause")
-  unpause(@Param() params: BaseParam, @Req() req: FastifyRequest) {
-    return this.commandBus.execute(
+  async unpause(@Param() params: BaseParam, @Req() req: FastifyRequest) {
+    await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: false,
         voiceChannelId: params.id,

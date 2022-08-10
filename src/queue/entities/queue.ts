@@ -20,7 +20,6 @@ export class Queue {
   public nowPlaying: Track | null;
   public nextTrack: Track | null;
   public loopType: LoopType;
-  public autoplay: boolean;
   public isPaused: boolean;
   public shuffle: boolean;
   public shuffleHistoryIds: string[];
@@ -35,7 +34,6 @@ export class Queue {
     this.tracks = [];
     this.history = [];
     this.loopType = LoopType.Disabled;
-    this.autoplay = false;
     this.shuffle = false;
     this.isPaused = false;
     this.shuffleHistoryIds = [];

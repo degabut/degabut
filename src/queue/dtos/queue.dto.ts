@@ -15,9 +15,6 @@ export class QueueDto {
   public history!: TrackDto[];
 
   @Expose()
-  public autoplay!: boolean;
-
-  @Expose()
   public shuffle!: boolean;
 
   @Expose()

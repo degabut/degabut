@@ -12,5 +12,6 @@ import { QueueService } from "./services";
 @Module({
   imports: [CqrsModule, YoutubeModule, DiscordBotModule],
   providers: [QueueRepository, QueueService, ...Commands, ...Queries, ...Listeners],
+  exports: [QueueRepository],
 })
 export class QueueModule {}

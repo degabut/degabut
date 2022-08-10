@@ -5,9 +5,18 @@ import { DiscordBotModule } from "@discord-bot/discord-bot.module";
 import { EventsModule } from "@events/events.module";
 import { Logger, Module } from "@nestjs/common";
 import { QueueModule } from "@queue/queue.module";
+import { UserModule } from "@user/user.module";
 
 @Module({
-  imports: [DatabaseModule, AuthModule, QueueModule, DiscordBotModule, ApiModule, EventsModule],
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    QueueModule,
+    UserModule,
+    DiscordBotModule,
+    ApiModule,
+    EventsModule,
+  ],
 })
 export class AppModule {
   private logger = new Logger(AppModule.name);

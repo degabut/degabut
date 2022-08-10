@@ -34,6 +34,8 @@
       "@events/*": ["./src/events/*"],
       "@queue": ["./src/queue"],
       "@queue/*": ["./src/queue/*"],
+      "@user": ["./src/user"],
+      "@user/*": ["./src/user/*"],
       "@youtube": ["./src/youtube"],
       "@youtube/*": ["./src/youtube/*"]
     }

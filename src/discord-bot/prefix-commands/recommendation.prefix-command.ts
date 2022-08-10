@@ -1,7 +1,7 @@
 import { ArrayUtil, DiscordUtil } from "@common/utils";
 import { Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
-import { GetLastPlayedQuery, GetMostPlayedQuery } from "@youtube/queries";
+import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
 import {
   ActionRowBuilder,
   EmbedBuilder,
@@ -22,8 +22,19 @@ export class RecommendationPrefixCommand implements IPrefixCommand {
   public async handler(message: Message): Promise<PrefixCommandResult> {
     const userId = message.mentions.users.first()?.id || message.author.id;
 
-    const lastPlayedQuery = new GetLastPlayedQuery({ count: 5, userId });
-    const mostPlayedQuery = new GetMostPlayedQuery({ days: 5, count: 5, userId });
+    const executor = { id: message.author.id };
+
+    const lastPlayedQuery = new GetLastPlayedQuery({
+      count: 5,
+      userId,
+      executor,
+    });
+    const mostPlayedQuery = new GetMostPlayedQuery({
+      days: 5,
+      count: 5,
+      userId,
+      executor,
+    });
     const [lastPlayed, mostPlayed] = await Promise.all([
       this.queryBus.execute(lastPlayedQuery),
       this.queryBus.execute(mostPlayedQuery),

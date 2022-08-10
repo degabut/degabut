@@ -1,7 +1,7 @@
 import { TrackAudioEndedEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { UserPlayHistory } from "@youtube/entities";
-import { UserPlayHistoryRepository } from "@youtube/repositories";
+import { UserPlayHistory } from "@user/entities";
+import { UserPlayHistoryRepository } from "@user/repositories";
 
 @EventsHandler(TrackAudioEndedEvent)
 export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEvent> {

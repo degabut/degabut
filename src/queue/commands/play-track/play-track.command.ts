@@ -6,8 +6,8 @@ import * as Joi from "joi";
 export class PlayTrackCommand extends Command<string> implements IWithExecutor {
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
-  public readonly index!: number;
-  public readonly trackId!: string;
+  public readonly index?: number;
+  public readonly trackId?: string;
 
   constructor(params: PlayTrackCommand) {
     super();

@@ -1,6 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
+import { QueueShuffleToggledEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 import {
@@ -11,7 +12,10 @@ import {
 
 @CommandHandler(ToggleShuffleCommand)
 export class ToggleShuffleHandler implements IInferredCommandHandler<ToggleShuffleCommand> {
-  constructor(private readonly queueRepository: QueueRepository) {}
+  constructor(
+    private readonly queueRepository: QueueRepository,
+    private readonly eventBus: EventBus,
+  ) {}
 
   @ValidateParams(ToggleShuffleParamSchema)
   public async execute(params: ToggleShuffleCommand): Promise<ToggleShuffleResult> {
@@ -27,6 +31,8 @@ export class ToggleShuffleHandler implements IInferredCommandHandler<ToggleShuff
       queue.shuffleHistoryIds = [];
       queue.previousShuffleHistoryIds = [];
     }
+
+    this.eventBus.publish(new QueueShuffleToggledEvent({ queue }));
 
     return queue.shuffle;
   }

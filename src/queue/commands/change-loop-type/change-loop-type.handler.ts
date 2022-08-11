@@ -1,7 +1,8 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { LoopType } from "@queue/entities/Queue";
+import { QueueLoopTypeChangedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 import {
@@ -12,7 +13,10 @@ import {
 
 @CommandHandler(ChangeLoopTypeCommand)
 export class ChangeLoopTypeHandler implements IInferredCommandHandler<ChangeLoopTypeCommand> {
-  constructor(private readonly queueRepository: QueueRepository) {}
+  constructor(
+    private readonly queueRepository: QueueRepository,
+    private readonly eventBus: EventBus,
+  ) {}
 
   @ValidateParams(ChangeLoopTypeParamSchema)
   public async execute(params: ChangeLoopTypeCommand): Promise<ChangeLoopTypeResult> {
@@ -26,6 +30,8 @@ export class ChangeLoopTypeHandler implements IInferredCommandHandler<ChangeLoop
     else if (queue.loopType === LoopType.Disabled) queue.loopType = loopType;
     else if (queue.loopType === loopType) queue.loopType = LoopType.Disabled;
     else queue.loopType = loopType;
+
+    this.eventBus.publish(new QueueLoopTypeChangedEvent({ queue }));
 
     return queue.loopType;
   }

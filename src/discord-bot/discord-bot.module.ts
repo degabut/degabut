@@ -30,6 +30,7 @@ import { DiscordBotService, QueuePlayerService } from "./services";
         discordClientOptions: {
           intents: [
             GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMembers,
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.GuildVoiceStates,
             GatewayIntentBits.GuildMessageReactions,

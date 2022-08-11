@@ -1,6 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
+import { QueueClearedEvent } from "@queue/events/queue-cleared.event";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
 
@@ -11,6 +12,7 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly queueService: QueueService,
+    private readonly eventBus: EventBus,
   ) {}
 
   @ValidateParams(ClearQueueParamSchema)
@@ -23,5 +25,7 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
 
     queue.tracks = queue.tracks.filter((t) => t.id === queue.nowPlaying?.id);
     if (removeNowPlaying) this.queueService.removeTrack(queue, true);
+
+    this.eventBus.publish(new QueueClearedEvent({ queue }));
   }
 }

@@ -1,9 +1,9 @@
 import { InjectDiscordClient, On, Once } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
-import { Client, VoiceState } from "discord.js";
+import { Client, GuildMember, VoiceState } from "discord.js";
 
-import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent } from "./events";
+import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent, VoiceMemberUpdatedEvent } from "./events";
 import { QueuePlayerRepository } from "./repositories";
 
 @Injectable()
@@ -49,5 +49,16 @@ export class DiscordBotGateway {
       const event = new VoiceMemberJoinedEvent({ player: joinedPlayer, member: newState.member });
       return this.eventBus.publish(event);
     }
+  }
+
+  @On("guildMemberUpdate")
+  onGuildMemberUpdate(_: GuildMember, newMember: GuildMember) {
+    const voiceChannelId = newMember.voice.channelId;
+    if (!voiceChannelId) return;
+    const player = this.playerRepository.getByVoiceChannelId(voiceChannelId);
+    if (!player) return;
+
+    const event = new VoiceMemberUpdatedEvent({ player, member: newMember });
+    this.eventBus.publish(event);
   }
 }

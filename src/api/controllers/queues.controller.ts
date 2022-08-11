@@ -12,6 +12,7 @@ import {
   RemoveTrackCommand,
   SetPauseCommand,
   SkipCommand,
+  ToggleShuffleCommand,
 } from "@queue/commands";
 import { LoopType } from "@queue/entities";
 import { GetQueueQuery } from "@queue/queries";
@@ -60,12 +61,12 @@ export class QueuesController {
 
   @Patch("/:id/tracks/:trackId")
   @UseGuards(AuthGuard)
-  changeTrackOrder(
+  async changeTrackOrder(
     @Body() body: { to: number },
     @Param() params: TrackParam,
     @User() user: AuthUser,
   ) {
-    return this.commandBus.execute(
+    await this.commandBus.execute(
       new ChangeTrackOrderCommand({
         voiceChannelId: params.id,
         trackId: params.trackId,
@@ -77,12 +78,12 @@ export class QueuesController {
 
   @Patch("/:id/loop-type")
   @UseGuards(AuthGuard)
-  changeLoopType(
+  async changeLoopType(
     @Body() body: { loopType: LoopType },
     @Param() params: BaseParam,
     @User() user: AuthUser,
   ) {
-    return this.commandBus.execute(
+    await this.commandBus.execute(
       new ChangeLoopTypeCommand({
         voiceChannelId: params.id,
         loopType: body.loopType,
@@ -91,10 +92,21 @@ export class QueuesController {
     );
   }
 
+  @Patch("/:id/shuffle")
+  @UseGuards(AuthGuard)
+  async toggleShuffle(@Param() params: BaseParam, @User() user: AuthUser) {
+    await this.commandBus.execute(
+      new ToggleShuffleCommand({
+        voiceChannelId: params.id,
+        executor: { id: user.id },
+      }),
+    );
+  }
+
   @Post("/:id/tracks/:trackId/play")
   @UseGuards(AuthGuard)
-  playTrack(@Param() params: TrackParam, @User() user: AuthUser) {
-    return this.commandBus.execute(
+  async playTrack(@Param() params: TrackParam, @User() user: AuthUser) {
+    await this.commandBus.execute(
       new PlayTrackCommand({
         voiceChannelId: params.id,
         trackId: params.trackId,
@@ -105,8 +117,8 @@ export class QueuesController {
 
   @Delete("/:id/tracks/:trackId")
   @UseGuards(AuthGuard)
-  removeTrack(@Param() params: TrackParam, @User() user: AuthUser) {
-    return this.commandBus.execute(
+  async removeTrack(@Param() params: TrackParam, @User() user: AuthUser) {
+    await this.commandBus.execute(
       new RemoveTrackCommand({
         voiceChannelId: params.id,
         trackId: params.trackId,
@@ -117,12 +129,12 @@ export class QueuesController {
 
   @Delete("/:id/tracks")
   @UseGuards(AuthGuard)
-  removeTracks(
+  async removeTracks(
     @Param() params: BaseParam,
     @Body() body: { includeNowPlaying?: boolean },
     @User() user: AuthUser,
   ) {
-    return this.commandBus.execute(
+    await this.commandBus.execute(
       new ClearQueueCommand({
         voiceChannelId: params.id,
         removeNowPlaying: !!body.includeNowPlaying,
@@ -133,8 +145,8 @@ export class QueuesController {
 
   @Post("/:id/skip")
   @UseGuards(AuthGuard)
-  skip(@Param() params: BaseParam, @User() user: AuthUser) {
-    return this.commandBus.execute(
+  async skip(@Param() params: BaseParam, @User() user: AuthUser) {
+    await this.commandBus.execute(
       new SkipCommand({
         voiceChannelId: params.id,
         executor: { id: user.id },

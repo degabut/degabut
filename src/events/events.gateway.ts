@@ -17,7 +17,7 @@ import { IdentifiedWebSocket } from "./interfaces";
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly unidentifiedClients = new Map<string, IdentifiedWebSocket>();
-  private readonly identifiedClients = new Map<string, IdentifiedWebSocket>();
+  private readonly identifiedClients = new Map<string, IdentifiedWebSocket[]>();
   private readonly disconnectTimeout: Record<string, NodeJS.Timeout> = {};
 
   constructor(private readonly jwtAuthProvider: JwtAuthProvider) {}
@@ -30,7 +30,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: IdentifiedWebSocket) {
     this.unidentifiedClients.delete(client.id);
-    if (client.userId) this.identifiedClients.delete(client.userId);
+    if (client.userId) {
+      const clients = this.identifiedClients.get(client.userId);
+      if (!clients) return;
+
+      const index = clients.findIndex((c) => c.id === client.id);
+      if (index >= 0) clients.splice(index, 1);
+      this.identifiedClients.set(client.userId, clients);
+    }
   }
 
   send(userIds: string[], event: string, data: any) {
@@ -39,8 +46,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const targets: IdentifiedWebSocket[] = [];
 
     for (const userId of userIds) {
-      const client = this.identifiedClients.get(userId);
-      if (client) targets.push(client);
+      const clients = this.identifiedClients.get(userId);
+      if (clients) targets.push(...clients);
     }
 
     const payload = JSON.stringify({
@@ -62,7 +69,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       client.userId = userId;
       this.unidentifiedClients.delete(client.id);
-      this.identifiedClients.set(userId, client);
+
+      const clients = this.identifiedClients.get(userId) || [];
+      if (clients.length >= 10) throw new Error();
+      clients.push(client);
+      this.identifiedClients.set(userId, clients);
 
       return {
         event: "identify",

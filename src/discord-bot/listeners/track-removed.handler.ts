@@ -8,6 +8,8 @@ export class TrackRemovedHandler implements IEventHandler<TrackRemovedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ track, removedBy, isNowPlaying }: TrackRemovedEvent): Promise<void> {
+    if (!removedBy) return; // removed from queue being processed
+
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 

@@ -2,6 +2,7 @@ import { ArrayUtil, RandomUtil } from "@common/utils";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
 import { LoopType, Queue, Track } from "@queue/entities";
+import { TrackRemovedEvent } from "@queue/events";
 import { QueueProcessedEvent } from "@queue/events/queue-processed.event";
 
 @Injectable()
@@ -35,7 +36,15 @@ export class QueueService {
     queue.nowPlaying = null;
 
     if (queue.loopType === LoopType.Disabled && nowPlayingIndex >= 0) {
+      const removedTrack = queue.tracks[nowPlayingIndex];
       queue.tracks.splice(nowPlayingIndex, 1);
+
+      this.eventBus.publish(
+        new TrackRemovedEvent({
+          track: removedTrack,
+          isNowPlaying: false,
+        }),
+      );
     }
 
     let nextIndex = 0;

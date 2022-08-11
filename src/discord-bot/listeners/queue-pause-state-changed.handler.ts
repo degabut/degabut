@@ -1,12 +1,12 @@
 import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { QueuePausedEvent } from "@queue/events";
+import { QueuePauseStateChangedEvent } from "@queue/events";
 
-@EventsHandler(QueuePausedEvent)
-export class QueuePausedHandler implements IEventHandler<QueuePausedEvent> {
+@EventsHandler(QueuePauseStateChangedEvent)
+export class QueuePauseStateChangedHandler implements IEventHandler<QueuePauseStateChangedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
-  public async handle({ queue }: QueuePausedEvent) {
+  public async handle({ queue }: QueuePauseStateChangedEvent) {
     const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 

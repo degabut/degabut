@@ -1,6 +1,6 @@
 import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
-import { QueuePausedHandler } from "./queue-paused.handler";
+import { QueuePauseStateChangedHandler } from "./queue-pause-state-changed.handler";
 import { QueueProcessedHandler } from "./queue-processed.handler";
 import { TrackAddedHandler } from "./track-added.handler";
 import { TrackRemovedHandler } from "./track-removed.handler";
@@ -11,5 +11,5 @@ export const Listeners: Constructor<IEventHandler>[] = [
   TrackRemovedHandler,
   TrackSkippedHandler,
   QueueProcessedHandler,
-  QueuePausedHandler,
+  QueuePauseStateChangedHandler,
 ];

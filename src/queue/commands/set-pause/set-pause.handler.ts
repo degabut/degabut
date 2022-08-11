@@ -1,7 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { QueuePausedEvent } from "@queue/events";
+import { QueuePauseStateChangedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 import { SetPauseCommand, SetPauseParamSchema, SetPauseResult } from "./set-pause.command";
@@ -22,7 +22,7 @@ export class SetPauseHandler implements IInferredCommandHandler<SetPauseCommand>
     if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
 
     queue.isPaused = isPaused;
-    this.eventBus.publish(new QueuePausedEvent({ queue }));
+    this.eventBus.publish(new QueuePauseStateChangedEvent({ queue }));
 
     return queue.isPaused;
   }

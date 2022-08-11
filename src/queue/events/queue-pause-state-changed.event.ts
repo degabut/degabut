@@ -1,9 +1,9 @@
 import { Queue } from "@queue/entities";
 
-export class QueuePausedEvent {
+export class QueuePauseStateChangedEvent {
   public readonly queue!: Queue;
 
-  constructor(params: QueuePausedEvent) {
+  constructor(params: QueuePauseStateChangedEvent) {
     Object.assign(this, params);
   }
 }

@@ -1,19 +1,20 @@
 import { VideoCompact } from "@youtube/entities";
 import { v4 } from "uuid";
 
+import { Member } from "./member";
 import { Queue } from "./queue";
 
 interface ConstructorProps {
   queue: Queue;
   video: VideoCompact;
-  requestedBy: string;
+  requestedBy: Member;
 }
 
 export class Track {
   public readonly queue: Queue;
   public readonly id: string;
   public readonly video: VideoCompact;
-  public readonly requestedBy: string;
+  public readonly requestedBy: Member;
   public playedAt: Date | null;
 
   constructor(props: ConstructorProps) {

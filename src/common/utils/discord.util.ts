@@ -40,7 +40,7 @@ export class DiscordUtil {
     ];
     const descriptions: string[] = [];
     if (track.video.channel) descriptions.push(`**${track.video.channel.name}**`);
-    if (track.requestedBy) descriptions.push(`Requested by <@!${track.requestedBy}>`);
+    if (track.requestedBy) descriptions.push(`Requested by <@!${track.requestedBy.id}>`);
 
     const thumbnail = track.video.thumbnails.at(-1);
 

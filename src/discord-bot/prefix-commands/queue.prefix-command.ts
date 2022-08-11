@@ -40,7 +40,7 @@ export class QueuePrefixCommand implements IPrefixCommand {
 
         return {
           name,
-          value: `${track.url}\r\nRequested by <@!${track.requestedBy}>`,
+          value: `${track.url}\r\nRequested by <@!${track.requestedBy.id}>`,
         };
       }),
     });

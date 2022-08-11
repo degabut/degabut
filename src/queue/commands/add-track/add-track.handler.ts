@@ -24,7 +24,8 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.voiceChannel.members.find((m) => m.id === executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     const video = keyword
       ? (await this.youtubeProvider.searchVideo(keyword)).shift()
@@ -37,7 +38,7 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     const track = new Track({
       queue,
       video,
-      requestedBy: executor.id,
+      requestedBy: member,
     });
 
     const isPlayedImmediately = !queue.nowPlaying;

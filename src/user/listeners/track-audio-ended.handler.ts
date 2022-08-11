@@ -11,7 +11,7 @@ export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEven
     await this.userPlayHistoryRepository.insert(
       new UserPlayHistory({
         playedAt: new Date(),
-        userId: track.requestedBy,
+        userId: track.requestedBy.id,
         videoId: track.video.id,
       }),
     );

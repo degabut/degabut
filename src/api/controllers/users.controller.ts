@@ -1,23 +1,25 @@
-import { Controller, Get, Param, Query, Req } from "@nestjs/common";
+import { AuthUser, User } from "@api/decorators";
+import { AuthGuard } from "@api/guards";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
-import { FastifyRequest } from "fastify";
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get("/:id/videos")
-  getHistories(@Query() query: any, @Param() params: any, @Req() req: FastifyRequest) {
-    const targetUserId = params.id === "me" ? req.raw.userId : params.id;
+  @UseGuards(AuthGuard)
+  getHistories(@Query() query: any, @Param() params: any, @User() user: AuthUser) {
+    const targetUserId = params.id === "me" ? user.id : params.id;
 
     return "last" in query
       ? this.queryBus.execute(
           new GetLastPlayedQuery({
             count: +query.last,
             userId: targetUserId,
-            executor: { id: req.raw.userId },
+            executor: { id: user.id },
           }),
         )
       : this.queryBus.execute(
@@ -25,16 +27,17 @@ export class UsersController {
             count: +query.count,
             days: +query.days,
             userId: targetUserId,
-            executor: { id: req.raw.userId },
+            executor: { id: user.id },
           }),
         );
   }
 
   @Get("/me/queue")
-  getSelfQueue(@Req() req: FastifyRequest) {
+  @UseGuards(AuthGuard)
+  getSelfQueue(@User() user: AuthUser) {
     return this.queryBus.execute(
       new GetQueueQuery({
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }

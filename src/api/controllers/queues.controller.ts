@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
+import { AuthUser, User } from "@api/decorators";
+import { AuthGuard } from "@api/guards";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddTrackCommand,
@@ -13,7 +15,6 @@ import {
 } from "@queue/commands";
 import { LoopType } from "@queue/entities";
 import { GetQueueQuery } from "@queue/queries";
-import { FastifyRequest } from "fastify";
 
 type BaseParam = {
   id: string;
@@ -28,20 +29,22 @@ export class QueuesController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
 
   @Get("/:id")
-  getQueue(@Req() req: FastifyRequest, @Param() params: BaseParam) {
+  @UseGuards(AuthGuard)
+  getQueue(@User() user: AuthUser, @Param() params: BaseParam) {
     return this.queryBus.execute(
       new GetQueueQuery({
         voiceChannelId: params.id,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Post("/:id/tracks")
+  @UseGuards(AuthGuard)
   async addTrack(
     @Body() body: { videoId?: string; keyword?: string },
     @Param() params: BaseParam,
-    @Req() req: FastifyRequest,
+    @User() user: AuthUser,
   ) {
     return {
       trackId: await this.commandBus.execute(
@@ -49,123 +52,128 @@ export class QueuesController {
           voiceChannelId: params.id,
           keyword: body.keyword,
           videoId: body.videoId,
-          executor: { id: req.raw.userId },
+          executor: { id: user.id },
         }),
       ),
     };
   }
 
   @Patch("/:id/tracks/:trackId")
+  @UseGuards(AuthGuard)
   changeTrackOrder(
     @Body() body: { to: number },
     @Param() params: TrackParam,
-    @Req() req: FastifyRequest,
+    @User() user: AuthUser,
   ) {
     return this.commandBus.execute(
       new ChangeTrackOrderCommand({
         voiceChannelId: params.id,
         trackId: params.trackId,
         to: body.to,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Patch("/:id/loop-type")
+  @UseGuards(AuthGuard)
   changeLoopType(
     @Body() body: { loopType: LoopType },
     @Param() params: BaseParam,
-    @Req() req: FastifyRequest,
+    @User() user: AuthUser,
   ) {
     return this.commandBus.execute(
       new ChangeLoopTypeCommand({
         voiceChannelId: params.id,
         loopType: body.loopType,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Post("/:id/tracks/:trackId/play")
-  playTrack(@Param() params: TrackParam, @Req() req: FastifyRequest) {
+  @UseGuards(AuthGuard)
+  playTrack(@Param() params: TrackParam, @User() user: AuthUser) {
     return this.commandBus.execute(
       new PlayTrackCommand({
         voiceChannelId: params.id,
         trackId: params.trackId,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Delete("/:id/tracks/:trackId")
-  removeTrack(@Param() params: TrackParam, @Req() req: FastifyRequest) {
+  @UseGuards(AuthGuard)
+  removeTrack(@Param() params: TrackParam, @User() user: AuthUser) {
     return this.commandBus.execute(
       new RemoveTrackCommand({
         voiceChannelId: params.id,
         trackId: params.trackId,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Delete("/:id/tracks")
+  @UseGuards(AuthGuard)
   removeTracks(
     @Param() params: BaseParam,
     @Body() body: { includeNowPlaying?: boolean },
-    @Req() req: FastifyRequest,
+    @User() user: AuthUser,
   ) {
     return this.commandBus.execute(
       new ClearQueueCommand({
         voiceChannelId: params.id,
         removeNowPlaying: !!body.includeNowPlaying,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Post("/:id/skip")
-  skip(@Param() params: BaseParam, @Req() req: FastifyRequest) {
+  @UseGuards(AuthGuard)
+  skip(@Param() params: BaseParam, @User() user: AuthUser) {
     return this.commandBus.execute(
       new SkipCommand({
         voiceChannelId: params.id,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Post("/:id/pause")
-  async pause(@Param() params: BaseParam, @Req() req: FastifyRequest) {
+  @UseGuards(AuthGuard)
+  async pause(@Param() params: BaseParam, @User() user: AuthUser) {
     await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: true,
         voiceChannelId: params.id,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Post("/:id/unpause")
-  async unpause(@Param() params: BaseParam, @Req() req: FastifyRequest) {
+  @UseGuards(AuthGuard)
+  async unpause(@Param() params: BaseParam, @User() user: AuthUser) {
     await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: false,
         voiceChannelId: params.id,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }
 
   @Post("/:id/jam")
-  async jam(
-    @Param() params: BaseParam,
-    @Body() body: { count: number },
-    @Req() req: FastifyRequest,
-  ) {
+  @UseGuards(AuthGuard)
+  async jam(@Param() params: BaseParam, @Body() body: { count: number }, @User() user: AuthUser) {
     await this.commandBus.execute(
       new JamCommand({
         voiceChannelId: params.id,
         count: body.count,
-        executor: { id: req.raw.userId },
+        executor: { id: user.id },
       }),
     );
   }

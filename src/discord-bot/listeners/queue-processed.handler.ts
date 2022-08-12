@@ -15,14 +15,10 @@ export class QueueProcessedHandler implements IEventHandler<QueueProcessedEvent>
     else {
       player.audioPlayer.play(DiscordUtil.createAudioSource(queue.nowPlaying));
 
-      try {
-        await player.textChannel.send({
-          content: "🎶 **Now Playing**",
-          embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
-        });
-      } catch {
-        // TODO handle channel not found
-      }
+      await player.notify({
+        content: "🎶 **Now Playing**",
+        embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
+      });
     }
   }
 }

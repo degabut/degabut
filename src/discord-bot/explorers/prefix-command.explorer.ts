@@ -3,7 +3,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiscoveryService } from "@nestjs/core";
 import { InstanceWrapper } from "@nestjs/core/injector/instance-wrapper";
-import { Client } from "discord.js";
+import { Client, DiscordAPIError } from "discord.js";
 
 import { PrefixCommandOptions, PREFIX_COMMAND } from "../decorators";
 import { IPrefixCommand } from "../interfaces";
@@ -63,7 +63,13 @@ export class PrefixCommandExplorer {
         const reply = await command.instanceWrapper.instance.handler(message, args);
         if (reply) message.reply(reply);
       } catch (error) {
-        await message.reply(`Failed to execute the command: ${(error as Error).message}`);
+        if (!(error instanceof DiscordAPIError)) return;
+
+        if (error.code === 10003 || error.code === 50013) {
+          await message.author.send(`Failed to execute the command: ${(error as Error).message}`);
+        } else {
+          await message.reply(`Failed to execute the command: ${(error as Error).message}`);
+        }
       }
     });
 

@@ -19,12 +19,8 @@ export class TrackRemovedHandler implements IEventHandler<TrackRemovedEvent> {
 
     if (isNowPlaying) player.audioPlayer.stop();
 
-    try {
-      await player.textChannel.send({
-        embeds: [embed],
-      });
-    } catch {
-      // TODO handle channel not found
-    }
+    await player.notify({
+      embeds: [embed],
+    });
   }
 }

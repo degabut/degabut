@@ -13,13 +13,9 @@ export class TrackAddedHandler implements IEventHandler<TrackAddedEvent> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 
-    try {
-      await player.textChannel.send({
-        content: `🎵 **Added To Queue** (${track.queue.tracks.length})`,
-        embeds: [DiscordUtil.trackToEmbed(track)],
-      });
-    } catch {
-      // TODO handle channel not found
-    }
+    await player.notify({
+      content: `🎵 **Added To Queue** (${track.queue.tracks.length})`,
+      embeds: [DiscordUtil.trackToEmbed(track)],
+    });
   }
 }

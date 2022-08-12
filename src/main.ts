@@ -10,7 +10,7 @@ async function bootstrap() {
     logger: process.env.NODE_ENV === "development" ? ["verbose"] : ["error", "warn"],
   });
   app.useWebSocketAdapter(new WsAdapter(app));
-  app.listen(8080);
+  app.listen(8080, "0.0.0.0");
 }
 
 bootstrap();

@@ -53,12 +53,12 @@ export class ButtonInteractionExplorer {
       if (!command) return;
 
       const pathSchema = command.options.key.split("/");
-      const params = pathSchema.reduce((val, key, index) => {
+      const params = pathSchema.reduce<Record<string, string>>((val, key, index) => {
         if (key.startsWith(":")) {
-          val[key.slice(1)] = path[index];
+          val[key.substring(1)] = path[index - 1];
         }
         return val;
-      }, {} as Record<string, string>);
+      }, {});
 
       try {
         const reply = await command.instanceWrapper.instance.handler(interaction, params);

@@ -1,8 +1,8 @@
-import { GuildMemberDto } from "@discord-bot/dtos";
 import { VideoCompactDto } from "@youtube/dtos";
 import { Exclude, Expose, plainToInstance, Transform, Type } from "class-transformer";
 
 import { Track } from "../entities";
+import { MemberDto } from "./member.dto";
 
 @Exclude()
 export class TrackDto {
@@ -17,8 +17,8 @@ export class TrackDto {
   public video!: VideoCompactDto;
 
   @Expose()
-  @Type(() => GuildMemberDto)
-  public requestedBy!: GuildMemberDto;
+  @Type(() => MemberDto)
+  public requestedBy!: MemberDto;
 
   @Expose()
   @Transform(({ value }) => value?.toISOString() || null)

@@ -36,6 +36,7 @@
     "@willsoto/nestjs-objection": "^8.1.0",
     "class-transformer": "^0.5.1",
     "discord.js": "^14.1.1",
+    "ffmpeg-static": "^5.0.2",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.2.0",
@@ -47,7 +48,7 @@
     "rxjs": "^7.2.0",
     "uuid": "^8.3.2",
     "youtubei": "1.0.0-rc.3",
-    "ytdl-core": "^4.11.0"
+    "ytdl-core": "4.9.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

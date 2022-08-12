@@ -11,43 +11,14 @@
 - `POSTGRES_DB`: postgres database name
 - `POSTGRES_USER`: postgres user name
 - `POSTGRES_PASSWORD`: postgres password
+- `JWT_PRIVATE_KEY`: long random string for JWT signing
+- `DISCORD_OAUTH_CLIENT_ID`: Discord OAuth Client ID
+- `DISCORD_OAUTH_CLIENT_SECRET`: Discord OAuth Client Secret
+- `DISCORD_OAUTH_REDIRECT_URI`: DIscord OAuth Redirect URI
 
 ## Run
 
-Docker Image: [suspiciouslookingowl/degabut](https://hub.docker.com/r/suspiciouslookingowl/degabut)
-
-```
-docker run --env TOKEN=xyz --env PREFIX=! -d suspiciouslookingowl/degabut
-```
-
-Alternatively, create a `.env` file containing:
-
-```env
-PREFIX=!
-TOKEN=xyz
-POSTGRES_DB=degabut
-POSTGRES_USER=user
-POSTGRES_PASSWORD=password
-```
-
-and run
-
-```
-docker run --env-file ./.env -d suspiciouslookingowl/degabut
-```
-
-Or using Docker Compose:
-
-```yaml
-version: "3.9"
-services:
-  degabut:
-    container_name: degabut
-    image: suspiciouslookingowl/degabut:latest
-    restart: always
-    env_file:
-      - .env
-```
+Check the examples [here](https://github.com/degabut/examples)
 
 ## Development
 

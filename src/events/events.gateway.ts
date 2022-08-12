@@ -12,9 +12,7 @@ import { v4 } from "uuid";
 
 import { IdentifiedWebSocket } from "./interfaces";
 
-@WebSocketGateway(8081, {
-  cors: { origin: "*" },
-})
+@WebSocketGateway(8081)
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly unidentifiedClients = new Map<string, IdentifiedWebSocket>();
   private readonly identifiedClients = new Map<string, IdentifiedWebSocket[]>();

@@ -1,7 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { LoopType } from "@queue/entities/Queue";
+import { LoopType } from "@queue/entities";
 import { QueueLoopTypeChangedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 

@@ -53,7 +53,7 @@ specifiers:
   uuid: ^8.3.2
   webpack: ^5.0.0
   youtubei: 1.0.0-rc.3
-  ytdl-core: 4.9.1
+  ytdl-core: 4.11.2
 
 dependencies:
   '@discord-nestjs/common': 4.0.4_i3yx7xdyi5ppvg32uglz4c62fi
@@ -82,7 +82,7 @@ dependencies:
   rxjs: 7.5.6
   uuid: 8.3.2
   youtubei: 1.0.0-rc.3
-  ytdl-core: 4.9.1
+  ytdl-core: 4.11.2
 
 devDependencies:
   '@nestjs/cli': 8.2.8
@@ -5768,9 +5768,9 @@ packages:
       - encoding
     dev: false
 
-  /ytdl-core/4.9.1:
-    resolution: {integrity: sha512-6Jbp5RDhUEozlaJQAR+l8oV8AHsx3WUXxSyPxzE6wOIAaLql7Hjiy0ZM58wZoyj1YEenlEPjEqcJIjKYKxvHtQ==}
-    engines: {node: '>=10'}
+  /ytdl-core/4.11.2:
+    resolution: {integrity: sha512-D939t9b4ZzP3v0zDvehR2q+KgG97UTgrTKju3pOPGQcXtl4W6W5z0EpznzcJFu+OOpl7S7Ge8hv8zU65QnxYug==}
+    engines: {node: '>=12'}
     dependencies:
       m3u8stream: 0.8.6
       miniget: 4.2.2

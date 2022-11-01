@@ -69,7 +69,8 @@ export class QueuePlayerService {
     player.audioPlayer.on("stateChange", (oldState, newState) => {
       if (
         newState.status === AudioPlayerStatus.Idle &&
-        oldState.status !== AudioPlayerStatus.Idle
+        oldState.status !== AudioPlayerStatus.Idle &&
+        player.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed
       ) {
         const track = (oldState.resource as AudioResource<Track>).metadata;
         this.eventBus.publish(new TrackAudioEndedEvent({ track }));

@@ -12,22 +12,51 @@ export class UsersController {
   @Get("/:id/videos")
   @UseGuards(AuthGuard)
   getHistories(@Query() query: any, @Param() params: any, @User() user: AuthUser) {
-    const targetUserId = params.id === "me" ? user.id : params.id;
+    const executor = { id: user.id };
 
     return "last" in query
       ? this.queryBus.execute(
           new GetLastPlayedQuery({
             count: +query.last,
-            userId: targetUserId,
-            executor: { id: user.id },
+            userId: params.id,
+            executor,
           }),
         )
       : this.queryBus.execute(
           new GetMostPlayedQuery({
             count: +query.count,
             days: +query.days,
-            userId: targetUserId,
-            executor: { id: user.id },
+            userId: params.id,
+            executor,
+          }),
+        );
+  }
+
+  @Get("/me/videos")
+  @UseGuards(AuthGuard)
+  getSelfHistories(@Query() query: any, @User() user: AuthUser) {
+    const executor = { id: user.id };
+    const selections =
+      query.guild === "true"
+        ? { guild: true as const }
+        : query.voiceChannel === "true"
+        ? { voiceChannel: true as const }
+        : { userId: user.id };
+
+    return "last" in query
+      ? this.queryBus.execute(
+          new GetLastPlayedQuery({
+            count: +query.last,
+            executor,
+            ...selections,
+          }),
+        )
+      : this.queryBus.execute(
+          new GetMostPlayedQuery({
+            count: +query.count,
+            days: +query.days,
+            executor,
+            ...selections,
           }),
         );
   }

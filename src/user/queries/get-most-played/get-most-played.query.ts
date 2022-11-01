@@ -9,7 +9,9 @@ export type GetMostPlayedResult = VideoCompactDto[];
 export class GetMostPlayedQuery extends Query<GetMostPlayedResult> implements IWithExecutor {
   count!: number;
   days!: number;
-  userId!: string;
+  userId?: string;
+  voiceChannel?: true;
+  guild?: true;
   executor!: Executor;
 
   constructor(params: GetMostPlayedQuery) {
@@ -22,5 +24,9 @@ export const GetMostPlayedParamSchema = Joi.object<GetMostPlayedQuery>({
   count: Joi.number().required(),
   days: Joi.number().required(),
   userId: Joi.string().required(),
+  voiceChannel: Joi.valid(true).optional(),
+  guild: Joi.valid(true).optional(),
   executor: ExecutorSchema,
-}).required();
+})
+  .xor("userId", "voiceChannel", "guild")
+  .required();

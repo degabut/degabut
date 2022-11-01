@@ -8,7 +8,9 @@ export type GetLastPlayedResult = VideoCompactDto[];
 
 export class GetLastPlayedQuery extends Query<GetLastPlayedResult> {
   count!: number;
-  userId!: string;
+  userId?: string;
+  voiceChannel?: true;
+  guild?: true;
   executor!: Executor;
 
   constructor(params: GetLastPlayedQuery) {
@@ -19,6 +21,10 @@ export class GetLastPlayedQuery extends Query<GetLastPlayedResult> {
 
 export const GetLastPlayedParamSchema = Joi.object<GetLastPlayedQuery>({
   count: Joi.number().required(),
-  userId: Joi.string().required(),
+  userId: Joi.string().optional(),
+  voiceChannel: Joi.valid(true).optional(),
+  guild: Joi.valid(true).optional(),
   executor: ExecutorSchema,
-}).required();
+})
+  .xor("userId", "voiceChannel", "guild")
+  .required();

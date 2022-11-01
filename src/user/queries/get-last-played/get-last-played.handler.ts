@@ -2,6 +2,7 @@ import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
+import { UserPlayHistory } from "@user/entities";
 import { UserPlayHistoryRepository } from "@user/repositories";
 import { VideoCompactDto } from "@youtube/dtos";
 import { VideoRepository } from "@youtube/repositories";
@@ -23,12 +24,26 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
   @ValidateParams(GetLastPlayedParamSchema)
   public async execute(params: GetLastPlayedQuery): Promise<GetLastPlayedResult> {
     const queue = this.queueRepository.getByUserId(params.executor.id);
-    if (params.executor.id !== params.userId) {
+    if (params.userId && params.userId !== params.executor.id) {
       if (!queue) throw new NotFoundException("Queue not found");
-      if (!queue.hasMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
+      if (!queue.hasMember(params.userId)) throw new ForbiddenException("Missing permissions");
+    }
+    if ((params.guild || params.voiceChannel) && !queue) {
+      throw new NotFoundException("Queue not found");
     }
 
-    const histories = await this.repository.getLastPlayedByUserId(params.userId, params.count);
+    let histories: UserPlayHistory[] = [];
+
+    if (params.userId)
+      histories = await this.repository.getLastPlayedByUserId(params.userId, params.count);
+    else if (params.guild && queue)
+      histories = await this.repository.getLastPlayedByGuildId(queue.guildId, params.count);
+    else if (params.voiceChannel && queue)
+      histories = await this.repository.getLastPlayedByVoiceChannelId(
+        queue.voiceChannelId,
+        params.count,
+      );
+
     if (!histories.length) return [];
 
     const videos = await this.videoRepository.getByIds(histories.map((h) => h.videoId));

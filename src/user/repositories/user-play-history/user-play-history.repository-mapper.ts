@@ -6,6 +6,8 @@ export class UserPlayHistoryRepositoryMapper {
     const props: UserPlayHistoryModelProps = {
       user_id: entity.userId,
       video_id: entity.videoId,
+      voice_channel_id: entity.voiceChannelId,
+      guild_id: entity.guildId,
       played_at: entity.playedAt,
     };
 
@@ -17,6 +19,8 @@ export class UserPlayHistoryRepositoryMapper {
       userId: props.user_id,
       videoId: props.video_id,
       playedAt: new Date(props.played_at),
+      voiceChannelId: props.voice_channel_id,
+      guildId: props.guild_id,
     });
 
     return entity;

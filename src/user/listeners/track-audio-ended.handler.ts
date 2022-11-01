@@ -12,6 +12,8 @@ export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEven
       new UserPlayHistory({
         playedAt: new Date(),
         userId: track.requestedBy.id,
+        guildId: track.queue.guildId,
+        voiceChannelId: track.queue.voiceChannelId,
         videoId: track.video.id,
       }),
     );

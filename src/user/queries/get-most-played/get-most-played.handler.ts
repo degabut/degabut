@@ -31,7 +31,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
     const from = new Date();
     from.setDate(from.getDate() - params.days);
 
-    const histories = await this.repository.getMostPlayed(params.userId, {
+    const histories = await this.repository.getMostPlayedByUserId(params.userId, {
       count: params.count,
       from,
     });

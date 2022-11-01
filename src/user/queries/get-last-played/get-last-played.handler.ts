@@ -28,7 +28,7 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
       if (!queue.hasMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
     }
 
-    const histories = await this.repository.getLastPlayed(params.userId, params.count);
+    const histories = await this.repository.getLastPlayedByUserId(params.userId, params.count);
     if (!histories.length) return [];
 
     const videos = await this.videoRepository.getByIds(histories.map((h) => h.videoId));

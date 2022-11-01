@@ -134,8 +134,10 @@ export class QueuePlayerService {
     if (!voiceChannel) return;
 
     if (voiceChannel.id !== player.voiceChannel.id) {
+      this.playerRepository.deleteByVoiceChannelId(player.voiceChannel.id);
       player.voiceChannel = voiceChannel;
       this.eventBus.publish(new VoiceChannelChangedEvent({ player }));
+      this.playerRepository.save(player);
     } else {
       this.eventBus.publish(new VoiceReadyEvent({ player }));
     }

@@ -41,15 +41,19 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
 
     let histories: UserPlayHistory[] = [];
 
-    if (params.userId)
+    if (params.userId) {
       histories = await this.repository.getMostPlayedByUserId(params.userId, options);
-    else if (params.guild && queue)
-      histories = await this.repository.getMostPlayedByGuildId(queue.guildId, options);
-    else if (params.voiceChannel && queue)
-      histories = await this.repository.getMostPlayedByVoiceChannelId(
-        queue.voiceChannelId,
-        options,
-      );
+    } else if (params.guild && queue) {
+      histories = await this.repository.getMostPlayedByGuildId(queue.guildId, {
+        ...options,
+        excludeUserIds: [params.executor.id],
+      });
+    } else if (params.voiceChannel && queue) {
+      histories = await this.repository.getMostPlayedByVoiceChannelId(queue.voiceChannelId, {
+        ...options,
+        excludeUserIds: [params.executor.id],
+      });
+    }
 
     if (!histories.length) return [];
 

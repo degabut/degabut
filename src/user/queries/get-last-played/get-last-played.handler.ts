@@ -34,15 +34,23 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
 
     let histories: UserPlayHistory[] = [];
 
-    if (params.userId)
-      histories = await this.repository.getLastPlayedByUserId(params.userId, params.count);
-    else if (params.guild && queue)
-      histories = await this.repository.getLastPlayedByGuildId(queue.guildId, params.count);
-    else if (params.voiceChannel && queue)
-      histories = await this.repository.getLastPlayedByVoiceChannelId(
-        queue.voiceChannelId,
-        params.count,
-      );
+    const options = {
+      count: params.count,
+    };
+
+    if (params.userId) {
+      histories = await this.repository.getLastPlayedByUserId(params.userId, options);
+    } else if (params.guild && queue) {
+      histories = await this.repository.getLastPlayedByGuildId(queue.guildId, {
+        ...options,
+        excludeUserIds: [params.executor.id],
+      });
+    } else if (params.voiceChannel && queue) {
+      histories = await this.repository.getLastPlayedByVoiceChannelId(queue.voiceChannelId, {
+        ...options,
+        excludeUserIds: [params.executor.id],
+      });
+    }
 
     if (!histories.length) return [];
 

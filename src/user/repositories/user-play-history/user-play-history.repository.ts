@@ -15,7 +15,17 @@ type GetSelections =
       voiceChannelId: string;
     };
 
-type GetMostPlayedOptions = { from?: Date; to?: Date; count?: number };
+type GetLastPlayedOptions = {
+  count?: number;
+  excludeUserIds?: string[];
+};
+
+type GetMostPlayedOptions = {
+  from?: Date;
+  to?: Date;
+  count?: number;
+  excludeUserIds?: string[];
+};
 
 @Injectable()
 export class UserPlayHistoryRepository {
@@ -29,22 +39,31 @@ export class UserPlayHistoryRepository {
     await this.userPlayHistoryModel.query().insert(props).returning("*");
   }
 
-  public async getLastPlayedByUserId(userId: string, count: number): Promise<UserPlayHistory[]> {
-    return this.getLastPlayed({ userId }, count);
+  public async getLastPlayedByUserId(
+    userId: string,
+    options: GetLastPlayedOptions,
+  ): Promise<UserPlayHistory[]> {
+    return this.getLastPlayed({ userId }, options);
   }
 
   public async getLastPlayedByVoiceChannelId(
     voiceChannelId: string,
-    count: number,
+    options: GetLastPlayedOptions,
   ): Promise<UserPlayHistory[]> {
-    return this.getLastPlayed({ voiceChannelId }, count);
+    return this.getLastPlayed({ voiceChannelId }, options);
   }
 
-  public async getLastPlayedByGuildId(guildId: string, count: number): Promise<UserPlayHistory[]> {
-    return this.getLastPlayed({ guildId }, count);
+  public async getLastPlayedByGuildId(
+    guildId: string,
+    options: GetLastPlayedOptions,
+  ): Promise<UserPlayHistory[]> {
+    return this.getLastPlayed({ guildId }, options);
   }
 
-  private async getLastPlayed(selection: GetSelections, count: number): Promise<UserPlayHistory[]> {
+  private async getLastPlayed(
+    selection: GetSelections,
+    options: GetLastPlayedOptions,
+  ): Promise<UserPlayHistory[]> {
     const results = await this.userPlayHistoryModel
       .query()
       .from((builder) => {
@@ -57,11 +76,16 @@ export class UserPlayHistoryRepository {
             if ("userId" in selection) qb.where({ user_id: selection.userId });
             else if ("guildId" in selection) qb.where({ guild_id: selection.guildId });
             else qb.where({ voice_channel_id: selection.voiceChannelId });
+
+            if (options.excludeUserIds) qb.whereNotIn("user_id", options.excludeUserIds);
           })
           .as("user_play_history");
       })
       .orderBy("played_at", "desc")
-      .limit(count);
+      .modify((builder) => {
+        const { count } = options;
+        if (count) builder.limit(count);
+      });
 
     return results.map((r) => UserPlayHistoryRepositoryMapper.toDomainEntity(r));
   }
@@ -96,6 +120,8 @@ export class UserPlayHistoryRepository {
         if ("userId" in selection) qb.where({ user_id: selection.userId });
         else if ("guildId" in selection) qb.where({ guild_id: selection.guildId });
         else qb.where({ voice_channel_id: selection.voiceChannelId });
+
+        if (options.excludeUserIds) qb.whereNotIn("user_id", options.excludeUserIds);
       })
       .groupBy("user_play_history.video_id")
       .orderBy("count", "desc")

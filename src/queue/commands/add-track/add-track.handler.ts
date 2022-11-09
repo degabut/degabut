@@ -3,6 +3,7 @@ import { BadRequestException, ForbiddenException, NotFoundException } from "@nes
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { Track } from "@queue/entities";
 import { TrackAddedEvent } from "@queue/events";
+import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
 import { YoutubeService } from "@youtube/services";
@@ -42,7 +43,7 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     });
 
     const isPlayedImmediately = !queue.nowPlaying;
-    if (queue.tracks.length >= 250) throw new BadRequestException("Queue is full");
+    if (queue.tracks.length >= MAX_QUEUE_TRACKS) throw new BadRequestException("Queue is full");
 
     queue.tracks.push(track);
     this.eventBus.publish(new TrackAddedEvent({ track, isPlayedImmediately }));

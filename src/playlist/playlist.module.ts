@@ -9,5 +9,6 @@ import { PlaylistRepository, PlaylistVideoRepository } from "./repositories";
 @Module({
   imports: [DatabaseModule, YoutubeModule],
   providers: [PlaylistRepository, PlaylistVideoRepository, ...Commands, ...Queries],
+  exports: [PlaylistRepository, PlaylistVideoRepository],
 })
 export class PlaylistModule {}

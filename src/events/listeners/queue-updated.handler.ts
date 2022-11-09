@@ -14,6 +14,7 @@ import {
   TrackAddedEvent,
   TrackOrderChangedEvent,
   TrackRemovedEvent,
+  TracksAddedEvent,
   TrackSkippedEvent,
 } from "@queue/events";
 
@@ -28,6 +29,7 @@ const events = [
   QueueShuffleToggledEvent,
   QueueClearedEvent,
   TrackAddedEvent,
+  TracksAddedEvent,
   TrackRemovedEvent,
   TrackSkippedEvent,
   TrackOrderChangedEvent,

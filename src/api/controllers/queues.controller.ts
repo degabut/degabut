@@ -4,6 +4,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@n
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddTrackCommand,
+  AddTracksCommand,
   ChangeLoopTypeCommand,
   ChangeTrackOrderCommand,
   ClearQueueCommand,
@@ -43,20 +44,34 @@ export class QueuesController {
   @Post("/:id/tracks")
   @UseGuards(AuthGuard)
   async addTrack(
-    @Body() body: { videoId?: string; keyword?: string },
+    @Body() body: { videoId?: string; keyword?: string; playlistId?: string },
     @Param() params: BaseParam,
     @User() user: AuthUser,
   ) {
-    return {
-      trackId: await this.commandBus.execute(
-        new AddTrackCommand({
-          voiceChannelId: params.id,
-          keyword: body.keyword,
-          videoId: body.videoId,
-          executor: { id: user.id },
-        }),
-      ),
-    };
+    const executor = { id: user.id };
+
+    if (body.playlistId) {
+      return {
+        trackIds: await this.commandBus.execute(
+          new AddTracksCommand({
+            playlistId: body.playlistId,
+            voiceChannelId: params.id,
+            executor,
+          }),
+        ),
+      };
+    } else {
+      return {
+        trackId: await this.commandBus.execute(
+          new AddTrackCommand({
+            voiceChannelId: params.id,
+            keyword: body.keyword,
+            videoId: body.videoId,
+            executor,
+          }),
+        ),
+      };
+    }
   }
 
   @Patch("/:id/tracks/:trackId")

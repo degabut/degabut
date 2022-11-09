@@ -5,9 +5,11 @@ import { QueueProcessedHandler } from "./queue-processed.handler";
 import { TrackAddedHandler } from "./track-added.handler";
 import { TrackRemovedHandler } from "./track-removed.handler";
 import { TrackSkippedHandler } from "./track-skipped.handler";
+import { TracksAddedHandler } from "./tracks-added.handler";
 
 export const Listeners: Constructor<IEventHandler>[] = [
   TrackAddedHandler,
+  TracksAddedHandler,
   TrackRemovedHandler,
   TrackSkippedHandler,
   QueueProcessedHandler,

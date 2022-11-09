@@ -1,6 +1,5 @@
+import { Playlist } from "@playlist/entities";
 import { Exclude, Expose, plainToInstance, Transform } from "class-transformer";
-
-import { Playlist } from "../entities/Playlist";
 
 @Exclude()
 export class PlaylistDto {

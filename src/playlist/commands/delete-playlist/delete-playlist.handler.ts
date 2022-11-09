@@ -1,7 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
-import { PlaylistRepository } from "@playlist/repositories";
+import { PlaylistRepository, PlaylistVideoRepository } from "@playlist/repositories";
 
 import {
   DeletePlaylistCommand,
@@ -11,7 +11,10 @@ import {
 
 @CommandHandler(DeletePlaylistCommand)
 export class DeletePlaylistHandler implements IInferredCommandHandler<DeletePlaylistCommand> {
-  constructor(private readonly playlistRepository: PlaylistRepository) {}
+  constructor(
+    private readonly playlistRepository: PlaylistRepository,
+    private readonly playlistVideoRepository: PlaylistVideoRepository,
+  ) {}
 
   @ValidateParams(DeletePlaylistParamSchema)
   public async execute(params: DeletePlaylistCommand): Promise<DeletePlaylistResult> {
@@ -20,6 +23,9 @@ export class DeletePlaylistHandler implements IInferredCommandHandler<DeletePlay
     const playlist = await this.playlistRepository.getById(playlistId);
     if (playlist?.ownerId !== executor.id) throw new ForbiddenException("No permission");
 
-    await this.playlistRepository.delete(playlist);
+    await Promise.all([
+      this.playlistRepository.delete(playlist),
+      this.playlistVideoRepository.deleteByPlaylistId(playlist.id),
+    ]);
   }
 }

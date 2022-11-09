@@ -22,6 +22,14 @@ export class PlaylistVideoRepository {
     return result > 0;
   }
 
+  public async deleteByPlaylistId(playlistId: string): Promise<boolean> {
+    const result = await this.playlistVideoModel
+      .query()
+      .delete()
+      .where({ playlist_id: playlistId });
+    return result > 0;
+  }
+
   public async getById(id: string): Promise<PlaylistVideo | undefined> {
     const result = await PlaylistVideoModel.query().findById(id);
     return result ? PlaylistVideoRepositoryMapper.toDomainEntity(result) : undefined;

@@ -1,11 +1,12 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddPlaylistVideoCommand,
   CreatePlaylistCommand,
   RemovePlaylistVideoCommand,
+  UpdatePlaylistCommand,
 } from "@playlist/commands";
 import { GetPlaylistQuery, GetPlaylistVideosQuery } from "@playlist/queries";
 
@@ -34,6 +35,22 @@ export class PlaylistsController {
     return {
       playlistId: await this.commandBus.execute(
         new CreatePlaylistCommand({
+          name: body.name,
+          executor,
+        }),
+      ),
+    };
+  }
+
+  @Patch("/:playlistId")
+  @UseGuards(AuthGuard)
+  async updatePlaylist(@Body() body: any = {}, @Param() params: any, @User() user: AuthUser) {
+    const executor = { id: user.id };
+
+    return {
+      playlistId: await this.commandBus.execute(
+        new UpdatePlaylistCommand({
+          playlistId: params.playlistId,
           name: body.name,
           executor,
         }),

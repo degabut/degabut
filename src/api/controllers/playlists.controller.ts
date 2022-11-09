@@ -5,6 +5,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddPlaylistVideoCommand,
   CreatePlaylistCommand,
+  DeletePlaylistCommand,
   RemovePlaylistVideoCommand,
   UpdatePlaylistCommand,
 } from "@playlist/commands";
@@ -40,6 +41,19 @@ export class PlaylistsController {
         }),
       ),
     };
+  }
+
+  @Delete("/:playlistId")
+  @UseGuards(AuthGuard)
+  async deletePlaylist(@Param() params: any, @User() user: AuthUser) {
+    const executor = { id: user.id };
+
+    return await this.commandBus.execute(
+      new DeletePlaylistCommand({
+        playlistId: params.playlistId,
+        executor,
+      }),
+    );
   }
 
   @Patch("/:playlistId")

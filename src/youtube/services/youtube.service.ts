@@ -22,8 +22,6 @@ export class YoutubeService {
 
       video = this.videoToVideoCompact(newVideo);
       await this.cacheVideo(video);
-    } else {
-      console.log("get cached");
     }
 
     return video;

@@ -15,6 +15,7 @@ export type VideoModelProps = {
   view_count: number | null;
   thumbnails: ThumbnailProps[];
   channel_id: string | null;
+  updated_at: Date;
 };
 
 export class VideoModel extends Model implements VideoModelProps {
@@ -24,6 +25,7 @@ export class VideoModel extends Model implements VideoModelProps {
   view_count!: number | null;
   channel_id!: string | null;
   thumbnails!: ThumbnailProps[];
+  updated_at!: Date;
 
   channel?: ChannelModel;
 

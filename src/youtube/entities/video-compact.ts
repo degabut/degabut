@@ -8,6 +8,7 @@ interface Props {
   thumbnails: Thumbnail[];
   channel: Channel | null;
   viewCount: number | null;
+  updatedAt?: Date;
 }
 
 export class VideoCompact implements Props {
@@ -17,6 +18,7 @@ export class VideoCompact implements Props {
   public readonly thumbnails: Thumbnail[];
   public readonly channel: Channel | null;
   public readonly viewCount: number | null;
+  public readonly updatedAt: Date;
 
   constructor(props: Props) {
     this.id = props.id;
@@ -25,5 +27,6 @@ export class VideoCompact implements Props {
     this.thumbnails = props.thumbnails;
     this.channel = props.channel;
     this.viewCount = props.viewCount;
+    this.updatedAt = props.updatedAt || new Date();
   }
 }

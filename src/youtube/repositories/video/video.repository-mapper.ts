@@ -12,6 +12,7 @@ export class VideoRepositoryMapper {
       view_count: entity.viewCount,
       thumbnails: entity.thumbnails,
       channel_id: entity.channel?.id || null,
+      updated_at: entity.updatedAt,
     };
 
     return props;

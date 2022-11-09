@@ -5,14 +5,14 @@ import { Track } from "@queue/entities";
 import { TrackAddedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
-import { YoutubeiProvider } from "@youtube/providers";
+import { YoutubeService } from "@youtube/services";
 
 import { AddTrackCommand, AddTrackParamSchema, AddTrackResult } from "./add-track.command";
 
 @CommandHandler(AddTrackCommand)
 export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand> {
   constructor(
-    private readonly youtubeProvider: YoutubeiProvider,
+    private readonly youtubeService: YoutubeService,
     private readonly queueRepository: QueueRepository,
     private readonly queueService: QueueService,
     private readonly eventBus: EventBus,
@@ -28,9 +28,9 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     if (!member) throw new ForbiddenException("Missing permissions");
 
     const video = keyword
-      ? (await this.youtubeProvider.searchVideo(keyword)).shift()
+      ? await this.youtubeService.searchOneVideo(keyword)
       : videoId
-      ? await this.youtubeProvider.getVideo(videoId)
+      ? await this.youtubeService.getVideo(videoId)
       : undefined;
 
     if (!video) throw new BadRequestException("Video not found");

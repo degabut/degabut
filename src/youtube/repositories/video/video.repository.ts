@@ -11,9 +11,15 @@ export class VideoRepository {
     private readonly videoModel: typeof VideoModel,
   ) {}
 
-  public async upsert(video: VideoCompact): Promise<void> {
-    const model = VideoRepositoryMapper.toRepository(video);
-    await this.videoModel.query().insert(model).onConflict("id").merge();
+  public async upsert(video: VideoCompact | VideoCompact[]): Promise<void> {
+    const videos = Array.isArray(video) ? video : [video];
+    const models = videos.map(VideoRepositoryMapper.toRepository);
+    await this.videoModel.query().insert(models).onConflict("id").merge();
+  }
+
+  public async getById(id: string): Promise<VideoCompact | undefined> {
+    const result = await this.videoModel.query().findById(id).withGraphJoined("channel");
+    return result ? VideoRepositoryMapper.toDomainEntity(result) : undefined;
   }
 
   public async getByIds(ids: string[]): Promise<VideoCompact[]> {

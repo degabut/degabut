@@ -10,7 +10,10 @@ import { TimeUtil } from "./time.util";
 const numbers = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 
 export class DiscordUtil {
-  static videoToMessageButton(video: Video | VideoCompact, index: number): ButtonBuilder {
+  static videoToMessageButton(
+    video: Omit<Video | VideoCompact, "updatedAt">,
+    index: number,
+  ): ButtonBuilder {
     return new ButtonBuilder({
       customId: `play/${video.id}`,
       label: video.title.length < 20 ? video.title : video.title.substring(0, 20) + "...",
@@ -19,7 +22,10 @@ export class DiscordUtil {
     });
   }
 
-  static videoToEmbedField(video: Video | VideoCompact, index: number): EmbedField {
+  static videoToEmbedField(
+    video: Omit<Video | VideoCompact, "updatedAt">,
+    index: number,
+  ): EmbedField {
     return {
       name: `${numbers[index]} ${video.title}`,
       value: [

@@ -4,8 +4,8 @@ import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistVideo } from "@playlist/entities";
 import { MAX_VIDEO_PER_PLAYLIST } from "@playlist/playlist.constant";
 import { PlaylistRepository, PlaylistVideoRepository } from "@playlist/repositories";
-import { YoutubeiProvider } from "@youtube/providers";
 import { ChannelRepository, VideoRepository } from "@youtube/repositories";
+import { YoutubeService } from "@youtube/services";
 
 import {
   AddPlaylistVideoCommand,
@@ -20,7 +20,7 @@ export class AddPlaylistVideoHandler implements IInferredCommandHandler<AddPlayl
     private readonly channelRepository: ChannelRepository,
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistVideoRepository,
-    private readonly youtubeProvider: YoutubeiProvider,
+    private readonly youtubeService: YoutubeService,
   ) {}
 
   @ValidateParams(AddPlaylistVideoParamSchema)
@@ -35,7 +35,7 @@ export class AddPlaylistVideoHandler implements IInferredCommandHandler<AddPlayl
       throw new BadRequestException("Playlist video limit reached");
     }
 
-    const video = await this.youtubeProvider.getVideo(videoId);
+    const video = await this.youtubeService.getVideo(videoId);
     if (!video) throw new BadRequestException("Video not found");
 
     const playlistVideo = new PlaylistVideo({

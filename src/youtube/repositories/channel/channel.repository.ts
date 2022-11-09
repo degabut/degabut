@@ -11,8 +11,10 @@ export class ChannelRepository {
     private readonly channelModel: typeof ChannelModel,
   ) {}
 
-  public async upsert(video: Channel): Promise<void> {
-    const props = ChannelRepositoryMapper.toRepository(video);
+  public async upsert(channel: Channel | Channel[]): Promise<void> {
+    const channels = Array.isArray(channel) ? channel : [channel];
+
+    const props = channels.map(ChannelRepositoryMapper.toRepository);
     await this.channelModel.query().insert(props).onConflict("id").merge();
   }
 }

@@ -2,6 +2,7 @@ import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
+import { GetPlaylistsQuery } from "@playlist/queries";
 import { GetQueueQuery } from "@queue/queries";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
 
@@ -59,6 +60,14 @@ export class UsersController {
             ...selections,
           }),
         );
+  }
+
+  @Get("/me/playlists")
+  @UseGuards(AuthGuard)
+  getSelfPlaylists(@User() user: AuthUser) {
+    const executor = { id: user.id };
+
+    return this.queryBus.execute(new GetPlaylistsQuery({ executor }));
   }
 
   @Get("/me/queue")

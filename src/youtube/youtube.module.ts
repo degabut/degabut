@@ -9,6 +9,6 @@ import { ChannelRepository, VideoRepository } from "./repositories";
 @Module({
   imports: [DatabaseModule],
   providers: [YoutubeiProvider, VideoRepository, ChannelRepository, ...Queries, ...Listeners],
-  exports: [YoutubeiProvider, VideoRepository],
+  exports: [YoutubeiProvider, VideoRepository, ChannelRepository],
 })
 export class YoutubeModule {}

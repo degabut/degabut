@@ -4,6 +4,7 @@ import { DatabaseModule } from "@database/database.module";
 import { DiscordBotModule } from "@discord-bot/discord-bot.module";
 import { EventsModule } from "@events/events.module";
 import { Logger, Module } from "@nestjs/common";
+import { PlaylistModule } from "@playlist/playlist.module";
 import { QueueModule } from "@queue/queue.module";
 import { UserModule } from "@user/user.module";
 
@@ -16,6 +17,7 @@ import { UserModule } from "@user/user.module";
     DiscordBotModule,
     ApiModule,
     EventsModule,
+    PlaylistModule,
   ],
 })
 export class AppModule {

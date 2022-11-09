@@ -38,8 +38,8 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     if (!videos.length) throw new BadRequestException("Playlist is empty");
 
     const tracks = videos
-      .map((p) => new Track({ queue, video: p.video!, requestedBy: member }))
-      .slice(0, MAX_QUEUE_TRACKS - queue.tracks.length);
+      .slice(0, MAX_QUEUE_TRACKS - queue.tracks.length)
+      .map((p) => new Track({ queue, video: p.video!, requestedBy: member }));
 
     if (!tracks.length) throw new BadRequestException("Queue is full");
 

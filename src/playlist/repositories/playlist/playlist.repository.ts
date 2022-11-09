@@ -10,6 +10,10 @@ export class PlaylistRepository {
     return PlaylistRepositoryMapper.toDomainEntity(result);
   }
 
+  public async delete(playlist: Playlist): Promise<void> {
+    await PlaylistModel.query().deleteById(playlist.id);
+  }
+
   public async update(playlist: Playlist): Promise<Playlist> {
     const props = PlaylistRepositoryMapper.toRepository(playlist);
     const [result] = await PlaylistModel.query()

@@ -13,6 +13,9 @@ export class PlaylistDto {
   ownerId!: number;
 
   @Expose()
+  videoCount!: number;
+
+  @Expose()
   @Transform(({ value }) => value?.toISOString() || null)
   createdAt!: string;
 

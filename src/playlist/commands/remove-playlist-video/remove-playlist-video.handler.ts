@@ -32,6 +32,12 @@ export class RemovePlaylistVideoHandler
     const playlistVideo = await this.playlistVideoRepository.getById(playlistVideoId);
     if (!playlistVideo) throw new NotFoundException("Playlist video not found");
 
-    await this.playlistVideoRepository.deleteById(playlistVideoId);
+    const count = await this.playlistVideoRepository.getCountByPlaylistId(playlistId);
+    playlist.videoCount = count - 1;
+
+    await Promise.all([
+      this.playlistRepository.update(playlist),
+      this.playlistVideoRepository.deleteById(playlistVideoId),
+    ]);
   }
 }

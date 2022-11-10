@@ -45,9 +45,12 @@ export class AddPlaylistVideoHandler implements IInferredCommandHandler<AddPlayl
       createdBy: executor.id,
     });
 
+    playlist.videoCount = count + 1;
+
     await this.videoRepository.upsert(video);
     await Promise.all([
       video.channel && this.channelRepository.upsert(video.channel),
+      this.playlistRepository.update(playlist),
       this.playlistVideoRepository.insert(playlistVideo),
     ]);
 

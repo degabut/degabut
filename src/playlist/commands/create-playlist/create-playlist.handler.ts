@@ -24,6 +24,7 @@ export class CreatePlaylistHandler implements IInferredCommandHandler<CreatePlay
 
     let playlist = new Playlist({
       name,
+      videoCount: 0,
       ownerId: executor.id,
     });
 

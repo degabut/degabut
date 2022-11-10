@@ -8,6 +8,7 @@ export class PlaylistRepositoryMapper {
       id: entity.id,
       name: entity.name,
       owner_id: entity.ownerId,
+      video_count: entity.videoCount,
       created_at: entity.createdAt,
       updated_at: entity.updatedAt,
     };
@@ -20,6 +21,7 @@ export class PlaylistRepositoryMapper {
       id: props.id,
       name: props.name,
       ownerId: props.owner_id,
+      videoCount: props.video_count,
       createdAt: new Date(props.created_at),
       updatedAt: new Date(props.updated_at),
     });

@@ -24,7 +24,7 @@ export class PlaylistRepository {
   }
 
   public async getByUserId(userId: string): Promise<Playlist[]> {
-    const query = PlaylistModel.query().where({ owner_id: userId });
+    const query = PlaylistModel.query().where({ owner_id: userId }).orderBy("created_at", "desc");
     const result = await query;
 
     return result.map(PlaylistRepositoryMapper.toDomainEntity);

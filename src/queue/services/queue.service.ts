@@ -24,9 +24,6 @@ export class QueueService {
     }
 
     queue.tracks.splice(index, 1);
-    if (removed.id === queue.nowPlaying?.id) {
-      this.processQueue(queue);
-    }
 
     return removed;
   }

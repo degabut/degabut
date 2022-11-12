@@ -8,10 +8,14 @@ export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEven
   constructor(private readonly userPlayHistoryRepository: UserPlayHistoryRepository) {}
 
   public async handle({ track }: TrackAudioEndedEvent): Promise<void> {
+    const userId = track.requestedBy.id;
+    const isUserInVoice = track.queue.voiceChannel.members.some((m) => m.id === userId);
+    if (!isUserInVoice) return;
+
     await this.userPlayHistoryRepository.insert(
       new UserPlayHistory({
         playedAt: new Date(),
-        userId: track.requestedBy.id,
+        userId,
         guildId: track.queue.guildId,
         voiceChannelId: track.queue.voiceChannelId,
         videoId: track.video.id,

@@ -23,9 +23,7 @@ export class DeletePlaylistHandler implements IInferredCommandHandler<DeletePlay
     const playlist = await this.playlistRepository.getById(playlistId);
     if (playlist?.ownerId !== executor.id) throw new ForbiddenException("No permission");
 
-    await Promise.all([
-      this.playlistRepository.delete(playlist),
-      this.playlistVideoRepository.deleteByPlaylistId(playlist.id),
-    ]);
+    await this.playlistVideoRepository.deleteByPlaylistId(playlist.id);
+    await this.playlistRepository.delete(playlist);
   }
 }

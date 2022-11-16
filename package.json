@@ -47,7 +47,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "uuid": "^8.3.2",
-    "youtubei": "1.0.0-rc.3",
+    "youtubei": "1.0.0-rc.6",
     "ytdl-core": "4.11.2"
   },
   "devDependencies": {

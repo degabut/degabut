@@ -52,7 +52,7 @@ specifiers:
   typescript: ^4.3.5
   uuid: ^8.3.2
   webpack: ^5.0.0
-  youtubei: 1.0.0-rc.3
+  youtubei: 1.0.0-rc.6
   ytdl-core: 4.11.2
 
 dependencies:
@@ -81,7 +81,7 @@ dependencies:
   rimraf: 3.0.2
   rxjs: 7.5.6
   uuid: 8.3.2
-  youtubei: 1.0.0-rc.3
+  youtubei: 1.0.0-rc.6
   ytdl-core: 4.11.2
 
 devDependencies:
@@ -5759,8 +5759,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /youtubei/1.0.0-rc.3:
-    resolution: {integrity: sha512-AyXPRgtPlfjM+mKKB9w1uMjJMIMplbmIIncMLkSCG00i0LSTrwWtnZXf9N9arzjXRoBa/3wZ1K9TdnmpQV6BqQ==}
+  /youtubei/1.0.0-rc.6:
+    resolution: {integrity: sha512-9LF0y+nloRA/67EBQChmG3gooIZjhvOC2WET78io2zEWjuGp90TBMdLVgEO0EHGj4keKUlBVwNL/Tr/YVsjbbg==}
     dependencies:
       node-fetch: 2.6.7
       protocol-buffers: 5.0.0

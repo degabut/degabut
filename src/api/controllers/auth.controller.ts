@@ -1,13 +1,13 @@
-import { GetTokenQuery } from "@auth/queries/get-token";
+import { GetTokenCommand } from "@auth/commands/get-token";
 import { Body, Controller, Post } from "@nestjs/common";
-import { QueryBus } from "@nestjs/cqrs";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly queryBus: QueryBus) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @Post()
-  getAccessToken(@Body() body: { code: string }) {
-    return this.queryBus.execute(new GetTokenQuery({ code: body.code }));
+  getAccessToken(@Body() body: { code: string; redirectUri: string }) {
+    return this.commandBus.execute(new GetTokenCommand(body));
   }
 }

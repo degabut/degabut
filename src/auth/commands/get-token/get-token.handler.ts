@@ -1,21 +1,24 @@
 import { DiscordOAuthProvider, JwtAuthProvider } from "@auth/providers";
 import { ValidateParams } from "@common/decorators";
 import { UnauthorizedException } from "@nestjs/common";
-import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 
-import { GetTokenParamSchema, GetTokenQuery, GetTokenResult } from "./get-token.query";
+import { GetTokenCommand, GetTokenParamSchema, GetTokenResult } from "./get-token.command";
 
-@QueryHandler(GetTokenQuery)
-export class GetTokenHandler implements IInferredQueryHandler<GetTokenQuery> {
+@CommandHandler(GetTokenCommand)
+export class GetTokenHandler implements IInferredCommandHandler<GetTokenCommand> {
   constructor(
     private readonly discordOAuthProvider: DiscordOAuthProvider,
     private readonly jwtAuthProvider: JwtAuthProvider,
   ) {}
 
   @ValidateParams(GetTokenParamSchema)
-  public async execute(params: GetTokenQuery): Promise<GetTokenResult> {
+  public async execute(params: GetTokenCommand): Promise<GetTokenResult> {
     try {
-      const accessToken = await this.discordOAuthProvider.getAccessToken(params.code);
+      const accessToken = await this.discordOAuthProvider.getAccessToken(
+        params.code,
+        params.redirectUri,
+      );
       const user = await this.discordOAuthProvider.getCurrentUser(accessToken);
 
       const token = this.jwtAuthProvider.sign(user.id);

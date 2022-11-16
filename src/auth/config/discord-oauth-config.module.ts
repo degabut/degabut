@@ -5,7 +5,6 @@ import * as Joi from "joi";
 export const discordOAuthConfig = registerAs("discord-oauth", () => ({
   clientId: process.env.DISCORD_OAUTH_CLIENT_ID as string,
   clientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET as string,
-  redirectUri: process.env.DISCORD_OAUTH_REDIRECT_URI as string,
   botToken: process.env.TOKEN as string,
 }));
 
@@ -17,7 +16,6 @@ export const discordOAuthConfig = registerAs("discord-oauth", () => ({
         TOKEN: Joi.string().required(),
         DISCORD_OAUTH_CLIENT_ID: Joi.string().required(),
         DISCORD_OAUTH_CLIENT_SECRET: Joi.string().required(),
-        DISCORD_OAUTH_REDIRECT_URI: Joi.string().required(),
       }),
       validationOptions: {
         abortEarly: false,

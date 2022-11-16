@@ -12,7 +12,6 @@ import {
 export class DiscordOAuthProvider {
   private readonly clientId: string;
   private readonly clientSecret: string;
-  private readonly redirectUri: string;
   private readonly botToken: string;
 
   constructor(
@@ -24,11 +23,10 @@ export class DiscordOAuthProvider {
 
     this.clientId = config.clientId;
     this.clientSecret = config.clientSecret;
-    this.redirectUri = config.redirectUri;
     this.botToken = config.botToken;
   }
 
-  async getAccessToken(code: string): Promise<string> {
+  async getAccessToken(code: string, redirectUri: string): Promise<string> {
     const response = await this.httpService.axiosRef.post<RESTPostOAuth2AccessTokenResult>(
       "/oauth2/token",
       new URLSearchParams({
@@ -36,7 +34,7 @@ export class DiscordOAuthProvider {
         code,
         client_id: this.clientId,
         client_secret: this.clientSecret,
-        redirect_uri: this.redirectUri,
+        redirect_uri: redirectUri,
       }),
     );
 

@@ -29,12 +29,13 @@ export class QueuePrefixCommand implements IPrefixCommand {
 
     const { tracks, nowPlaying } = queue;
     const totalLength = tracks.length;
+    const slicedTracks = tracks.slice((page - 1) * perPage, page * perPage);
 
     const start = (page - 1) * perPage;
     const embed = new EmbedBuilder({
       title: "Queue",
       description: `Showing page **${page}** / **${Math.ceil(totalLength / perPage)}**`,
-      fields: tracks.map((track, index) => {
+      fields: slicedTracks.map((track, index) => {
         let name = `${start + index + 1}. ${track.video.title}`;
         if (track.id === nowPlaying?.id) name = `__${name}__`;
 

@@ -26,6 +26,13 @@ type TrackParam = BaseParam & {
   trackId: string;
 };
 
+type AddTracksBody = {
+  videoId?: string;
+  keyword?: string;
+  playlistId?: string;
+  youtubePlaylistId?: string;
+};
+
 @Controller("queues")
 export class QueuesController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
@@ -43,18 +50,15 @@ export class QueuesController {
 
   @Post("/:id/tracks")
   @UseGuards(AuthGuard)
-  async addTrack(
-    @Body() body: { videoId?: string; keyword?: string; playlistId?: string },
-    @Param() params: BaseParam,
-    @User() user: AuthUser,
-  ) {
+  async addTrack(@Body() body: AddTracksBody, @Param() params: BaseParam, @User() user: AuthUser) {
     const executor = { id: user.id };
 
-    if (body.playlistId) {
+    if (body.playlistId || body.youtubePlaylistId) {
       return {
         trackIds: await this.commandBus.execute(
           new AddTracksCommand({
             playlistId: body.playlistId,
+            youtubePlaylistId: body.youtubePlaylistId,
             voiceChannelId: params.id,
             executor,
           }),

@@ -7,6 +7,8 @@ import { TracksAddedEvent } from "@queue/events";
 import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
+import { VideoCompact } from "@youtube/entities";
+import { YoutubeiProvider } from "@youtube/providers";
 
 import { AddTracksCommand, AddTracksParamSchema, AddTracksResult } from "./add-tracks.command";
 
@@ -17,12 +19,13 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistVideoRepository,
     private readonly queueService: QueueService,
+    private readonly youtubeProvider: YoutubeiProvider,
     private readonly eventBus: EventBus,
   ) {}
 
   @ValidateParams(AddTracksParamSchema)
   public async execute(params: AddTracksCommand): Promise<AddTracksResult> {
-    const { playlistId, executor, voiceChannelId } = params;
+    const { playlistId, youtubePlaylistId, executor, voiceChannelId } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
@@ -30,16 +33,24 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     const member = queue.voiceChannel.members.find((m) => m.id === executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    const playlist = await this.playlistRepository.getById(playlistId);
-    if (!playlist) throw new NotFoundException("Playlist not found");
-    if (playlist?.ownerId !== executor.id) throw new ForbiddenException("Missing permissions");
+    let videos: VideoCompact[] = [];
 
-    const videos = await this.playlistVideoRepository.getByPlaylistId(playlist.id);
+    if (playlistId) {
+      const playlist = await this.playlistRepository.getById(playlistId);
+      if (!playlist) throw new NotFoundException("Playlist not found");
+      if (playlist?.ownerId !== executor.id) throw new ForbiddenException("Missing permissions");
+
+      const playlistVideos = await this.playlistVideoRepository.getByPlaylistId(playlist.id);
+      videos = playlistVideos.map((pv) => pv.video!);
+    } else if (youtubePlaylistId) {
+      videos = await this.youtubeProvider.getPlaylistVideos(youtubePlaylistId);
+    }
+
     if (!videos.length) throw new BadRequestException("Playlist is empty");
 
     const tracks = videos
       .slice(0, MAX_QUEUE_TRACKS - queue.tracks.length)
-      .map((p) => new Track({ queue, video: p.video!, requestedBy: member }));
+      .map((video) => new Track({ queue, video, requestedBy: member }));
 
     if (!tracks.length) throw new BadRequestException("Queue is full");
 

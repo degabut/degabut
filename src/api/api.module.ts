@@ -9,6 +9,7 @@ import {
   QueuesController,
   UsersController,
   VideosController,
+  YoutubeController,
 } from "./controllers";
 
 @Module({
@@ -20,6 +21,7 @@ import {
     UsersController,
     VideosController,
     QueuesController,
+    YoutubeController,
   ],
 })
 export class ApiModule {}

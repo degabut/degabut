@@ -9,7 +9,7 @@ export class TrackAudioFinishedHandler implements IEventHandler<TrackAudioFinish
 
   public async handle({ track }: TrackAudioFinishedEvent): Promise<void> {
     const userId = track.requestedBy.id;
-    const isUserInVoice = track.queue.voiceChannel.members.some((m) => m.id === userId);
+    const isUserInVoice = track.queue.hasMember(userId);
     if (!isUserInVoice) return;
 
     await this.userPlayHistoryRepository.insert(

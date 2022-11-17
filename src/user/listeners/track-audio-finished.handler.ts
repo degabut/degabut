@@ -1,13 +1,13 @@
-import { TrackAudioEndedEvent } from "@discord-bot/events";
+import { TrackAudioFinishedEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { UserPlayHistory } from "@user/entities";
 import { UserPlayHistoryRepository } from "@user/repositories";
 
-@EventsHandler(TrackAudioEndedEvent)
-export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEvent> {
+@EventsHandler(TrackAudioFinishedEvent)
+export class TrackAudioFinishedHandler implements IEventHandler<TrackAudioFinishedEvent> {
   constructor(private readonly userPlayHistoryRepository: UserPlayHistoryRepository) {}
 
-  public async handle({ track }: TrackAudioEndedEvent): Promise<void> {
+  public async handle({ track }: TrackAudioFinishedEvent): Promise<void> {
     const userId = track.requestedBy.id;
     const isUserInVoice = track.queue.voiceChannel.members.some((m) => m.id === userId);
     if (!isUserInVoice) return;

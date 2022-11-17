@@ -2,6 +2,7 @@ import { QueuePlayer } from "@discord-bot/entities/queue-player";
 import {
   TrackAudioEndedEvent,
   TrackAudioErrorEvent,
+  TrackAudioFinishedEvent,
   TrackAudioStartedEvent,
   VoiceChannelChangedEvent,
   VoiceReadyEvent,
@@ -72,8 +73,12 @@ export class QueuePlayerService {
         oldState.status !== AudioPlayerStatus.Idle &&
         player.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed
       ) {
-        const track = (oldState.resource as AudioResource<Track>).metadata;
+        const resource = oldState.resource as AudioResource<Track>;
+        const track = resource.metadata;
+        const isFinished = Math.abs(track.video.duration - resource.playbackDuration / 1000) < 3;
+
         this.eventBus.publish(new TrackAudioEndedEvent({ track }));
+        if (isFinished) this.eventBus.publish(new TrackAudioFinishedEvent({ track }));
       } else if (newState.status === AudioPlayerStatus.Playing) {
         const track = (newState.resource as AudioResource<Track>).metadata;
         this.eventBus.publish(new TrackAudioStartedEvent({ track }));

@@ -4,7 +4,6 @@ import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistVideo } from "@playlist/entities";
 import { MAX_VIDEO_PER_PLAYLIST } from "@playlist/playlist.constant";
 import { PlaylistRepository, PlaylistVideoRepository } from "@playlist/repositories";
-import { ChannelRepository, VideoRepository } from "@youtube/repositories";
 import { YoutubeService } from "@youtube/services";
 
 import {
@@ -16,8 +15,6 @@ import {
 @CommandHandler(AddPlaylistVideoCommand)
 export class AddPlaylistVideoHandler implements IInferredCommandHandler<AddPlaylistVideoCommand> {
   constructor(
-    private readonly videoRepository: VideoRepository,
-    private readonly channelRepository: ChannelRepository,
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistVideoRepository,
     private readonly youtubeService: YoutubeService,
@@ -47,9 +44,7 @@ export class AddPlaylistVideoHandler implements IInferredCommandHandler<AddPlayl
 
     playlist.videoCount = count + 1;
 
-    await this.videoRepository.upsert(video);
     await Promise.all([
-      video.channel && this.channelRepository.upsert(video.channel),
       this.playlistRepository.update(playlist),
       this.playlistVideoRepository.insert(playlistVideo),
     ]);

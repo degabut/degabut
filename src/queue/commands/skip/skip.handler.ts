@@ -3,7 +3,6 @@ import { ForbiddenException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { TrackSkippedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
-import { QueueService } from "@queue/services";
 
 import { SkipCommand, SkipParamSchema } from "./skip.command";
 
@@ -11,7 +10,6 @@ import { SkipCommand, SkipParamSchema } from "./skip.command";
 export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
   constructor(
     private readonly queueRepository: QueueRepository,
-    private readonly queueService: QueueService,
     private readonly eventBus: EventBus,
   ) {}
 
@@ -27,6 +25,5 @@ export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
     if (!track) return;
 
     this.eventBus.publish(new TrackSkippedEvent({ track, executor }));
-    this.queueService.processQueue(queue);
   }
 }

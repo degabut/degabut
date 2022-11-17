@@ -7,6 +7,8 @@ export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEven
   constructor(private readonly queueService: QueueService) {}
 
   public async handle({ track }: TrackAudioEndedEvent): Promise<void> {
+    const queue = track.queue;
+    if (queue.shuffle) queue.shuffleHistoryIds.push(track.id);
     this.queueService.processQueue(track.queue);
   }
 }

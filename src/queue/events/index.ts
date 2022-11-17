@@ -10,6 +10,7 @@ export * from "./queue-pause-state-changed.event";
 export * from "./queue-processed.event";
 export * from "./queue-shuffle-toggled.event";
 export * from "./track-added.event";
+export * from "./track-marked-play-next.event";
 export * from "./track-order-changed.event";
 export * from "./track-removed.event";
 export * from "./track-skipped.event";

@@ -1,8 +1,8 @@
 import { ValidateParams } from "@common/decorators";
 import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
+import { TrackMarkedPlayNextEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
-import { QueueService } from "@queue/services";
 
 import { PlayTrackCommand, PlayTrackParamSchema } from "./play-track.command";
 
@@ -10,7 +10,7 @@ import { PlayTrackCommand, PlayTrackParamSchema } from "./play-track.command";
 export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackCommand> {
   constructor(
     private readonly queueRepository: QueueRepository,
-    private readonly queueService: QueueService,
+    private readonly eventBus: EventBus,
   ) {}
 
   @ValidateParams(PlayTrackParamSchema)
@@ -27,7 +27,7 @@ export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackComman
       throw new BadRequestException("Track is currently playing");
 
     queue.nextTrack = track;
-    this.queueService.processQueue(queue);
+    this.eventBus.publish(new TrackMarkedPlayNextEvent({ track, executor }));
 
     return track.id;
   }

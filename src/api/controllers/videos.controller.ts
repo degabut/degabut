@@ -4,6 +4,7 @@ import { QueryBus } from "@nestjs/cqrs";
 import { GetVideoQuery } from "@youtube/queries/get-video/get-video.query";
 import { SearchVideoQuery } from "@youtube/queries/search-video/search-video.query";
 
+// TODO remove this, replaced by YoutubeController
 @Controller("videos")
 export class VideosController {
   constructor(private readonly queryBus: QueryBus) {}

@@ -11,18 +11,37 @@ import {
 } from "@playlist/commands";
 import { GetPlaylistQuery, GetPlaylistVideosQuery } from "@playlist/queries";
 
+type PlaylistIdParams = {
+  playlistId: string;
+};
+
+type CreatePlaylistBody = {
+  name: string;
+};
+
+type EditPlaylistBody = CreatePlaylistBody;
+
+type AddVideoBody = {
+  videoId: string;
+};
+
+type RemoveVideoParams = {
+  playlistId: string;
+  playlistVideoId: string;
+};
+
 @Controller("playlists")
 export class PlaylistsController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
 
   @Get("/:playlistId")
   @UseGuards(AuthGuard)
-  getPlaylist(@Param() params: any, @User() user: AuthUser) {
+  getPlaylist(@Param() params: PlaylistIdParams, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return this.queryBus.execute(
       new GetPlaylistQuery({
-        playlistId: params.playlistId,
+        ...params,
         executor,
       }),
     );
@@ -30,13 +49,13 @@ export class PlaylistsController {
 
   @Post("/")
   @UseGuards(AuthGuard)
-  async createPlaylist(@Body() body: any = {}, @User() user: AuthUser) {
+  async createPlaylist(@Body() body: CreatePlaylistBody, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return {
       playlistId: await this.commandBus.execute(
         new CreatePlaylistCommand({
-          name: body.name,
+          ...body,
           executor,
         }),
       ),
@@ -45,12 +64,12 @@ export class PlaylistsController {
 
   @Delete("/:playlistId")
   @UseGuards(AuthGuard)
-  async deletePlaylist(@Param() params: any, @User() user: AuthUser) {
+  async deletePlaylist(@Param() params: PlaylistIdParams, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return await this.commandBus.execute(
       new DeletePlaylistCommand({
-        playlistId: params.playlistId,
+        ...params,
         executor,
       }),
     );
@@ -58,14 +77,18 @@ export class PlaylistsController {
 
   @Patch("/:playlistId")
   @UseGuards(AuthGuard)
-  async updatePlaylist(@Body() body: any = {}, @Param() params: any, @User() user: AuthUser) {
+  async updatePlaylist(
+    @Body() body: EditPlaylistBody,
+    @Param() params: PlaylistIdParams,
+    @User() user: AuthUser,
+  ) {
     const executor = { id: user.id };
 
     return {
       playlistId: await this.commandBus.execute(
         new UpdatePlaylistCommand({
-          playlistId: params.playlistId,
-          name: body.name,
+          ...params,
+          ...body,
           executor,
         }),
       ),
@@ -74,12 +97,12 @@ export class PlaylistsController {
 
   @Get("/:playlistId/videos")
   @UseGuards(AuthGuard)
-  getPlaylistVideos(@Param() params: any, @User() user: AuthUser) {
+  getPlaylistVideos(@Param() params: PlaylistIdParams, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return this.queryBus.execute(
       new GetPlaylistVideosQuery({
-        playlistId: params.playlistId,
+        ...params,
         executor,
       }),
     );
@@ -87,29 +110,32 @@ export class PlaylistsController {
 
   @Post("/:playlistId/videos")
   @UseGuards(AuthGuard)
-  async addPlaylistVideo(@Body() body: any = {}, @Param() params: any, @User() user: AuthUser) {
+  async addPlaylistVideo(
+    @Body() body: AddVideoBody,
+    @Param() params: PlaylistIdParams,
+    @User() user: AuthUser,
+  ) {
     const executor = { id: user.id };
 
     return {
       playlistVideoId: await this.commandBus.execute(
         new AddPlaylistVideoCommand({
-          playlistId: params.playlistId,
-          videoId: body.videoId,
+          ...params,
+          ...body,
           executor,
         }),
       ),
     };
   }
 
-  @Delete("/:playlistId/videos/:videoId")
+  @Delete("/:playlistId/videos/:playlistVideoId")
   @UseGuards(AuthGuard)
-  removePlaylistVideo(@Param() params: any, @User() user: AuthUser) {
+  removePlaylistVideo(@Param() params: RemoveVideoParams, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return this.commandBus.execute(
       new RemovePlaylistVideoCommand({
-        playlistId: params.playlistId,
-        playlistVideoId: params.videoId,
+        ...params,
         executor,
       }),
     );

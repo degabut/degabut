@@ -18,11 +18,11 @@ import {
 import { LoopType } from "@queue/entities";
 import { GetQueueQuery } from "@queue/queries";
 
-type BaseParam = {
-  id: string;
+type VoiceChannelIdParams = {
+  voiceChannelId: string;
 };
 
-type TrackParam = BaseParam & {
+type TrackParam = VoiceChannelIdParams & {
   trackId: string;
 };
 
@@ -33,33 +33,40 @@ type AddTracksBody = {
   youtubePlaylistId?: string;
 };
 
+type ChangeTrackOrderBody = { to: number };
+
+type ChangeLoopTypeBody = { loopType: LoopType };
+
+type JamBody = { count: number };
+
 @Controller("queues")
 export class QueuesController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
 
-  @Get("/:id")
+  @Get("/:voiceChannelId")
   @UseGuards(AuthGuard)
-  getQueue(@User() user: AuthUser, @Param() params: BaseParam) {
+  getQueue(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     return this.queryBus.execute(
       new GetQueueQuery({
-        voiceChannelId: params.id,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Post("/:id/tracks")
+  @Post("/:voiceChannelId/tracks")
   @UseGuards(AuthGuard)
-  async addTrack(@Body() body: AddTracksBody, @Param() params: BaseParam, @User() user: AuthUser) {
-    const executor = { id: user.id };
-
-    if (body.playlistId || body.youtubePlaylistId) {
+  async addTrack(
+    @Body() body: AddTracksBody | undefined,
+    @Param() params: VoiceChannelIdParams,
+    @User() executor: AuthUser,
+  ) {
+    if (body && ("playlistId" in body || "youtubePlaylistId" in body)) {
       return {
         trackIds: await this.commandBus.execute(
           new AddTracksCommand({
-            playlistId: body.playlistId,
-            youtubePlaylistId: body.youtubePlaylistId,
-            voiceChannelId: params.id,
+            ...params,
+            ...body,
             executor,
           }),
         ),
@@ -68,9 +75,8 @@ export class QueuesController {
       return {
         trackId: await this.commandBus.execute(
           new AddTrackCommand({
-            voiceChannelId: params.id,
-            keyword: body.keyword,
-            videoId: body.videoId,
+            ...params,
+            ...body,
             executor,
           }),
         ),
@@ -78,133 +84,134 @@ export class QueuesController {
     }
   }
 
-  @Patch("/:id/tracks/:trackId")
+  @Patch("/:voiceChannelId/tracks/:trackId")
   @UseGuards(AuthGuard)
   async changeTrackOrder(
-    @Body() body: { to: number },
+    @Body() body: ChangeTrackOrderBody,
     @Param() params: TrackParam,
-    @User() user: AuthUser,
+    @User() executor: AuthUser,
   ) {
     await this.commandBus.execute(
       new ChangeTrackOrderCommand({
-        voiceChannelId: params.id,
-        trackId: params.trackId,
-        to: body.to,
-        executor: { id: user.id },
+        ...params,
+        ...body,
+        executor,
       }),
     );
   }
 
-  @Patch("/:id/loop-type")
+  @Patch("/:voiceChannelId/loop-type")
   @UseGuards(AuthGuard)
   async changeLoopType(
-    @Body() body: { loopType: LoopType },
-    @Param() params: BaseParam,
-    @User() user: AuthUser,
+    @Body() body: ChangeLoopTypeBody,
+    @Param() params: VoiceChannelIdParams,
+    @User() executor: AuthUser,
   ) {
     await this.commandBus.execute(
       new ChangeLoopTypeCommand({
-        voiceChannelId: params.id,
-        loopType: body.loopType,
-        executor: { id: user.id },
+        ...params,
+        ...body,
+        executor,
       }),
     );
   }
 
-  @Patch("/:id/shuffle")
+  @Patch("/:voiceChannelId/shuffle")
   @UseGuards(AuthGuard)
-  async toggleShuffle(@Param() params: BaseParam, @User() user: AuthUser) {
+  async toggleShuffle(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new ToggleShuffleCommand({
-        voiceChannelId: params.id,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Post("/:id/tracks/:trackId/play")
+  @Post("/:voiceChannelId/tracks/:trackId/play")
   @UseGuards(AuthGuard)
-  async playTrack(@Param() params: TrackParam, @User() user: AuthUser) {
+  async playTrack(@Param() params: TrackParam, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new PlayTrackCommand({
-        voiceChannelId: params.id,
-        trackId: params.trackId,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Delete("/:id/tracks/:trackId")
+  @Delete("/:voiceChannelId/tracks/:trackId")
   @UseGuards(AuthGuard)
-  async removeTrack(@Param() params: TrackParam, @User() user: AuthUser) {
+  async removeTrack(@Param() params: TrackParam, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new RemoveTrackCommand({
-        voiceChannelId: params.id,
-        trackId: params.trackId,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Delete("/:id/tracks")
+  @Delete("/:voiceChannelId/tracks")
   @UseGuards(AuthGuard)
   async removeTracks(
-    @Param() params: BaseParam,
+    @Param() params: VoiceChannelIdParams,
     @Body() body: { includeNowPlaying?: boolean },
-    @User() user: AuthUser,
+    @User() executor: AuthUser,
   ) {
     await this.commandBus.execute(
       new ClearQueueCommand({
-        voiceChannelId: params.id,
+        ...params,
         removeNowPlaying: !!body.includeNowPlaying,
-        executor: { id: user.id },
+        executor,
       }),
     );
   }
 
-  @Post("/:id/skip")
+  @Post("/:voiceChannelId/skip")
   @UseGuards(AuthGuard)
-  async skip(@Param() params: BaseParam, @User() user: AuthUser) {
+  async skip(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new SkipCommand({
-        voiceChannelId: params.id,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Post("/:id/pause")
+  @Post("/:voiceChannelId/pause")
   @UseGuards(AuthGuard)
-  async pause(@Param() params: BaseParam, @User() user: AuthUser) {
+  async pause(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: true,
-        voiceChannelId: params.id,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Post("/:id/unpause")
+  @Post("/:voiceChannelId/unpause")
   @UseGuards(AuthGuard)
-  async unpause(@Param() params: BaseParam, @User() user: AuthUser) {
+  async unpause(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: false,
-        voiceChannelId: params.id,
-        executor: { id: user.id },
+        ...params,
+        executor,
       }),
     );
   }
 
-  @Post("/:id/jam")
+  @Post("/:voiceChannelId/jam")
   @UseGuards(AuthGuard)
-  async jam(@Param() params: BaseParam, @Body() body: { count: number }, @User() user: AuthUser) {
+  async jam(
+    @Param() params: VoiceChannelIdParams,
+    @Body() body: JamBody,
+    @User() executor: AuthUser,
+  ) {
     await this.commandBus.execute(
       new JamCommand({
-        voiceChannelId: params.id,
-        count: body.count,
-        executor: { id: user.id },
+        ...params,
+        ...body,
+        executor,
       }),
     );
   }

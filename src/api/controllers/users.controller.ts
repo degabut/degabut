@@ -6,20 +6,37 @@ import { GetPlaylistsQuery } from "@playlist/queries";
 import { GetQueueQuery } from "@queue/queries";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
 
+type UserIdParams = {
+  userId: string;
+};
+
+type GetHistoryQuery =
+  | {
+      last: string;
+    }
+  | {
+      count: string;
+      days: string;
+    };
+
+type GetSelfHistoryQuery = GetHistoryQuery & { guild: string; voiceChannel: string };
+
 @Controller("users")
 export class UsersController {
   constructor(private readonly queryBus: QueryBus) {}
 
-  @Get("/:id/videos")
+  @Get("/:userId/videos")
   @UseGuards(AuthGuard)
-  getHistories(@Query() query: any, @Param() params: any, @User() user: AuthUser) {
-    const executor = { id: user.id };
-
+  getHistories(
+    @Query() query: GetHistoryQuery,
+    @Param() params: UserIdParams,
+    @User() executor: AuthUser,
+  ) {
     return "last" in query
       ? this.queryBus.execute(
           new GetLastPlayedQuery({
             count: +query.last,
-            userId: params.id,
+            ...params,
             executor,
           }),
         )
@@ -27,7 +44,7 @@ export class UsersController {
           new GetMostPlayedQuery({
             count: +query.count,
             days: +query.days,
-            userId: params.id,
+            ...params,
             executor,
           }),
         );
@@ -35,14 +52,13 @@ export class UsersController {
 
   @Get("/me/videos")
   @UseGuards(AuthGuard)
-  getSelfHistories(@Query() query: any, @User() user: AuthUser) {
-    const executor = { id: user.id };
+  getSelfHistories(@Query() query: GetSelfHistoryQuery, @User() executor: AuthUser) {
     const selections =
       query.guild === "true"
         ? { guild: true as const }
         : query.voiceChannel === "true"
         ? { voiceChannel: true as const }
-        : { userId: user.id };
+        : { userId: executor.id };
 
     return "last" in query
       ? this.queryBus.execute(
@@ -64,19 +80,13 @@ export class UsersController {
 
   @Get("/me/playlists")
   @UseGuards(AuthGuard)
-  getSelfPlaylists(@User() user: AuthUser) {
-    const executor = { id: user.id };
-
+  getSelfPlaylists(@User() executor: AuthUser) {
     return this.queryBus.execute(new GetPlaylistsQuery({ executor }));
   }
 
   @Get("/me/queue")
   @UseGuards(AuthGuard)
-  getSelfQueue(@User() user: AuthUser) {
-    return this.queryBus.execute(
-      new GetQueueQuery({
-        executor: { id: user.id },
-      }),
-    );
+  getSelfQueue(@User() executor: AuthUser) {
+    return this.queryBus.execute(new GetQueueQuery({ executor }));
   }
 }

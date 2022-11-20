@@ -21,6 +21,7 @@ export class QueuePlayer {
   private textChannel: BaseGuildTextChannel | null;
   public voiceChannel: BaseGuildVoiceChannel;
   public readyLock: boolean;
+  public disconnectTimeout: NodeJS.Timeout | null;
 
   constructor(props: ConstructorProps) {
     this.guild = props.voiceChannel.guild;
@@ -29,6 +30,7 @@ export class QueuePlayer {
     this.textChannel = props.textChannel;
     this.audioPlayer = createAudioPlayer();
     this.readyLock = true;
+    this.disconnectTimeout = null;
   }
 
   public hasMember(userId: string): boolean {

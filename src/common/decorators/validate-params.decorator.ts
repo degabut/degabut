@@ -6,7 +6,7 @@ export const ValidateParams = (...schemas: Schema[]): MethodDecorator<(...args: 
   return (t, p, descriptor) => {
     const method = descriptor.value;
 
-    descriptor.value = function (this: any, ...args: unknown[]) {
+    descriptor.value = async function (this: any, ...args: unknown[]) {
       const validatedArgs: unknown[] = [];
       for (const [i, schema] of schemas.entries()) {
         const result = schema.validate(args[i], { stripUnknown: true });

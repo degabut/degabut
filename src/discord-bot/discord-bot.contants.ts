@@ -1,1 +1,1 @@
-export const AUTO_DISCONNECT_TIMEOUT = 1000 * 60 * 10; // 10 minutes
+export const AUTO_DISCONNECT_TIMEOUT = 1000 * 60 * 45; // 45 minutes

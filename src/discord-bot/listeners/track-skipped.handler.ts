@@ -10,7 +10,7 @@ export class TrackSkippedHandler implements IEventHandler<TrackSkippedEvent> {
 
   public async handle({ track, executor }: TrackSkippedEvent): Promise<void> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
-    if (!player || player.audioPlayer.state.status !== AudioPlayerStatus.Playing) return;
+    if (!player || player.audioPlayer.state.status === AudioPlayerStatus.Idle) return;
 
     player.audioPlayer.stop();
 

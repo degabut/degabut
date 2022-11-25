@@ -69,8 +69,8 @@ export class QueuePlayerService {
 
     player.audioPlayer.on("stateChange", (oldState, newState) => {
       if (
-        newState.status === AudioPlayerStatus.Idle &&
         oldState.status !== AudioPlayerStatus.Idle &&
+        newState.status === AudioPlayerStatus.Idle &&
         player.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed
       ) {
         const resource = oldState.resource as AudioResource<Track>;
@@ -79,7 +79,10 @@ export class QueuePlayerService {
 
         this.eventBus.publish(new TrackAudioEndedEvent({ track }));
         if (isFinished) this.eventBus.publish(new TrackAudioFinishedEvent({ track }));
-      } else if (newState.status === AudioPlayerStatus.Playing) {
+      } else if (
+        oldState.status !== AudioPlayerStatus.Paused &&
+        newState.status === AudioPlayerStatus.Playing
+      ) {
         const track = (newState.resource as AudioResource<Track>).metadata;
         this.eventBus.publish(new TrackAudioStartedEvent({ track }));
       }

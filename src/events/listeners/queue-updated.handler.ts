@@ -1,3 +1,4 @@
+import { TrackAudioStartedEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueueDto } from "@queue/dtos";
 import {
@@ -29,6 +30,7 @@ const events = [
   QueueShuffleToggledEvent,
   QueueClearedEvent,
   TrackAddedEvent,
+  TrackAudioStartedEvent,
   TracksAddedEvent,
   TrackRemovedEvent,
   TrackSkippedEvent,

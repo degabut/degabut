@@ -53,7 +53,7 @@ specifiers:
   typescript: ^4.3.5
   uuid: ^8.3.2
   webpack: ^5.0.0
-  youtubei: 1.0.0-rc.6
+  youtubei: 1.0.0-rc.7
   ytdl-core: 4.11.2
 
 dependencies:
@@ -82,7 +82,7 @@ dependencies:
   rimraf: 3.0.2
   rxjs: 7.5.6
   uuid: 8.3.2
-  youtubei: 1.0.0-rc.6
+  youtubei: 1.0.0-rc.7
   ytdl-core: 4.11.2
 
 devDependencies:
@@ -2080,6 +2080,10 @@ packages:
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
+
+  /b4a/1.6.1:
+    resolution: {integrity: sha512-AsKjNhz72yxteo/0EtQEiwkMUgk/tGmycXlbG4g3Ard2/ULtNLUykGOkeK0egmN27h0xMAhb76jYccW+XTBExA==}
+    dev: false
 
   /babel-jest/28.1.3_@babel+core@7.18.9:
     resolution: {integrity: sha512-epUaPOEWMk3cWX0M/sPvCHHCe9fMFAa/9hXEgKP8nFfNl/jlGkE9ucq9NqkZGXLDduCJYS0UvSlPUwC0S+rH6Q==}
@@ -4764,9 +4768,10 @@ packages:
       sisteransi: 1.0.5
     dev: true
 
-  /protocol-buffers-encodings/1.1.1:
-    resolution: {integrity: sha512-5aFshI9SbhtcMiDiZZu3g2tMlZeS5lhni//AGJ7V34PQLU5JA91Cva7TIs6inZhYikS3OpnUzAUuL6YtS0CyDA==}
+  /protocol-buffers-encodings/1.2.0:
+    resolution: {integrity: sha512-daeNPuKh1NlLD1uDfbLpD+xyUTc07nEtfHwmBZmt/vH0B7VOM+JOCOpDcx9ZRpqHjAiIkGqyTDi+wfGSl17R9w==}
     dependencies:
+      b4a: 1.6.1
       signed-varint: 2.0.1
       varint: 5.0.0
     dev: false
@@ -4781,7 +4786,7 @@ packages:
     dependencies:
       generate-function: 2.3.1
       generate-object-property: 1.2.0
-      protocol-buffers-encodings: 1.1.1
+      protocol-buffers-encodings: 1.2.0
       protocol-buffers-schema: 3.6.0
       signed-varint: 2.0.1
       varint: 6.0.0
@@ -5801,8 +5806,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /youtubei/1.0.0-rc.6:
-    resolution: {integrity: sha512-9LF0y+nloRA/67EBQChmG3gooIZjhvOC2WET78io2zEWjuGp90TBMdLVgEO0EHGj4keKUlBVwNL/Tr/YVsjbbg==}
+  /youtubei/1.0.0-rc.7:
+    resolution: {integrity: sha512-dId8fWMRh8M5lYmWkDViuga1zrei3+AYe1Uwy63bt5i5JKfvcagkrf6bpOapTPJ9MEv86ta20BwgrBVQswtA9A==}
     dependencies:
       node-fetch: 2.6.7
       protocol-buffers: 5.0.0

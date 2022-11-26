@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Channel, PlaylistCompact, Video, VideoCompact } from "@youtube/entities";
+import { Channel, PlaylistCompact, Transcript, Video, VideoCompact } from "@youtube/entities";
 import { MAX_PLAYLIST_VIDEOS_PAGE } from "@youtube/youtube.constants";
 import {
   Client as YoutubeiClient,
@@ -29,6 +29,11 @@ export class YoutubeiProvider {
     if (!video) return;
 
     return this.videoToEntity(video);
+  }
+
+  public async getVideoTranscript(id: string): Promise<Transcript[] | undefined> {
+    const transcript = await this.youtubeClient.getVideoTranscript(id);
+    return transcript?.map((t) => new Transcript(t));
   }
 
   public async getPlaylistVideos(youtubePlaylistId: string): Promise<VideoCompact[]> {

@@ -1,7 +1,12 @@
 import { AuthGuard } from "@api/guards";
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
-import { GetVideoQuery, SearchPlaylistQuery, SearchVideoQuery } from "@youtube/queries";
+import {
+  GetVideoQuery,
+  GetVideoTranscriptQuery,
+  SearchPlaylistQuery,
+  SearchVideoQuery,
+} from "@youtube/queries";
 
 type VideoIdParams = {
   id: string;
@@ -19,6 +24,12 @@ export class YoutubeController {
   @UseGuards(AuthGuard)
   getVideo(@Param() params: VideoIdParams) {
     return this.queryBus.execute(new GetVideoQuery(params));
+  }
+
+  @Get("/videos/:id/transcript")
+  @UseGuards(AuthGuard)
+  getVideoTranscript(@Param() params: VideoIdParams) {
+    return this.queryBus.execute(new GetVideoTranscriptQuery(params));
   }
 
   @Get("/videos")

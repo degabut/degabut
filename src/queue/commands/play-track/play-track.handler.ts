@@ -19,7 +19,8 @@ export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackComman
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     const track = index ? queue.tracks[index] : queue.tracks.find((t) => t.id === trackId);
     if (!track) throw new NotFoundException("Track not found");
@@ -27,7 +28,7 @@ export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackComman
       throw new BadRequestException("Track is currently playing");
 
     queue.nextTrack = track;
-    this.eventBus.publish(new TrackMarkedPlayNextEvent({ track, executor }));
+    this.eventBus.publish(new TrackMarkedPlayNextEvent({ track, member }));
 
     return track.id;
   }

@@ -19,7 +19,8 @@ export class ChangeTrackOrderHandler implements IInferredCommandHandler<ChangeTr
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     const fromIndex = from ? from : queue.tracks.findIndex((track) => track.id === trackId);
 
@@ -28,6 +29,6 @@ export class ChangeTrackOrderHandler implements IInferredCommandHandler<ChangeTr
     queue.tracks.splice(fromIndex, 1);
     queue.tracks.splice(to, 0, track);
 
-    this.eventBus.publish(new TrackOrderChangedEvent({ track, to }));
+    this.eventBus.publish(new TrackOrderChangedEvent({ track, to, member }));
   }
 }

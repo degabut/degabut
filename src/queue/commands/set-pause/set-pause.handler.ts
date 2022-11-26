@@ -19,10 +19,11 @@ export class SetPauseHandler implements IInferredCommandHandler<SetPauseCommand>
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     queue.isPaused = isPaused;
-    this.eventBus.publish(new QueuePauseStateChangedEvent({ queue }));
+    this.eventBus.publish(new QueuePauseStateChangedEvent({ queue, member }));
 
     return queue.isPaused;
   }

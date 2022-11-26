@@ -26,7 +26,7 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
     const queue = this.queueRepository.getByUserId(params.executor.id);
     if (params.userId && params.userId !== params.executor.id) {
       if (!queue) throw new NotFoundException("Queue not found");
-      if (!queue.hasMember(params.userId)) throw new ForbiddenException("Missing permissions");
+      if (!queue.getMember(params.userId)) throw new ForbiddenException("Missing permissions");
     }
     if ((params.guild || params.voiceChannel) && !queue) {
       throw new NotFoundException("Queue not found");

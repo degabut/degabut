@@ -25,7 +25,8 @@ export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCo
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     const nowPlaying = queue.nowPlaying;
     const removed = this.queueService.removeTrack(
@@ -38,7 +39,7 @@ export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCo
         new TrackRemovedEvent({
           track: removed,
           isNowPlaying: nowPlaying?.id === removed.id,
-          removedBy: executor.id,
+          member,
         }),
       );
     }

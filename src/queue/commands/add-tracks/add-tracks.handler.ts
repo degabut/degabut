@@ -30,7 +30,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
 
-    const member = queue.voiceChannel.members.find((m) => m.id === executor.id);
+    const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
     let videos: VideoCompact[] = [];
@@ -55,7 +55,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     if (!tracks.length) throw new BadRequestException("Queue is full");
 
     queue.tracks.push(...tracks);
-    this.eventBus.publish(new TracksAddedEvent({ queue, tracks }));
+    this.eventBus.publish(new TracksAddedEvent({ queue, tracks, member }));
 
     if (!queue.nowPlaying) {
       queue.nextTrack = tracks[0];

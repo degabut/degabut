@@ -24,14 +24,15 @@ export class ChangeLoopTypeHandler implements IInferredCommandHandler<ChangeLoop
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     if (!loopType) queue.loopType = LoopType.Disabled;
     else if (queue.loopType === LoopType.Disabled) queue.loopType = loopType;
     else if (queue.loopType === loopType) queue.loopType = LoopType.Disabled;
     else queue.loopType = loopType;
 
-    this.eventBus.publish(new QueueLoopTypeChangedEvent({ queue }));
+    this.eventBus.publish(new QueueLoopTypeChangedEvent({ queue, member }));
 
     return queue.loopType;
   }

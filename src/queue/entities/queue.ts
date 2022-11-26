@@ -1,3 +1,4 @@
+import { Member } from "./member";
 import { Track } from "./track";
 import { VoiceChannel } from "./voice-channel";
 
@@ -41,7 +42,7 @@ export class Queue {
     this.voiceChannel = props.voiceChannel;
   }
 
-  public hasMember(userId: string): boolean {
-    return this.voiceChannel.members.some((m) => m.id === userId);
+  public getMember(userId: string): Member | undefined {
+    return this.voiceChannel.members.find((m) => m.id === userId);
   }
 }

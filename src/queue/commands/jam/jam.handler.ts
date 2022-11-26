@@ -24,7 +24,7 @@ export class JamHandler implements IInferredCommandHandler<JamCommand> {
     if (!member) throw new ForbiddenException("Missing permissions");
 
     const jam = new JamCollection({
-      requestedBy: member,
+      member,
       jams: [...Array(count)].map(
         () =>
           new Jam({

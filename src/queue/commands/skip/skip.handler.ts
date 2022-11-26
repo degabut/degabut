@@ -19,11 +19,12 @@ export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new Error("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     const track = queue.nowPlaying;
     if (!track) return;
 
-    this.eventBus.publish(new TrackSkippedEvent({ track, executor }));
+    this.eventBus.publish(new TrackSkippedEvent({ track, member }));
   }
 }

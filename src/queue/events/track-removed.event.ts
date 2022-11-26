@@ -1,8 +1,8 @@
-import { Track } from "@queue/entities";
+import { Member, Track } from "@queue/entities";
 
 export class TrackRemovedEvent {
   public readonly track!: Track;
-  public readonly removedBy?: string;
+  public readonly member?: Member;
   public readonly isNowPlaying!: boolean;
 
   constructor(params: TrackRemovedEvent) {

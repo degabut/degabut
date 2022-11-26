@@ -16,7 +16,7 @@ export class GetQueueHandler implements IInferredQueryHandler<GetQueueQuery> {
       ? this.queueRepository.getByVoiceChannelId(params.voiceChannelId)
       : this.queueRepository.getByUserId(params.executor.id);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
+    if (!queue.getMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
 
     return QueueDto.create(queue);
   }

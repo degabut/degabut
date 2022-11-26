@@ -8,14 +8,14 @@ import { EmbedBuilder } from "discord.js";
 export class TrackSkippedHandler implements IEventHandler<TrackSkippedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
-  public async handle({ track, executor }: TrackSkippedEvent): Promise<void> {
+  public async handle({ track, member }: TrackSkippedEvent): Promise<void> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player || player.audioPlayer.state.status === AudioPlayerStatus.Idle) return;
 
     player.audioPlayer.stop();
 
     const embed = new EmbedBuilder({
-      description: `⏭ **<@!${executor.id}> skipped ${track.video.title}**`,
+      description: `⏭ **<@!${member.id}> skipped ${track.video.title}**`,
     });
 
     await player.notify({

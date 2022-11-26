@@ -1,7 +1,7 @@
 import { Member } from "./member";
 
 export class JamCollection {
-  public readonly requestedBy!: Member;
+  public readonly member!: Member;
   public readonly jams!: Jam[];
 
   constructor(params: JamCollection) {

@@ -1,9 +1,8 @@
-import { Executor } from "@common/interfaces";
-import { Track } from "@queue/entities";
+import { Member, Track } from "@queue/entities";
 
 export class TrackSkippedEvent {
   public readonly track!: Track;
-  public readonly executor!: Executor;
+  public readonly member!: Member;
 
   constructor(params: TrackSkippedEvent) {
     Object.assign(this, params);

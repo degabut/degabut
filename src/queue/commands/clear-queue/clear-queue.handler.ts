@@ -21,11 +21,12 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    if (!queue.hasMember(executor.id)) throw new ForbiddenException("Missing permissions");
+    const member = queue.getMember(executor.id);
+    if (!member) throw new ForbiddenException("Missing permissions");
 
     queue.tracks = queue.tracks.filter((t) => t.id === queue.nowPlaying?.id);
     if (removeNowPlaying) this.queueService.removeTrack(queue, true);
 
-    this.eventBus.publish(new QueueClearedEvent({ queue }));
+    this.eventBus.publish(new QueueClearedEvent({ queue, member }));
   }
 }

@@ -7,14 +7,14 @@ import { EmbedBuilder } from "discord.js";
 export class TrackRemovedHandler implements IEventHandler<TrackRemovedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
-  public async handle({ track, removedBy, isNowPlaying }: TrackRemovedEvent): Promise<void> {
-    if (!removedBy) return; // removed from queue being processed
+  public async handle({ track, member, isNowPlaying }: TrackRemovedEvent): Promise<void> {
+    if (!member) return; // removed from queue being processed
 
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 
     const embed = new EmbedBuilder({
-      description: `🚮 **<@!${removedBy}> removed ${track.video.title} from queue**`,
+      description: `🚮 **<@!${member.id}> removed ${track.video.title} from queue**`,
     });
 
     if (isNowPlaying) player.audioPlayer.stop();

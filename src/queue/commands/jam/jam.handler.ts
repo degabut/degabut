@@ -20,7 +20,7 @@ export class JamHandler implements IInferredCommandHandler<JamCommand> {
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
-    const member = queue.voiceChannel.members.find((m) => m.id === executor.id);
+    const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
     const jam = new JamCollection({

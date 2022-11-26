@@ -11,7 +11,7 @@ export class JamCollectionDto {
 
   @Expose()
   @Type(() => MemberDto)
-  public requestedBy!: MemberDto;
+  public member!: MemberDto;
 
   public static create(entity: JamCollection): JamCollectionDto {
     return plainToInstance(JamCollectionDto, entity);

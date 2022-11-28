@@ -6,14 +6,14 @@ import { TrackAddedEvent } from "@queue/events";
 import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
-import { YoutubeService } from "@youtube/services";
+import { YoutubeCachedService } from "@youtube/services";
 
 import { AddTrackCommand, AddTrackParamSchema, AddTrackResult } from "./add-track.command";
 
 @CommandHandler(AddTrackCommand)
 export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand> {
   constructor(
-    private readonly youtubeService: YoutubeService,
+    private readonly youtubeService: YoutubeCachedService,
     private readonly queueRepository: QueueRepository,
     private readonly queueService: QueueService,
     private readonly eventBus: EventBus,

@@ -1,22 +1,24 @@
 import { DatabaseModule } from "@database/database.module";
+import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
 import { Listeners } from "./listeners";
-import { YoutubeiProvider } from "./providers";
+import { YoutubeEmbedProvider, YoutubeiProvider } from "./providers";
 import { Queries } from "./queries";
 import { ChannelRepository, VideoRepository } from "./repositories";
-import { YoutubeService } from "./services";
+import { YoutubeCachedService } from "./services";
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [HttpModule, DatabaseModule],
   providers: [
     YoutubeiProvider,
+    YoutubeEmbedProvider,
     VideoRepository,
     ChannelRepository,
-    YoutubeService,
+    YoutubeCachedService,
     ...Queries,
     ...Listeners,
   ],
-  exports: [YoutubeiProvider, YoutubeService, VideoRepository, ChannelRepository],
+  exports: [YoutubeiProvider, YoutubeCachedService, VideoRepository, ChannelRepository],
 })
 export class YoutubeModule {}

@@ -13,7 +13,7 @@ interface Props {
 
 export class VideoCompact implements Props {
   public readonly id: string;
-  public readonly title: string;
+  public title: string;
   public readonly duration: number;
   public readonly thumbnails: Thumbnail[];
   public readonly channel: Channel | null;

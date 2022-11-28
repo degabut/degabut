@@ -4,7 +4,7 @@ import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistVideo } from "@playlist/entities";
 import { MAX_VIDEO_PER_PLAYLIST } from "@playlist/playlist.constant";
 import { PlaylistRepository, PlaylistVideoRepository } from "@playlist/repositories";
-import { YoutubeService } from "@youtube/services";
+import { YoutubeCachedService } from "@youtube/services";
 
 import {
   AddPlaylistVideoCommand,
@@ -17,7 +17,7 @@ export class AddPlaylistVideoHandler implements IInferredCommandHandler<AddPlayl
   constructor(
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistVideoRepository,
-    private readonly youtubeService: YoutubeService,
+    private readonly youtubeService: YoutubeCachedService,
   ) {}
 
   @ValidateParams(AddPlaylistVideoParamSchema)

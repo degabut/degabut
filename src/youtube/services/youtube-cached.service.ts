@@ -1,21 +1,23 @@
 import { TimeUtil } from "@common/utils";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Channel, Video, VideoCompact } from "@youtube/entities";
-import { YoutubeiProvider } from "@youtube/providers";
+import { YoutubeEmbedProvider, YoutubeiProvider } from "@youtube/providers";
 import { ChannelRepository, VideoRepository } from "@youtube/repositories";
 import { MAX_VIDEO_AGE } from "@youtube/youtube.constants";
 
 @Injectable()
-export class YoutubeService {
+export class YoutubeCachedService {
+  private readonly logger = new Logger(YoutubeCachedService.name);
+
   constructor(
     private readonly videoRepository: VideoRepository,
     private readonly channelRepository: ChannelRepository,
     private readonly youtubeProvider: YoutubeiProvider,
+    private readonly youtubeEmbedProvider: YoutubeEmbedProvider,
   ) {}
 
   async getVideo(videoId: string): Promise<VideoCompact | undefined> {
     let video: VideoCompact | undefined = await this.videoRepository.getById(videoId);
-
     if (!video || TimeUtil.getSecondDifference(video.updatedAt, new Date()) > MAX_VIDEO_AGE) {
       const newVideo = await this.youtubeProvider.getVideo(videoId);
       if (!newVideo) return undefined;
@@ -37,6 +39,15 @@ export class YoutubeService {
   }
 
   private async cacheVideo(video: VideoCompact) {
+    try {
+      // YouTube with its infinite wisdom decided to auto translate video titles
+      // this fetches the original title from the embed API to store in the database
+      const embedVideo = await this.youtubeEmbedProvider.getVideo(video.id);
+      if (embedVideo) video.title = embedVideo.title;
+    } catch (error) {
+      this.logger.error(error);
+    }
+
     await Promise.all([
       this.videoRepository.upsert(video),
       video.channel && this.channelRepository.upsert(video.channel),

@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { QueueRepository } from "@queue/repositories";
-import { YoutubeService } from "@youtube/services";
+import { YoutubeCachedService } from "@youtube/services";
 import { MockFunctionMetadata, ModuleMocker } from "jest-mock";
 
 import { AddTrackHandler } from "./add-track.handler";
@@ -23,7 +23,7 @@ const mockHandler = async (queueTrackSize = 0) => {
             }),
           };
 
-        case YoutubeService:
+        case YoutubeCachedService:
           return {
             getVideo: jest.fn().mockResolvedValue({}),
             searchOneVideo: jest.fn().mockResolvedValue({}),

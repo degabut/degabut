@@ -20,7 +20,7 @@ export class GetLastPlayedQuery extends Query<GetLastPlayedResult> {
 }
 
 export const GetLastPlayedParamSchema = Joi.object<GetLastPlayedQuery>({
-  count: Joi.number().required(),
+  count: Joi.number().required().min(1).max(100),
   userId: Joi.string().optional(),
   voiceChannel: Joi.valid(true).optional(),
   guild: Joi.valid(true).optional(),

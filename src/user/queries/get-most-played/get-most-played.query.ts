@@ -21,8 +21,8 @@ export class GetMostPlayedQuery extends Query<GetMostPlayedResult> implements IW
 }
 
 export const GetMostPlayedParamSchema = Joi.object<GetMostPlayedQuery>({
-  count: Joi.number().required(),
-  days: Joi.number().required(),
+  count: Joi.number().required().min(1).max(100),
+  days: Joi.number().required().min(1).max(365),
   userId: Joi.string().optional(),
   voiceChannel: Joi.valid(true).optional(),
   guild: Joi.valid(true).optional(),

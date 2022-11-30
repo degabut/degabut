@@ -1,9 +1,7 @@
-import { AudioResource, createAudioResource } from "@discordjs/voice";
 import { TrackDto } from "@queue/dtos";
 import { Track } from "@queue/entities";
 import { Video, VideoCompact } from "@youtube/entities";
 import { ButtonBuilder, ButtonStyle, EmbedBuilder, EmbedField } from "discord.js";
-import * as ytdl from "ytdl-core";
 
 import { TimeUtil } from "./time.util";
 
@@ -57,18 +55,5 @@ export class DiscordUtil {
       image: thumbnail ? { url: thumbnail.url } : undefined,
       fields,
     });
-  }
-
-  static createAudioSource(track: Track): AudioResource<Track> {
-    const stream = ytdl(track.video.id, {
-      filter: "audioonly",
-      highWaterMark: 1 << 62,
-      liveBuffer: 1 << 62,
-      dlChunkSize: 0,
-      quality: "highestaudio",
-    });
-    const resource = createAudioResource<Track>(stream, { metadata: track });
-
-    return resource;
   }
 }

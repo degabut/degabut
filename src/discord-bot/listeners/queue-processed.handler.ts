@@ -13,12 +13,22 @@ export class QueueProcessedHandler implements IEventHandler<QueueProcessedEvent>
 
     if (!queue.nowPlaying) player.audioPlayer.stop();
     else {
-      player.audioPlayer.play(DiscordUtil.createAudioSource(queue.nowPlaying));
+      const res = await player.audioPlayer.node.rest.loadTracks(queue.nowPlaying.video.id);
+      const [track] = res.tracks;
+      if (!track) return;
 
-      await player.notify({
-        content: "🎶 **Now Playing**",
-        embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
-      });
+      player.currentTrack = {
+        id: track.track,
+        track: queue.nowPlaying,
+      };
+
+      await Promise.all([
+        player.audioPlayer.play(track),
+        player.notify({
+          content: "🎶 **Now Playing**",
+          embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
+        }),
+      ]);
     }
   }
 }

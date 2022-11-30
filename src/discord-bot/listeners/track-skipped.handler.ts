@@ -1,5 +1,4 @@
 import { QueuePlayerRepository } from "@discord-bot/repositories";
-import { AudioPlayerStatus } from "@discordjs/voice";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { TrackSkippedEvent } from "@queue/events";
 import { EmbedBuilder } from "discord.js";
@@ -10,7 +9,7 @@ export class TrackSkippedHandler implements IEventHandler<TrackSkippedEvent> {
 
   public async handle({ track, member }: TrackSkippedEvent): Promise<void> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
-    if (!player || player.audioPlayer.state.status === AudioPlayerStatus.Idle) return;
+    if (!player || (!player.audioPlayer.playing && !player.audioPlayer.paused)) return;
 
     player.audioPlayer.stop();
 

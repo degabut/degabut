@@ -11,6 +11,6 @@ export class QueuePauseStateChangedHandler implements IEventHandler<QueuePauseSt
     if (!player) return;
 
     if (queue.isPaused) player.audioPlayer.pause();
-    else player.audioPlayer.unpause();
+    else player.audioPlayer.resume();
   }
 }

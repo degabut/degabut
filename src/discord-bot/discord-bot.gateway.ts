@@ -1,7 +1,9 @@
 import { InjectDiscordClient, On, Once } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { EventBus } from "@nestjs/cqrs";
-import { Client, GuildMember, VoiceState } from "discord.js";
+import { Client, GatewayDispatchEvents, GuildMember, VoiceState } from "discord.js";
+import { Node } from "lavaclient";
 
 import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent, VoiceMemberUpdatedEvent } from "./events";
 import { QueuePlayerRepository } from "./repositories";
@@ -13,12 +15,27 @@ export class DiscordBotGateway {
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
+    private readonly config: ConfigService,
     private readonly playerRepository: QueuePlayerRepository,
     private readonly eventBus: EventBus,
-  ) {}
+  ) {
+    const node = new Node({
+      sendGatewayPayload: (id, payload) => client.guilds.cache.get(id)?.shard?.send(payload),
+      connection: {
+        host: this.config.getOrThrow("discord-bot.lavalinkHost"),
+        password: this.config.getOrThrow("discord-bot.lavalinkPassword"),
+        port: this.config.get("discord-bot.lavalinkPort") || 2333,
+      },
+    });
+
+    client.ws.on(GatewayDispatchEvents.VoiceServerUpdate, (data) => node.handleVoiceUpdate(data));
+    client.ws.on(GatewayDispatchEvents.VoiceStateUpdate, (data) => node.handleVoiceUpdate(data));
+    client.lavalink = node;
+  }
 
   @Once("ready")
   onReady() {
+    this.client.lavalink.connect(this.client.user?.id);
     this.logger.log("Discord bot ready");
   }
 

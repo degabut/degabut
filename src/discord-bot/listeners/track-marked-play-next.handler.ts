@@ -1,5 +1,4 @@
 import { QueuePlayerRepository } from "@discord-bot/repositories";
-import { AudioPlayerStatus } from "@discordjs/voice";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { TrackMarkedPlayNextEvent } from "@queue/events";
 
@@ -9,7 +8,7 @@ export class TrackMarkedPlayNextHandler implements IEventHandler<TrackMarkedPlay
 
   public async handle({ track }: TrackMarkedPlayNextEvent): Promise<void> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
-    if (!player || player.audioPlayer.state.status !== AudioPlayerStatus.Playing) return;
+    if (!player || !player.audioPlayer.playing) return;
 
     player.audioPlayer.stop();
   }

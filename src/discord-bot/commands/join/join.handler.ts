@@ -3,7 +3,6 @@ import { QueuePlayer } from "@discord-bot/entities";
 import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { QueuePlayerService } from "@discord-bot/services";
 import { InjectDiscordClient } from "@discord-nestjs/core";
-import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { Client, ClientUser } from "discord.js";
@@ -45,16 +44,12 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
       throw new BadRequestException("Bot does not have permission to join voice channel");
     }
 
-    const voiceConnection = joinVoiceChannel({
-      channelId: voiceChannel.id,
-      guildId: voiceChannel.guild.id,
-      adapterCreator: voiceChannel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
-    });
+    const audioPlayer = this.client.lavalink.createPlayer(voiceChannel.guild.id);
 
     const player = new QueuePlayer({
       textChannel,
       voiceChannel,
-      voiceConnection,
+      audioPlayer,
     });
 
     this.playerRepository.save(player);

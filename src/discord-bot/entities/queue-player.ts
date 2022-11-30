@@ -1,4 +1,3 @@
-import { AudioPlayer, createAudioPlayer, VoiceConnection } from "@discordjs/voice";
 import {
   BaseGuild,
   BaseGuildTextChannel,
@@ -7,29 +6,30 @@ import {
   MessageOptions,
   MessagePayload,
 } from "discord.js";
+import { Node, Player } from "lavaclient";
+
+import { LavaTrack } from "./lava-track";
 
 interface ConstructorProps {
-  voiceConnection: VoiceConnection;
+  audioPlayer: Player<Node>;
   voiceChannel: BaseGuildVoiceChannel;
   textChannel: BaseGuildTextChannel;
 }
 
 export class QueuePlayer {
   public readonly guild: BaseGuild;
-  public readonly audioPlayer: AudioPlayer;
-  public readonly voiceConnection: VoiceConnection;
+  public readonly audioPlayer: Player<Node>;
   private textChannel: BaseGuildTextChannel | null;
   public voiceChannel: BaseGuildVoiceChannel;
-  public readyLock: boolean;
+  public currentTrack: LavaTrack | null;
   public disconnectTimeout: NodeJS.Timeout | null;
 
   constructor(props: ConstructorProps) {
     this.guild = props.voiceChannel.guild;
-    this.voiceConnection = props.voiceConnection;
     this.voiceChannel = props.voiceChannel;
     this.textChannel = props.textChannel;
-    this.audioPlayer = createAudioPlayer();
-    this.readyLock = true;
+    this.audioPlayer = props.audioPlayer;
+    this.currentTrack = null;
     this.disconnectTimeout = null;
   }
 

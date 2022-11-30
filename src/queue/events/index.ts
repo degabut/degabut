@@ -13,5 +13,4 @@ export * from "./track-added.event";
 export * from "./track-marked-play-next.event";
 export * from "./track-order-changed.event";
 export * from "./track-removed.event";
-export * from "./track-skipped.event";
 export * from "./tracks-added.event";

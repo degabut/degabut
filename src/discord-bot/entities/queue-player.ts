@@ -3,6 +3,7 @@ import {
   BaseGuildTextChannel,
   BaseGuildVoiceChannel,
   DiscordAPIError,
+  GuildMember,
   MessageOptions,
   MessagePayload,
 } from "discord.js";
@@ -33,8 +34,8 @@ export class QueuePlayer {
     this.disconnectTimeout = null;
   }
 
-  public hasMember(userId: string): boolean {
-    return this.voiceChannel.members.some((m) => m.id === userId);
+  public getMember(userId: string): GuildMember | undefined {
+    return this.voiceChannel.members.find((m) => m.id === userId);
   }
 
   async notify(message: string | MessagePayload | MessageOptions) {

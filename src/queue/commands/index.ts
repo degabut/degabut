@@ -9,7 +9,6 @@ import { JamHandler } from "./jam";
 import { PlayTrackHandler } from "./play-track";
 import { RemoveTrackHandler } from "./remove-track";
 import { SetPauseHandler } from "./set-pause";
-import { SkipHandler } from "./skip";
 import { ToggleShuffleHandler } from "./toggle-shuffle";
 
 export * from "./add-track";
@@ -21,7 +20,6 @@ export * from "./jam";
 export * from "./play-track";
 export * from "./remove-track";
 export * from "./set-pause";
-export * from "./skip";
 export * from "./toggle-shuffle";
 
 export const Commands: Constructor<ICommandHandler>[] = [
@@ -34,6 +32,5 @@ export const Commands: Constructor<ICommandHandler>[] = [
   JamHandler,
   RemoveTrackHandler,
   SetPauseHandler,
-  SkipHandler,
   ToggleShuffleHandler,
 ];

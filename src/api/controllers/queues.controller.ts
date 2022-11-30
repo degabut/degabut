@@ -12,7 +12,6 @@ import {
   PlayTrackCommand,
   RemoveTrackCommand,
   SetPauseCommand,
-  SkipCommand,
   ToggleShuffleCommand,
 } from "@queue/commands";
 import { LoopType } from "@queue/entities";
@@ -160,17 +159,6 @@ export class QueuesController {
       new ClearQueueCommand({
         ...params,
         removeNowPlaying: !!body.includeNowPlaying,
-        executor,
-      }),
-    );
-  }
-
-  @Post("/:voiceChannelId/skip")
-  @UseGuards(AuthGuard)
-  async skip(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
-    await this.commandBus.execute(
-      new SkipCommand({
-        ...params,
         executor,
       }),
     );

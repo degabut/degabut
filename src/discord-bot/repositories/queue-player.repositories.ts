@@ -12,7 +12,7 @@ export class QueuePlayerRepository {
   }
 
   public getByUserId(userId: string): QueuePlayer | undefined {
-    return [...this.players.values()].find((p) => p.hasMember(userId));
+    return [...this.players.values()].find((p) => !!p.getMember(userId));
   }
 
   public deleteByVoiceChannelId(voiceChannelId: string): void {

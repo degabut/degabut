@@ -6,6 +6,7 @@ import { PartialQueueHandler } from "./partial-queue.handler";
 import { QueueHandler } from "./queue.handler";
 import { TrackMemberHandler } from "./track-member.handler";
 import { TrackOrderChangedHandler } from "./track-order-changed.handler";
+import { TrackSeekedHandler } from "./track-seeked.handler";
 import { TrackHandler } from "./track.handler";
 import { TracksMemberHandler } from "./tracks-member.handler";
 import { VoiceMemberJoinedHandler } from "./voice-member-joined.handler";
@@ -19,6 +20,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   TrackMemberHandler,
   TrackOrderChangedHandler,
   TrackHandler,
+  TrackSeekedHandler,
   TracksMemberHandler,
   VoiceMemberJoinedHandler,
   VoiceMemberLeftHandler,

@@ -1,15 +1,15 @@
 import { ValidateParams } from "@common/decorators";
+import { TrackSkippedEvent } from "@discord-bot/events";
+import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { ForbiddenException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { TrackSkippedEvent } from "@queue/events";
-import { QueueRepository } from "@queue/repositories";
 
 import { SkipCommand, SkipParamSchema } from "./skip.command";
 
 @CommandHandler(SkipCommand)
 export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
   constructor(
-    private readonly queueRepository: QueueRepository,
+    private readonly playerRepository: QueuePlayerRepository,
     private readonly eventBus: EventBus,
   ) {}
 
@@ -17,14 +17,15 @@ export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
   public async execute(params: SkipCommand): Promise<void> {
     const { voiceChannelId, executor } = params;
 
-    const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
-    if (!queue) throw new Error("Queue not found");
-    const member = queue.getMember(executor.id);
+    const player = this.playerRepository.getByVoiceChannelId(voiceChannelId);
+    if (!player) throw new Error("Player not found");
+    const member = player.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    const track = queue.nowPlaying;
-    if (!track) return;
+    if (!player.currentTrack?.track) return;
 
-    this.eventBus.publish(new TrackSkippedEvent({ track, member }));
+    await player.audioPlayer.stop();
+
+    this.eventBus.publish(new TrackSkippedEvent({ track: player.currentTrack.track, member }));
   }
 }

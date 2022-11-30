@@ -1,6 +1,6 @@
+import { TrackSkippedEvent } from "@discord-bot/events";
 import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { TrackSkippedEvent } from "@queue/events";
 import { EmbedBuilder } from "discord.js";
 
 @EventsHandler(TrackSkippedEvent)
@@ -9,9 +9,7 @@ export class TrackSkippedHandler implements IEventHandler<TrackSkippedEvent> {
 
   public async handle({ track, member }: TrackSkippedEvent): Promise<void> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
-    if (!player || (!player.audioPlayer.playing && !player.audioPlayer.paused)) return;
-
-    player.audioPlayer.stop();
+    if (!player) return;
 
     const embed = new EmbedBuilder({
       description: `⏭ **<@!${member.id}> skipped ${track.video.title}**`,

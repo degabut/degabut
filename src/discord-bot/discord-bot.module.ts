@@ -13,6 +13,7 @@ import { Explorers } from "./explorers";
 import { Interactions } from "./interactions";
 import { Listeners } from "./listeners";
 import { PrefixCommands } from "./prefix-commands";
+import { Queries } from "./queries";
 import { QueuePlayerRepository } from "./repositories";
 import { DiscordBotService, QueuePlayerService } from "./services";
 
@@ -49,6 +50,7 @@ import { DiscordBotService, QueuePlayerService } from "./services";
     QueuePlayerRepository,
     ...Explorers,
     ...Commands,
+    ...Queries,
     ...PrefixCommands,
     ...Interactions,
     ...Listeners,

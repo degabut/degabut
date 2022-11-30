@@ -10,7 +10,7 @@ type VoiceChannelIdParams = {
 };
 
 type SeekBody = {
-  seek: number;
+  position: number;
 };
 
 @Controller("players")

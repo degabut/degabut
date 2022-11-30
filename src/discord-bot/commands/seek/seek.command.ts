@@ -5,7 +5,7 @@ import * as Joi from "joi";
 
 export class SeekCommand extends Command implements IWithExecutor {
   public readonly voiceChannelId!: string;
-  public readonly seek!: number;
+  public readonly position!: number;
   public readonly executor!: Executor;
 
   constructor(params: SeekCommand) {
@@ -16,6 +16,6 @@ export class SeekCommand extends Command implements IWithExecutor {
 
 export const SeekParamSchema = Joi.object<SeekCommand>({
   voiceChannelId: Joi.string().required(),
-  seek: Joi.number().min(0).required(),
+  position: Joi.number().min(0).required(),
   executor: ExecutorSchema,
 }).required();

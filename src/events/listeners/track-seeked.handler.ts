@@ -12,11 +12,11 @@ export class TrackSeekedHandler implements IEventHandler<TrackSeekedEvent> {
       .replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`)
       .replace(/^-(.*)-event$/, "$1");
 
-    const { player, seek, member } = event;
+    const { player, position, member } = event;
     const memberIds = player.voiceChannel.members.map((m) => m.id);
 
     this.gateway.send(memberIds, eventName, {
-      seek,
+      position,
       member: GuildMemberDto.create(member),
     });
   }

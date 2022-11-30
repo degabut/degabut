@@ -2,7 +2,7 @@ import { QueuePlayer } from "@discord-bot/entities";
 import { GuildMember } from "discord.js";
 
 export class TrackSeekedEvent {
-  public readonly seek!: number;
+  public readonly position!: number;
   public readonly member!: GuildMember;
   public readonly player!: QueuePlayer;
 

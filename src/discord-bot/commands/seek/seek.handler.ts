@@ -24,8 +24,8 @@ export class SeekHandler implements IInferredCommandHandler<SeekCommand> {
 
     if (!player.currentTrack?.track) return;
 
-    await player.audioPlayer.seek(params.seek);
+    await player.audioPlayer.seek(params.position);
 
-    this.eventBus.publish(new TrackSeekedEvent({ player, member, seek: params.seek }));
+    this.eventBus.publish(new TrackSeekedEvent({ player, member, position: params.position }));
   }
 }

@@ -11,7 +11,6 @@ import {
   JamCommand,
   PlayTrackCommand,
   RemoveTrackCommand,
-  SetPauseCommand,
   ToggleShuffleCommand,
 } from "@queue/commands";
 import { LoopType } from "@queue/entities";
@@ -159,30 +158,6 @@ export class QueuesController {
       new ClearQueueCommand({
         ...params,
         removeNowPlaying: !!body.includeNowPlaying,
-        executor,
-      }),
-    );
-  }
-
-  @Post("/:voiceChannelId/pause")
-  @UseGuards(AuthGuard)
-  async pause(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
-    await this.commandBus.execute(
-      new SetPauseCommand({
-        isPaused: true,
-        ...params,
-        executor,
-      }),
-    );
-  }
-
-  @Post("/:voiceChannelId/unpause")
-  @UseGuards(AuthGuard)
-  async unpause(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
-    await this.commandBus.execute(
-      new SetPauseCommand({
-        isPaused: false,
-        ...params,
         executor,
       }),
     );

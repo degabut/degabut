@@ -6,7 +6,6 @@ export * from "./queue-cleared.event";
 export * from "./queue-created.event";
 export * from "./queue-destroyed.event";
 export * from "./queue-loop-type-changed.event";
-export * from "./queue-pause-state-changed.event";
 export * from "./queue-processed.event";
 export * from "./queue-shuffle-toggled.event";
 export * from "./track-added.event";

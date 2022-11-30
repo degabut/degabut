@@ -18,9 +18,6 @@ export class QueueDto {
   public shuffle!: boolean;
 
   @Expose()
-  public isPaused!: boolean;
-
-  @Expose()
   public loopType!: LoopType;
 
   @Expose()

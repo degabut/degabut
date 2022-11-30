@@ -1,22 +1,25 @@
 import { ValidateParams } from "@common/decorators";
+import { QueuePlayerDto } from "@discord-bot/dtos";
 import { QueuePlayerRepository } from "@discord-bot/repositories";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
-import { GetPositionParamSchema, GetPositionQuery, GetPositionResult } from "./get-position.query";
+import {
+  GetQueuePlayerParamSchema,
+  GetQueuePlayerQuery,
+  GetQueuePlayerResult,
+} from "./get-queue-player.query";
 
-@QueryHandler(GetPositionQuery)
-export class GetPositionHandler implements IInferredQueryHandler<GetPositionQuery> {
+@QueryHandler(GetQueuePlayerQuery)
+export class GetQueuePlayerHandler implements IInferredQueryHandler<GetQueuePlayerQuery> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
-  @ValidateParams(GetPositionParamSchema)
-  public async execute(params: GetPositionQuery): Promise<GetPositionResult> {
+  @ValidateParams(GetQueuePlayerParamSchema)
+  public async execute(params: GetQueuePlayerQuery): Promise<GetQueuePlayerResult> {
     const player = this.playerRepository.getByVoiceChannelId(params.voiceChannelId);
     if (!player) throw new NotFoundException("Player not found");
     if (!player.getMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
 
-    return {
-      position: player.audioPlayer.accuratePosition || -1,
-    };
+    return QueuePlayerDto.create(player);
   }
 }

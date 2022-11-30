@@ -3,6 +3,7 @@ import { Constructor, IEventHandler } from "@nestjs/cqrs";
 import { MemberJammedHandler } from "./member-jammed.handler";
 import { MemberHandler } from "./member.handler";
 import { PartialQueueHandler } from "./partial-queue.handler";
+import { PlayerPauseStateChangedHandler } from "./player-pause-state-changed.handler";
 import { QueueHandler } from "./queue.handler";
 import { TrackMemberHandler } from "./track-member.handler";
 import { TrackOrderChangedHandler } from "./track-order-changed.handler";
@@ -16,6 +17,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   MemberJammedHandler,
   MemberHandler,
   PartialQueueHandler,
+  PlayerPauseStateChangedHandler,
   QueueHandler,
   TrackMemberHandler,
   TrackOrderChangedHandler,

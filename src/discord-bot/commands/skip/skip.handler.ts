@@ -1,7 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { TrackSkippedEvent } from "@discord-bot/events";
 import { QueuePlayerRepository } from "@discord-bot/repositories";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 
 import { SkipCommand, SkipParamSchema } from "./skip.command";
@@ -18,7 +18,7 @@ export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
     const { voiceChannelId, executor } = params;
 
     const player = this.playerRepository.getByVoiceChannelId(voiceChannelId);
-    if (!player) throw new Error("Player not found");
+    if (!player) throw new NotFoundException("Player not found");
     const member = player.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 

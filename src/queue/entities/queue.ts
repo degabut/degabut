@@ -21,7 +21,6 @@ export class Queue {
   public nowPlaying: Track | null;
   public nextTrack: Track | null;
   public loopType: LoopType;
-  public isPaused: boolean;
   public shuffle: boolean;
   public shuffleHistoryIds: string[];
   public previousShuffleHistoryIds: string[];
@@ -36,7 +35,6 @@ export class Queue {
     this.history = [];
     this.loopType = LoopType.Disabled;
     this.shuffle = false;
-    this.isPaused = false;
     this.shuffleHistoryIds = [];
     this.previousShuffleHistoryIds = [];
     this.voiceChannel = props.voiceChannel;

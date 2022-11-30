@@ -1,7 +1,7 @@
 import { Constructor, IQueryHandler } from "@nestjs/cqrs";
 
-import { GetPositionHandler } from "./get-position";
+import { GetQueuePlayerHandler } from "./get-queue-player";
 
-export * from "./get-position";
+export * from "./get-queue-player";
 
-export const Queries: Constructor<IQueryHandler>[] = [GetPositionHandler];
+export const Queries: Constructor<IQueryHandler>[] = [GetQueuePlayerHandler];

@@ -4,16 +4,10 @@ import { QueueDto } from "@queue/dtos";
 import {
   QueueDestroyedEvent,
   QueueLoopTypeChangedEvent,
-  QueuePauseStateChangedEvent,
   QueueShuffleToggledEvent,
 } from "@queue/events";
 
-const events = [
-  QueueDestroyedEvent,
-  QueuePauseStateChangedEvent,
-  QueueLoopTypeChangedEvent,
-  QueueShuffleToggledEvent,
-];
+const events = [QueueDestroyedEvent, QueueLoopTypeChangedEvent, QueueShuffleToggledEvent];
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)

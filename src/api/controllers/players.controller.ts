@@ -1,7 +1,7 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
-import { SeekCommand, SkipCommand } from "@discord-bot/commands";
-import { GetPositionQuery } from "@discord-bot/queries";
+import { SeekCommand, SetPauseCommand, SkipCommand } from "@discord-bot/commands";
+import { GetQueuePlayerQuery } from "@discord-bot/queries";
 import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 
@@ -17,11 +17,11 @@ type SeekBody = {
 export class PlayersController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
 
-  @Get("/:voiceChannelId/position")
+  @Get("/:voiceChannelId")
   @UseGuards(AuthGuard)
-  async getPosition(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+  async getPlayer(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     return await this.queryBus.execute(
-      new GetPositionQuery({
+      new GetQueuePlayerQuery({
         ...params,
         executor,
       }),
@@ -49,6 +49,30 @@ export class PlayersController {
   async skip(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new SkipCommand({
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/pause")
+  @UseGuards(AuthGuard)
+  async pause(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    await this.commandBus.execute(
+      new SetPauseCommand({
+        isPaused: true,
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/unpause")
+  @UseGuards(AuthGuard)
+  async unpause(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    await this.commandBus.execute(
+      new SetPauseCommand({
+        isPaused: false,
         ...params,
         executor,
       }),

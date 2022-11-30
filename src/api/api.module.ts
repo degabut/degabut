@@ -8,8 +8,6 @@ import {
   PlaylistsController,
   QueuesController,
   UsersController,
-  VideosController,
-  YoutubeController,
 } from "./controllers";
 
 @Module({
@@ -19,9 +17,7 @@ import {
     HealthController,
     PlaylistsController,
     UsersController,
-    VideosController,
     QueuesController,
-    YoutubeController,
   ],
 })
 export class ApiModule {}

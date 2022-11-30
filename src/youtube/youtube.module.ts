@@ -4,7 +4,6 @@ import { Module } from "@nestjs/common";
 
 import { Listeners } from "./listeners";
 import { YoutubeEmbedProvider, YoutubeiProvider } from "./providers";
-import { Queries } from "./queries";
 import { ChannelRepository, VideoRepository } from "./repositories";
 import { YoutubeCachedService } from "./services";
 
@@ -16,7 +15,6 @@ import { YoutubeCachedService } from "./services";
     VideoRepository,
     ChannelRepository,
     YoutubeCachedService,
-    ...Queries,
     ...Listeners,
   ],
   exports: [YoutubeiProvider, YoutubeCachedService, VideoRepository, ChannelRepository],

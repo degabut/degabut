@@ -25,8 +25,6 @@ export class SetPauseHandler implements IInferredCommandHandler<SetPauseCommand>
     if (isPaused) await player.audioPlayer.pause();
     else await player.audioPlayer.resume();
 
-    await new Promise((r) => setTimeout(r, 750)); // TODO
-
     this.eventBus.publish(new PlayerPauseStateChangedEvent({ player, member }));
 
     return player.audioPlayer.paused;

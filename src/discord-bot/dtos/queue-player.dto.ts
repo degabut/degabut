@@ -4,7 +4,7 @@ import { Exclude, Expose, plainToInstance, Transform } from "class-transformer";
 @Exclude()
 export class QueuePlayerDto {
   @Expose()
-  @Transform(({ obj }) => obj.audioPlayer.accuratePosition || -1)
+  @Transform(({ obj }) => obj.audioPlayer.position || -1)
   public position!: number;
 
   @Expose()

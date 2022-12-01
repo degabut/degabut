@@ -4,6 +4,7 @@ import { MemberJammedHandler } from "./member-jammed.handler";
 import { MemberHandler } from "./member.handler";
 import { PartialQueueHandler } from "./partial-queue.handler";
 import { PlayerPauseStateChangedHandler } from "./player-pause-state-changed.handler";
+import { PlayerTickHandler } from "./player-tick.handler";
 import { QueueHandler } from "./queue.handler";
 import { TrackMemberHandler } from "./track-member.handler";
 import { TrackOrderChangedHandler } from "./track-order-changed.handler";
@@ -14,6 +15,7 @@ import { VoiceMemberJoinedHandler } from "./voice-member-joined.handler";
 import { VoiceMemberLeftHandler } from "./voice-member-left.handler";
 
 export const Listeners: Constructor<IEventHandler>[] = [
+  PlayerTickHandler,
   MemberJammedHandler,
   MemberHandler,
   PartialQueueHandler,

@@ -5,7 +5,12 @@ import { EventBus } from "@nestjs/cqrs";
 import { Client, GatewayDispatchEvents, GuildMember, VoiceState } from "discord.js";
 import { Node } from "lavaclient";
 
-import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent, VoiceMemberUpdatedEvent } from "./events";
+import {
+  PlayerTickEvent,
+  VoiceMemberJoinedEvent,
+  VoiceMemberLeftEvent,
+  VoiceMemberUpdatedEvent,
+} from "./events";
 import { QueuePlayerRepository } from "./repositories";
 
 @Injectable()
@@ -36,6 +41,15 @@ export class DiscordBotGateway {
   @Once("ready")
   onReady() {
     this.client.lavalink.connect(this.client.user?.id);
+    this.client.lavalink.on("raw", (e) => {
+      if (e.op !== "playerUpdate") return;
+
+      const player = this.playerRepository.getByGuildId(e.guildId);
+      if (!player) return;
+
+      const event = new PlayerTickEvent({ player, position: e.state.position || null });
+      this.eventBus.publish(event);
+    });
     this.logger.log("Discord bot ready");
   }
 

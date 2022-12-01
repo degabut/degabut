@@ -38,7 +38,7 @@ export class YoutubeCachedService {
     return firstVideo;
   }
 
-  private async cacheVideo(video: VideoCompact) {
+  async cacheVideo(video: VideoCompact) {
     try {
       // YouTube with its infinite wisdom decided to auto translate video titles
       // this fetches the original title from the embed API to store in the database

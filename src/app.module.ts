@@ -8,8 +8,11 @@ import { PlaylistModule } from "@playlist/playlist.module";
 import { QueueModule } from "@queue/queue.module";
 import { UserModule } from "@user/user.module";
 
+import { HealthModule } from "./health/health.module";
+
 @Module({
   imports: [
+    HealthModule,
     DatabaseModule,
     AuthModule,
     QueueModule,

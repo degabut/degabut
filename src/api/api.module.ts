@@ -1,10 +1,10 @@
 import { AuthModule } from "@auth/auth.module";
+import { HealthModule } from "@health/health.module";
 import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 
 import {
   AuthController,
-  HealthController,
   PlayersController,
   PlaylistsController,
   QueuesController,
@@ -12,10 +12,9 @@ import {
 } from "./controllers";
 
 @Module({
-  imports: [CqrsModule, AuthModule],
+  imports: [CqrsModule, AuthModule, HealthModule],
   controllers: [
     AuthController,
-    HealthController,
     PlaylistsController,
     UsersController,
     PlayersController,

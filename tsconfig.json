@@ -32,6 +32,8 @@
       "@discord-bot/*": ["./src/discord-bot/*"],
       "@events": ["./src/events"],
       "@events/*": ["./src/events/*"],
+      "@health": ["./src/health"],
+      "@health/*": ["./src/health/*"],
       "@playlist": ["./src/playlist"],
       "@playlist/*": ["./src/playlist/*"],
       "@queue": ["./src/queue"],

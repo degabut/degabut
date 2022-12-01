@@ -32,6 +32,7 @@
     "@nestjs/cqrs": "^9.0.1",
     "@nestjs/platform-fastify": "^9.0.8",
     "@nestjs/platform-ws": "^9.0.8",
+    "@nestjs/terminus": "^9.1.4",
     "@nestjs/websockets": "^9.0.8",
     "@willsoto/nestjs-objection": "^8.1.0",
     "class-transformer": "^0.5.1",

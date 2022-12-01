@@ -9,7 +9,7 @@ import { IPrefixCommand } from "../interfaces";
 @Injectable()
 @PrefixCommand({
   name: "stop",
-  aliases: ["disconnect", "dc"],
+  aliases: ["disconnect", "dc", "leave"],
 })
 export class StopPrefixCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}

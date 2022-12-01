@@ -26,6 +26,7 @@ export class VideoRepositoryMapper {
       viewCount: model.view_count,
       channel: model.channel ? ChannelRepositoryMapper.toDomainEntity(model.channel) : null,
       thumbnails: model.thumbnails.map((t) => new Thumbnail(t)),
+      updatedAt: model.updated_at,
     });
 
     return entity;

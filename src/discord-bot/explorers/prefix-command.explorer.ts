@@ -63,12 +63,10 @@ export class PrefixCommandExplorer {
         const reply = await command.instanceWrapper.instance.handler(message, args);
         if (reply) message.reply(reply);
       } catch (error) {
-        if (!(error instanceof DiscordAPIError)) return;
-
-        if (error.code === 10003 || error.code === 50013) {
+        if (error instanceof DiscordAPIError && (error.code === 10003 || error.code === 50013)) {
           await message.author.send(`Failed to execute the command: ${(error as Error).message}`);
         } else {
-          await message.reply(`Failed to execute the command: ${(error as Error).message}`);
+          await message.reply(`⚠ Failed to execute the command: **${(error as Error).message}**`);
         }
       }
     });

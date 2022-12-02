@@ -71,7 +71,7 @@ export class ButtonInteractionExplorer {
     });
 
     for (const command of commands) {
-      this.logger.log(`Registered interaction: ${command.options.name}`);
+      this.logger.log(`Registered {${command.options.name}} interaction handler`);
     }
   }
 }

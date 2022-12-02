@@ -4,7 +4,7 @@ import {
   VoiceMemberJoinedEvent,
   VoiceMemberLeftEvent,
 } from "@discord-bot/events";
-import { QueuePlayerService } from "@discord-bot/services";
+import { PlayerDestroyReason, QueuePlayerService } from "@discord-bot/services";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 
 @EventsHandler(VoiceMemberLeftEvent, VoiceMemberJoinedEvent, VoiceChannelChangedEvent)
@@ -18,7 +18,7 @@ export class VoiceChangedEvent implements IEventHandler<VoiceChannelChangedEvent
     } else if (player.voiceChannel.members.size <= 1 && !player.disconnectTimeout) {
       player.disconnectTimeout = setTimeout(() => {
         if (player.voiceChannel.members.size > 1) return;
-        this.playerService.stopPlayer(player);
+        this.playerService.destroyPlayer(player, PlayerDestroyReason.AUTO_DISCONNECTED);
       }, AUTO_DISCONNECT_TIMEOUT);
     }
   }

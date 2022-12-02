@@ -14,6 +14,12 @@ import { Injectable, Logger } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
 import { Client, VoiceChannel } from "discord.js";
 
+export enum PlayerDestroyReason {
+  COMMAND = "COMMAND",
+  DISCONNECTED = "DISCONNECTED",
+  AUTO_DISCONNECTED = "AUTO_DISCONNECTED",
+}
+
 @Injectable()
 export class QueuePlayerService {
   private logger = new Logger(QueuePlayerService.name);
@@ -25,7 +31,12 @@ export class QueuePlayerService {
     private readonly playerRepository: QueuePlayerRepository,
   ) {}
 
-  public async stopPlayer(playerOrId: string | QueuePlayer): Promise<void> {
+  public async destroyPlayer(
+    playerOrId: string | QueuePlayer,
+    reason: PlayerDestroyReason,
+  ): Promise<void> {
+    this.logger.log(`Destroying player ${playerOrId}, reason: ${reason}`);
+
     let player: QueuePlayer | undefined;
     if (typeof playerOrId === "string") {
       player = this.playerRepository.getByVoiceChannelId(playerOrId);
@@ -42,6 +53,7 @@ export class QueuePlayerService {
 
   public initPlayerConnection(player: QueuePlayer): void {
     player.audioPlayer.on("channelJoin", () => {
+      this.logger.log(`Joined ${player.voiceChannel.id} (${player.guild.id})`);
       this.eventBus.publish(new VoiceReadyEvent({ player }));
     });
 
@@ -58,7 +70,7 @@ export class QueuePlayerService {
     player.audioPlayer.on("disconnected", async () => {
       await new Promise((r) => setTimeout(r, 2500));
       if (player.audioPlayer.connected) return;
-      this.stopPlayer(player);
+      this.destroyPlayer(player, PlayerDestroyReason.DISCONNECTED);
     });
 
     player.audioPlayer.on("trackStart", () => {
@@ -77,8 +89,8 @@ export class QueuePlayerService {
       player.currentTrack = null;
     });
 
-    player.audioPlayer.on("trackException", (_, err) => {
-      this.logger.error(err);
+    player.audioPlayer.on("trackException", (_, e) => {
+      this.logger.error({ error: "trackException", e });
       const lavaTrack = player.currentTrack;
       if (!lavaTrack) return;
       this.eventBus.publish(new TrackAudioErrorEvent({ track: lavaTrack.track }));

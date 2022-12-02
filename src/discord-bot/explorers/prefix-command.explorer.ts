@@ -74,9 +74,9 @@ export class PrefixCommandExplorer {
     });
 
     for (const command of commands) {
-      let message = `Registered prefix command: ${command.options.name}`;
-      if (command.options.aliases) message += ` (${command.options.aliases.join(", ")})`;
-      this.logger.log(message);
+      let commandName = command.options.name;
+      if (command.options.aliases) commandName += ` (${command.options.aliases.join(", ")})`;
+      this.logger.log(`Registered {${commandName}} prefix command handler`);
     }
   }
 }

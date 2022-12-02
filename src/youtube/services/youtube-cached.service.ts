@@ -44,8 +44,8 @@ export class YoutubeCachedService {
       // this fetches the original title from the embed API to store in the database
       const embedVideo = await this.youtubeEmbedProvider.getVideo(video.id);
       if (embedVideo) video.title = embedVideo.title;
-    } catch (error) {
-      this.logger.error(error);
+    } catch (e) {
+      this.logger.error({ error: "Fetch embed error", e });
     }
 
     await Promise.all([

@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { QueuePlayerService } from "@discord-bot/services";
+import { PlayerDestroyReason, QueuePlayerService } from "@discord-bot/services";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 
 import { StopCommand, StopParamSchema } from "./stop.command";
@@ -10,6 +10,6 @@ export class StopHandler implements IInferredCommandHandler<StopCommand> {
 
   @ValidateParams(StopParamSchema)
   public async execute(params: StopCommand): Promise<void> {
-    this.playerService.stopPlayer(params.voiceChannelId);
+    this.playerService.destroyPlayer(params.voiceChannelId, PlayerDestroyReason.COMMAND);
   }
 }

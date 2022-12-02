@@ -26,6 +26,7 @@ export class JoinPrefixCommand implements IPrefixCommand {
     const command = new JoinCommand({
       voiceChannel: message.member.voice.channel,
       textChannel: message.channel,
+      executor: { id: message.author.id },
     });
 
     await this.commandBus.execute(command);

@@ -14,7 +14,7 @@ import { LavaTrack } from "./lava-track";
 interface ConstructorProps {
   audioPlayer: Player<Node>;
   voiceChannel: BaseGuildVoiceChannel;
-  textChannel: BaseGuildTextChannel;
+  textChannel?: BaseGuildTextChannel | null;
 }
 
 export class QueuePlayer {
@@ -28,7 +28,7 @@ export class QueuePlayer {
   constructor(props: ConstructorProps) {
     this.guild = props.voiceChannel.guild;
     this.voiceChannel = props.voiceChannel;
-    this.textChannel = props.textChannel;
+    this.textChannel = props.textChannel || null;
     this.audioPlayer = props.audioPlayer;
     this.currentTrack = null;
     this.disconnectTimeout = null;
@@ -42,21 +42,18 @@ export class QueuePlayer {
     if (this.textChannel) {
       try {
         await this.textChannel.send(message);
+        return;
       } catch (err) {
         if (!(err instanceof DiscordAPIError)) return;
         if (err.code === 10003) this.textChannel = null;
-        if (this.voiceChannel.isTextBased()) {
-          await this.voiceChannel.send(message);
-        }
       }
-    } else {
-      try {
-        if (this.voiceChannel.isTextBased()) {
-          await this.voiceChannel.send(message);
-        }
-      } catch {
-        // ignore
-      }
+    }
+
+    if (!this.voiceChannel.isTextBased()) return;
+    try {
+      await this.voiceChannel.send(message);
+    } catch {
+      // ignore
     }
   }
 }

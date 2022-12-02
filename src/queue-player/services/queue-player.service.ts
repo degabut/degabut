@@ -96,6 +96,6 @@ export class QueuePlayerService {
       this.eventBus.publish(new TrackAudioErrorEvent({ track: lavaTrack.track }));
     });
 
-    player.audioPlayer.connect(player.voiceChannel.id);
+    player.audioPlayer.connect(player.voiceChannel.id, { deafened: true });
   }
 }

@@ -1,4 +1,3 @@
-import { QueuePlayerDto } from "@discord-bot/dtos";
 import { PlayerTickEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
@@ -9,6 +8,6 @@ export class PlayerTickHandler implements IEventHandler<PlayerTickEvent> {
 
   public async handle({ player }: PlayerTickEvent): Promise<void> {
     const memberIds = player.voiceChannel.members.map((m) => m.id);
-    this.gateway.send(memberIds, "player-tick", QueuePlayerDto.create(player));
+    this.gateway.send(memberIds, "player-tick", { position: player.audioPlayer.position });
   }
 }

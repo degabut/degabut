@@ -38,8 +38,10 @@ specifiers:
   jsonwebtoken: ^8.5.1
   knex: ^2.2.0
   lavaclient: ^4.1.1
+  nestjs-pino: ^3.1.1
   objection: ^3.0.1
   pg: ^8.7.3
+  pino-http: ^8.2.1
   prettier: ^2.3.2
   reflect-metadata: ^0.1.13
   rimraf: ^3.0.2
@@ -75,8 +77,10 @@ dependencies:
   jsonwebtoken: 8.5.1
   knex: 2.2.0_pg@8.7.3
   lavaclient: 4.1.1
+  nestjs-pino: 3.1.1_ar6wzga4b223sd7tvh6kksb5h4
   objection: 3.0.1_knex@2.2.0
   pg: 8.7.3
+  pino-http: 8.2.1
   reflect-metadata: 0.1.13
   rimraf: 3.0.2
   rxjs: 7.5.6
@@ -2973,6 +2977,12 @@ packages:
   /fast-uri/2.1.0:
     resolution: {integrity: sha512-qKRta6N7BWEFVlyonVY/V+BMLgFqktCUV0QjT259ekAIlbVrMaFnFLxJ4s/JPl4tou56S1BzPufI60bLe29fHA==}
 
+  /fast-url-parser/1.1.3:
+    resolution: {integrity: sha512-5jOCVXADYNuRkKFzNJ0dCCewsZiYo0dz8QNYljkOpFC6r2U4OBmKtvm/Tsuh4w1YYdDqDb31a8TVhBJ2OJKdqQ==}
+    dependencies:
+      punycode: 1.4.1
+    dev: false
+
   /fastify-plugin/3.0.1:
     resolution: {integrity: sha512-qKcDXmuZadJqdTm6vlCqioEbyewF60b/0LOFCcYN1B6BIZGlYJumWWOYs70SFYLDAH4YqdE1cxH/RKMG7rFxgA==}
     dev: false
@@ -2987,7 +2997,7 @@ packages:
       avvio: 8.2.0
       find-my-way: 7.0.1
       light-my-request: 5.3.0
-      pino: 8.4.0
+      pino: 8.7.0
       process-warning: 2.0.0
       proxy-addr: 2.0.7
       rfdc: 1.3.0
@@ -3008,7 +3018,7 @@ packages:
       avvio: 8.2.0
       find-my-way: 7.0.1
       light-my-request: 5.3.0
-      pino: 8.4.0
+      pino: 8.7.0
       process-warning: 2.0.0
       proxy-addr: 2.0.7
       rfdc: 1.3.0
@@ -3194,7 +3204,6 @@ packages:
   /get-caller-file/2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
-    dev: true
 
   /get-intrinsic/1.1.2:
     resolution: {integrity: sha512-Jfm3OyCxHh9DJyc28qGk+JmfkpO41A4XkneDSujN9MDXrm4oDKdHvndhZ2dN94+ERNfkYJWDclW6k2L/ZGHjXA==}
@@ -4372,6 +4381,18 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
+  /nestjs-pino/3.1.1_ar6wzga4b223sd7tvh6kksb5h4:
+    resolution: {integrity: sha512-T7ajfqYTSHKrirzrElQJ3EWO/OZF5fFFkgaRvD+I7F5YY2hU3X295E/CnTkgpHZozL0s/3Ud4OtTZlT3NisTBw==}
+    engines: {node: '>= 14'}
+    requiresBuild: true
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0
+      pino-http: ^6.4.0 || ^7.0.0 || ^8.0.0
+    dependencies:
+      '@nestjs/common': 8.4.7_aniaiezvefq2fqnommj6u5l4zi
+      pino-http: 8.2.1
+    dev: false
+
   /node-emoji/1.11.0:
     resolution: {integrity: sha512-wo2DpQkQp7Sjm2A0cq+sN7EHKO6Sl0ctXeBdFZrL9T9+UywORbufTcTZxom8YqpLQt/FqNMUkOpkZrJVYSKD3A==}
     dependencies:
@@ -4635,11 +4656,21 @@ packages:
       readable-stream: 4.1.0
       split2: 4.1.0
 
+  /pino-http/8.2.1:
+    resolution: {integrity: sha512-bdWAE4HYfFjDhKw2/N7BLNSIFAs+WDLZnetsGRpBdNEKq7/RoZUgblLS5OlMY257RPQml6J5QiiLkwxbstzWbA==}
+    dependencies:
+      fast-url-parser: 1.1.3
+      get-caller-file: 2.0.5
+      pino: 8.7.0
+      pino-std-serializers: 6.0.0
+      process-warning: 2.0.0
+    dev: false
+
   /pino-std-serializers/6.0.0:
     resolution: {integrity: sha512-mMMOwSKrmyl+Y12Ri2xhH1lbzQxwwpuru9VjyJpgFIH4asSj88F2csdMwN6+M5g1Ll4rmsYghHLQJw81tgZ7LQ==}
 
-  /pino/8.4.0:
-    resolution: {integrity: sha512-R95U66WOb4Ggtb1RPGnC2uvtc8T0i1FSbrKHrAudRtiLDrlNxKjM1MyCJu+V4gL0qdE/7/LoXAmkEY/TlX6ELA==}
+  /pino/8.7.0:
+    resolution: {integrity: sha512-l9sA5uPxmZzwydhMWUcm1gI0YxNnYl8MfSr2h8cwLvOAzQLBLewzF247h/vqHe3/tt6fgtXeG9wdjjoetdI/vA==}
     hasBin: true
     dependencies:
       atomic-sleep: 1.0.0
@@ -4796,6 +4827,10 @@ packages:
       end-of-stream: 1.4.4
       once: 1.4.0
     dev: true
+
+  /punycode/1.4.1:
+    resolution: {integrity: sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==}
+    dev: false
 
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}

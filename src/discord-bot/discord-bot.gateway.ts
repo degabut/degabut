@@ -43,12 +43,12 @@ export class DiscordBotGateway {
     this.client.lavalink.connect(this.client.user?.id);
 
     this.client.lavalink.on("error", (e) => {
-      this.logger.error("Lavalink Error", e);
+      this.logger.error({ error: "Lavalink Error", e });
       process.exit(0);
     });
 
     this.client.lavalink.on("disconnect", (e) => {
-      this.logger.error("Lavalink Disconnected", e);
+      this.logger.error({ error: "Lavalink Disconnected", e });
       process.exit(0);
     });
 

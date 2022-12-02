@@ -3,6 +3,7 @@ import { AuthModule } from "@auth/auth.module";
 import { DatabaseModule } from "@database/database.module";
 import { DiscordBotModule } from "@discord-bot/discord-bot.module";
 import { EventsModule } from "@events/events.module";
+import { LoggerModule } from "@logger/logger.module";
 import { Logger, Module } from "@nestjs/common";
 import { PlaylistModule } from "@playlist/playlist.module";
 import { QueueModule } from "@queue/queue.module";
@@ -12,6 +13,7 @@ import { HealthModule } from "./health/health.module";
 
 @Module({
   imports: [
+    LoggerModule,
     HealthModule,
     DatabaseModule,
     AuthModule,
@@ -30,10 +32,10 @@ export class AppModule {
     // TODO dirty workaround to catch error on CQRS event
     // https://github.com/nestjs/cqrs/issues/409
     process.on("unhandledRejection", (reason, promise) => {
-      this.logger.error({ err: "unhandledRejection", reason, promise });
+      this.logger.error({ error: "unhandledRejection", reason, promise });
     });
-    process.on("uncaughtException", (reason, promise) => {
-      this.logger.error({ err: "uncaughtException", reason, promise });
+    process.on("uncaughtException", (reason, origin) => {
+      this.logger.error({ error: "uncaughtException", reason, origin });
     });
   }
 }

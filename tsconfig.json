@@ -34,6 +34,8 @@
       "@events/*": ["./src/events/*"],
       "@health": ["./src/health"],
       "@health/*": ["./src/health/*"],
+      "@logger": ["./src/logger"],
+      "@logger/*": ["./src/logger/*"],
       "@playlist": ["./src/playlist"],
       "@playlist/*": ["./src/playlist/*"],
       "@queue": ["./src/queue"],

@@ -1,31 +1,31 @@
 import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
-import { MemberJammedHandler } from "./member-jammed.handler";
-import { MemberHandler } from "./member.handler";
-import { PartialQueueHandler } from "./partial-queue.handler";
-import { PlayerPauseStateChangedHandler } from "./player-pause-state-changed.handler";
-import { PlayerTickHandler } from "./player-tick.handler";
-import { QueueHandler } from "./queue.handler";
-import { TrackMemberHandler } from "./track-member.handler";
-import { TrackOrderChangedHandler } from "./track-order-changed.handler";
-import { TrackSeekedHandler } from "./track-seeked.handler";
-import { TrackHandler } from "./track.handler";
-import { TracksMemberHandler } from "./tracks-member.handler";
-import { VoiceMemberJoinedHandler } from "./voice-member-joined.handler";
-import { VoiceMemberLeftHandler } from "./voice-member-left.handler";
+import { MemberJammedListener } from "./member-jammed.listener";
+import { MemberListener } from "./member.listener";
+import { PartialQueueListener } from "./partial-queue.listener";
+import { PlayerPauseStateChangedListener } from "./player-pause-state-changed.listener";
+import { PlayerTickListener } from "./player-tick.listener";
+import { QueueListener } from "./queue.listener";
+import { TrackMemberListener } from "./track-member.listener";
+import { TrackOrderChangedListener } from "./track-order-changed.listener";
+import { TrackSeekedListener } from "./track-seeked.listener";
+import { TrackListener } from "./track.listener";
+import { TracksMemberListener } from "./tracks-member.listener";
+import { VoiceMemberJoinedListener } from "./voice-member-joined.listener";
+import { VoiceMemberLeftListener } from "./voice-member-left.listener";
 
 export const Listeners: Constructor<IEventHandler>[] = [
-  PlayerTickHandler,
-  MemberJammedHandler,
-  MemberHandler,
-  PartialQueueHandler,
-  PlayerPauseStateChangedHandler,
-  QueueHandler,
-  TrackMemberHandler,
-  TrackOrderChangedHandler,
-  TrackHandler,
-  TrackSeekedHandler,
-  TracksMemberHandler,
-  VoiceMemberJoinedHandler,
-  VoiceMemberLeftHandler,
+  PlayerTickListener,
+  MemberJammedListener,
+  MemberListener,
+  PartialQueueListener,
+  PlayerPauseStateChangedListener,
+  QueueListener,
+  TrackMemberListener,
+  TrackOrderChangedListener,
+  TrackListener,
+  TrackSeekedListener,
+  TracksMemberListener,
+  VoiceMemberJoinedListener,
+  VoiceMemberLeftListener,
 ];

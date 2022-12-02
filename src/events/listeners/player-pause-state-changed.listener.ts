@@ -4,7 +4,9 @@ import { QueuePlayerDto } from "@queue-player/dtos";
 import { PlayerPauseStateChangedEvent } from "@queue-player/events";
 
 @EventsHandler(PlayerPauseStateChangedEvent)
-export class PlayerPauseStateChangedHandler implements IEventHandler<PlayerPauseStateChangedEvent> {
+export class PlayerPauseStateChangedListener
+  implements IEventHandler<PlayerPauseStateChangedEvent>
+{
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle(event: PlayerPauseStateChangedEvent): Promise<void> {

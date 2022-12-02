@@ -3,7 +3,7 @@ import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 
 @EventsHandler(VoiceMemberLeftEvent)
-export class VoiceMemberLeftHandler implements IEventHandler<VoiceMemberLeftEvent> {
+export class VoiceMemberLeftListener implements IEventHandler<VoiceMemberLeftEvent> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle({ voiceChannel, member }: VoiceMemberLeftEvent): Promise<void> {

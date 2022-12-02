@@ -4,7 +4,7 @@ import { MemberRemovedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(VoiceMemberLeftEvent)
-export class VoiceMemberLeftHandler implements IEventHandler<VoiceMemberLeftEvent> {
+export class VoiceMemberLeftListener implements IEventHandler<VoiceMemberLeftEvent> {
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly eventBus: EventBus,

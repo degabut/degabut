@@ -3,7 +3,7 @@ import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { PlayerTickEvent } from "@queue-player/events";
 
 @EventsHandler(PlayerTickEvent)
-export class PlayerTickHandler implements IEventHandler<PlayerTickEvent> {
+export class PlayerTickListener implements IEventHandler<PlayerTickEvent> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle({ player }: PlayerTickEvent): Promise<void> {

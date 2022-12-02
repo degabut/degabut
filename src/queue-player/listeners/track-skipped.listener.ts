@@ -4,7 +4,7 @@ import { QueuePlayerRepository } from "@queue-player/repositories";
 import { EmbedBuilder } from "discord.js";
 
 @EventsHandler(TrackSkippedEvent)
-export class TrackSkippedHandler implements IEventHandler<TrackSkippedEvent> {
+export class TrackSkippedListener implements IEventHandler<TrackSkippedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ track, member }: TrackSkippedEvent): Promise<void> {

@@ -3,7 +3,7 @@ import { TrackAudioEndedEvent } from "@queue-player/events";
 import { QueueService } from "@queue/services";
 
 @EventsHandler(TrackAudioEndedEvent)
-export class TrackAudioEndedHandler implements IEventHandler<TrackAudioEndedEvent> {
+export class TrackAudioEndedListener implements IEventHandler<TrackAudioEndedEvent> {
   constructor(private readonly queueService: QueueService) {}
 
   public async handle({ track }: TrackAudioEndedEvent): Promise<void> {

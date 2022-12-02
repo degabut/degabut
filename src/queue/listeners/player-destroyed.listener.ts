@@ -4,7 +4,7 @@ import { QueueDestroyedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(PlayerDestroyedEvent)
-export class PlayerDestroyedHandler implements IEventHandler<PlayerDestroyedEvent> {
+export class PlayerDestroyedListener implements IEventHandler<PlayerDestroyedEvent> {
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly eventBus: EventBus,

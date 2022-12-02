@@ -4,7 +4,7 @@ import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueueProcessedEvent } from "@queue/events";
 
 @EventsHandler(QueueProcessedEvent)
-export class QueueProcessedHandler implements IEventHandler<QueueProcessedEvent> {
+export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ queue }: QueueProcessedEvent) {

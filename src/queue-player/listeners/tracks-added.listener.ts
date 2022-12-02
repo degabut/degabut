@@ -4,7 +4,7 @@ import { TracksAddedEvent } from "@queue/events";
 import { EmbedBuilder } from "discord.js";
 
 @EventsHandler(TracksAddedEvent)
-export class TracksAddedHandler implements IEventHandler<TracksAddedEvent> {
+export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ tracks, queue }: TracksAddedEvent): Promise<void> {

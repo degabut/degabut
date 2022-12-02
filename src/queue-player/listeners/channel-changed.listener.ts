@@ -9,7 +9,7 @@ const events = [VoiceMemberLeftEvent, VoiceMemberJoinedEvent, PlayerChannelChang
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)
-export class ChannelChangedEvent implements IEventHandler<Events> {
+export class ChannelChangedListener implements IEventHandler<Events> {
   constructor(
     private readonly playerService: QueuePlayerService,
     private readonly playerRepository: QueuePlayerRepository,

@@ -1,16 +1,16 @@
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { TrackAudioStartedEvent } from "@queue-player/events";
-import { MAX_QUEUE_HISTORY_TRACKS } from "@queue/queue.constants";
+import { YoutubeCachedService } from "@youtube/services";
 
 @EventsHandler(TrackAudioStartedEvent)
-export class TrackAudioStartedHandler implements IEventHandler<TrackAudioStartedEvent> {
+export class TrackAudioStartedListener implements IEventHandler<TrackAudioStartedEvent> {
+  constructor(private readonly youtubeService: YoutubeCachedService) {}
+
   public async handle({ track }: TrackAudioStartedEvent): Promise<void> {
     const queue = track.queue;
     const { nowPlaying } = queue;
     if (!nowPlaying) return;
 
-    track.playedAt = new Date();
-    queue.history.unshift(nowPlaying);
-    queue.history.splice(MAX_QUEUE_HISTORY_TRACKS);
+    await this.youtubeService.cacheVideo(nowPlaying.video);
   }
 }

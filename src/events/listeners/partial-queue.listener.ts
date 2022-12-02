@@ -11,7 +11,7 @@ const events = [QueueDestroyedEvent, QueueLoopTypeChangedEvent, QueueShuffleTogg
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)
-export class PartialQueueHandler implements IEventHandler<Events> {
+export class PartialQueueListener implements IEventHandler<Events> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle(event: Events): Promise<void> {

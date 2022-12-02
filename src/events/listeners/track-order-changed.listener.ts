@@ -1,13 +1,12 @@
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { QueueDto } from "@queue/dtos";
-import { QueueCreatedEvent } from "@queue/events";
+import { TrackOrderChangedEvent } from "@queue/events";
 
-const events = [QueueCreatedEvent];
+const events = [TrackOrderChangedEvent];
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)
-export class QueueHandler implements IEventHandler<Events> {
+export class TrackOrderChangedListener implements IEventHandler<Events> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle(event: Events): Promise<void> {
@@ -15,9 +14,11 @@ export class QueueHandler implements IEventHandler<Events> {
       .replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`)
       .replace(/^-(.*)-event$/, "$1");
 
-    const { queue } = event;
+    const { track } = event;
+    const queue = track.queue;
+    const trackIds = queue.tracks.map((t) => t.id);
     const memberIds = queue.voiceChannel.members.map((m) => m.id);
 
-    this.gateway.send(memberIds, eventName, QueueDto.create(queue));
+    this.gateway.send(memberIds, eventName, trackIds);
   }
 }

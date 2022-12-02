@@ -5,7 +5,7 @@ import { MemberAddedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(VoiceMemberJoinedEvent)
-export class VoiceMemberJoinedHandler implements IEventHandler<VoiceMemberJoinedEvent> {
+export class VoiceMemberJoinedListener implements IEventHandler<VoiceMemberJoinedEvent> {
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly eventBus: EventBus,

@@ -3,7 +3,7 @@ import { QueuePlayerRepository } from "@queue-player/repositories";
 import { TrackMarkedPlayNextEvent } from "@queue/events";
 
 @EventsHandler(TrackMarkedPlayNextEvent)
-export class TrackMarkedPlayNextHandler implements IEventHandler<TrackMarkedPlayNextEvent> {
+export class TrackMarkedPlayNextListener implements IEventHandler<TrackMarkedPlayNextEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
   public async handle({ track }: TrackMarkedPlayNextEvent): Promise<void> {

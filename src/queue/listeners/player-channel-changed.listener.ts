@@ -4,7 +4,7 @@ import { Member, VoiceChannel } from "@queue/entities";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(PlayerChannelChangedEvent)
-export class PlayerChannelChangedHandler implements IEventHandler<PlayerChannelChangedEvent> {
+export class PlayerChannelChangedListener implements IEventHandler<PlayerChannelChangedEvent> {
   constructor(private readonly queueRepository: QueueRepository) {}
 
   public async handle({ player }: PlayerChannelChangedEvent): Promise<void> {

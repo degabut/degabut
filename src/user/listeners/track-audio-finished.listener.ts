@@ -4,7 +4,7 @@ import { UserPlayHistory } from "@user/entities";
 import { UserPlayHistoryRepository } from "@user/repositories";
 
 @EventsHandler(TrackAudioFinishedEvent)
-export class TrackAudioFinishedHandler implements IEventHandler<TrackAudioFinishedEvent> {
+export class TrackAudioFinishedListener implements IEventHandler<TrackAudioFinishedEvent> {
   constructor(private readonly userPlayHistoryRepository: UserPlayHistoryRepository) {}
 
   public async handle({ track }: TrackAudioFinishedEvent): Promise<void> {

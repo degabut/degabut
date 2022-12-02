@@ -1,5 +1,5 @@
 import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
-import { TrackAudioFinishedHandler } from "./track-audio-finished.handler";
+import { TrackAudioFinishedListener } from "./track-audio-finished.listener";
 
-export const Listeners: Constructor<IEventHandler>[] = [TrackAudioFinishedHandler];
+export const Listeners: Constructor<IEventHandler>[] = [TrackAudioFinishedListener];

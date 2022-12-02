@@ -1,19 +1,19 @@
 import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
-import { ChannelChangedEvent } from "./channel-changed.handler";
-import { QueueProcessedHandler } from "./queue-processed.handler";
-import { TrackAddedHandler } from "./track-added.handler";
-import { TrackMarkedPlayNextHandler } from "./track-marked-play-next.handler";
-import { TrackRemovedHandler } from "./track-removed.handler";
-import { TrackSkippedHandler } from "./track-skipped.handler";
-import { TracksAddedHandler } from "./tracks-added.handler";
+import { ChannelChangedListener } from "./channel-changed.listener";
+import { QueueProcessedListener } from "./queue-processed.listener";
+import { TrackAddedListener } from "./track-added.listener";
+import { TrackMarkedPlayNextListener } from "./track-marked-play-next.listener";
+import { TrackRemovedListener } from "./track-removed.listener";
+import { TrackSkippedListener } from "./track-skipped.listener";
+import { TracksAddedListener } from "./tracks-added.listener";
 
 export const Listeners: Constructor<IEventHandler>[] = [
-  TrackAddedHandler,
-  TracksAddedHandler,
-  TrackRemovedHandler,
-  TrackSkippedHandler,
-  TrackMarkedPlayNextHandler,
-  QueueProcessedHandler,
-  ChannelChangedEvent,
+  ChannelChangedListener,
+  TrackAddedListener,
+  TracksAddedListener,
+  TrackRemovedListener,
+  TrackSkippedListener,
+  TrackMarkedPlayNextListener,
+  QueueProcessedListener,
 ];

@@ -4,7 +4,7 @@ import { JamCollectionDto } from "@queue/dtos";
 import { MemberJammedEvent } from "@queue/events";
 
 @EventsHandler(MemberJammedEvent)
-export class MemberJammedHandler implements IEventHandler<MemberJammedEvent> {
+export class MemberJammedListener implements IEventHandler<MemberJammedEvent> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle({ jam, queue }: MemberJammedEvent): Promise<void> {

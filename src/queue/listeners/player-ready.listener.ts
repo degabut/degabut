@@ -5,7 +5,7 @@ import { QueueCreatedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(PlayerReadyEvent)
-export class PlayerReadyHandler implements IEventHandler<PlayerReadyEvent> {
+export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly eventBus: EventBus,

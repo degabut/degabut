@@ -7,7 +7,7 @@ const events = [TracksAddedEvent, QueueClearedEvent];
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)
-export class TracksMemberHandler implements IEventHandler<Events> {
+export class TracksMemberListener implements IEventHandler<Events> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle(event: Events): Promise<void> {

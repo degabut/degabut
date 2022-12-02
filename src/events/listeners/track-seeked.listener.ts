@@ -4,7 +4,7 @@ import { GuildMemberDto } from "@queue-player/dtos";
 import { TrackSeekedEvent } from "@queue-player/events";
 
 @EventsHandler(TrackSeekedEvent)
-export class TrackSeekedHandler implements IEventHandler<TrackSeekedEvent> {
+export class TrackSeekedListener implements IEventHandler<TrackSeekedEvent> {
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle(event: TrackSeekedEvent): Promise<void> {

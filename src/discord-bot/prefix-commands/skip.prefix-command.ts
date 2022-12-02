@@ -1,6 +1,6 @@
-import { SkipCommand } from "@discord-bot/commands";
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
+import { SkipCommand } from "@queue-player/commands";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";

@@ -6,7 +6,7 @@ import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 export class VoiceMemberJoinedHandler implements IEventHandler<VoiceMemberJoinedEvent> {
   constructor(private readonly gateway: EventsGateway) {}
 
-  public async handle({ player, member }: VoiceMemberJoinedEvent): Promise<void> {
-    this.gateway.send([member.id], "queue-joined", { voiceChannelId: player.voiceChannel.id });
+  public async handle({ voiceChannel, member }: VoiceMemberJoinedEvent): Promise<void> {
+    this.gateway.send([member.id], "queue-joined", { voiceChannelId: voiceChannel.id });
   }
 }

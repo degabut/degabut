@@ -6,16 +6,11 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { YoutubeModule } from "@youtube/youtube.module";
 import { GatewayIntentBits } from "discord.js";
 
-import { Commands } from "./commands";
 import { DiscordBotConfigModule } from "./config";
 import { DiscordBotGateway } from "./discord-bot.gateway";
 import { Explorers } from "./explorers";
 import { Interactions } from "./interactions";
-import { Listeners } from "./listeners";
 import { PrefixCommands } from "./prefix-commands";
-import { Queries } from "./queries";
-import { QueuePlayerRepository } from "./repositories";
-import { DiscordBotService, QueuePlayerService } from "./services";
 
 @Module({
   imports: [
@@ -43,18 +38,7 @@ import { DiscordBotService, QueuePlayerService } from "./services";
     }),
     YoutubeModule,
   ],
-  providers: [
-    DiscordBotGateway,
-    DiscordBotService,
-    QueuePlayerService,
-    QueuePlayerRepository,
-    ...Explorers,
-    ...Commands,
-    ...Queries,
-    ...PrefixCommands,
-    ...Interactions,
-    ...Listeners,
-  ],
-  exports: [DiscordModule, DiscordBotService, QueuePlayerService],
+  providers: [DiscordBotGateway, ...Explorers, ...PrefixCommands, ...Interactions],
+  exports: [DiscordModule],
 })
 export class DiscordBotModule {}

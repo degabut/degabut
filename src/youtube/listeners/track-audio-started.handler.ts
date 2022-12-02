@@ -1,5 +1,5 @@
-import { TrackAudioStartedEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { TrackAudioStartedEvent } from "@queue-player/events";
 import { YoutubeCachedService } from "@youtube/services";
 
 @EventsHandler(TrackAudioStartedEvent)

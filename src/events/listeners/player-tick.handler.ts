@@ -1,6 +1,6 @@
-import { PlayerTickEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { PlayerTickEvent } from "@queue-player/events";
 
 @EventsHandler(PlayerTickEvent)
 export class PlayerTickHandler implements IEventHandler<PlayerTickEvent> {

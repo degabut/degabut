@@ -40,6 +40,8 @@
       "@playlist/*": ["./src/playlist/*"],
       "@queue": ["./src/queue"],
       "@queue/*": ["./src/queue/*"],
+      "@queue-player": ["./src/queue-player"],
+      "@queue-player/*": ["./src/queue-player/*"],
       "@user": ["./src/user"],
       "@user/*": ["./src/user/*"],
       "@youtube": ["./src/youtube"],

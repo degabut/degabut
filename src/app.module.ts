@@ -3,26 +3,27 @@ import { AuthModule } from "@auth/auth.module";
 import { DatabaseModule } from "@database/database.module";
 import { DiscordBotModule } from "@discord-bot/discord-bot.module";
 import { EventsModule } from "@events/events.module";
+import { HealthModule } from "@health/health.module";
 import { LoggerModule } from "@logger/logger.module";
 import { Logger, Module } from "@nestjs/common";
 import { PlaylistModule } from "@playlist/playlist.module";
+import { QueuePlayerModule } from "@queue-player/queue-player.module";
 import { QueueModule } from "@queue/queue.module";
 import { UserModule } from "@user/user.module";
 
-import { HealthModule } from "./health/health.module";
-
 @Module({
   imports: [
-    LoggerModule,
-    HealthModule,
-    DatabaseModule,
-    AuthModule,
-    QueueModule,
-    UserModule,
-    DiscordBotModule,
     ApiModule,
+    AuthModule,
+    DatabaseModule,
+    DiscordBotModule,
     EventsModule,
+    HealthModule,
+    LoggerModule,
     PlaylistModule,
+    QueueModule,
+    QueuePlayerModule,
+    UserModule,
   ],
 })
 export class AppModule {

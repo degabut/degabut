@@ -21,6 +21,7 @@ module.exports = {
     "@events(.*)": "<rootDir>/events$1",
     "@playlist(.*)": "<rootDir>/playlist$1",
     "@queue(.*)": "<rootDir>/queue$1",
+    "@queue-player(.*)": "<rootDir>/discord-bot$1",
     "@user(.*)": "<rootDir>/user$1",
     "@youtube(.*)": "<rootDir>/youtube$1",
   },

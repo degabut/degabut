@@ -1,7 +1,7 @@
-import { QueuePlayerDto } from "@discord-bot/dtos";
-import { PlayerPauseStateChangedEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { QueuePlayerDto } from "@queue-player/dtos";
+import { PlayerPauseStateChangedEvent } from "@queue-player/events";
 
 @EventsHandler(PlayerPauseStateChangedEvent)
 export class PlayerPauseStateChangedHandler implements IEventHandler<PlayerPauseStateChangedEvent> {

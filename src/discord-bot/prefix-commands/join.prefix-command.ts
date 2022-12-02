@@ -1,6 +1,6 @@
-import { JoinCommand } from "@discord-bot/commands";
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
+import { JoinCommand } from "@queue-player/commands";
 import { BaseGuildTextChannel, Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";

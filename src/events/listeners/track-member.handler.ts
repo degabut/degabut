@@ -1,7 +1,7 @@
-import { GuildMemberDto } from "@discord-bot/dtos";
-import { TrackSkippedEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { GuildMemberDto } from "@queue-player/dtos";
+import { TrackSkippedEvent } from "@queue-player/events";
 import { MemberDto, TrackDto } from "@queue/dtos";
 import { Member } from "@queue/entities";
 import { TrackAddedEvent, TrackRemovedEvent } from "@queue/events";

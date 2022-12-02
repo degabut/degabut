@@ -10,8 +10,8 @@ export class VoiceMemberLeftHandler implements IEventHandler<VoiceMemberLeftEven
     private readonly eventBus: EventBus,
   ) {}
 
-  public async handle({ player, member }: VoiceMemberLeftEvent): Promise<void> {
-    const queue = this.queueRepository.getByVoiceChannelId(player.voiceChannel.id);
+  public async handle({ voiceChannel, member }: VoiceMemberLeftEvent): Promise<void> {
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue) return;
 
     const removedMemberIndex = queue.voiceChannel.members.findIndex((m) => m.id === member.id);

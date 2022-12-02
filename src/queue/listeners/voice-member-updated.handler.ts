@@ -11,8 +11,8 @@ export class VoiceMemberUpdatedHandler implements IEventHandler<VoiceMemberUpdat
     private readonly eventBus: EventBus,
   ) {}
 
-  public async handle({ player, member }: VoiceMemberUpdatedEvent): Promise<void> {
-    const queue = this.queueRepository.getByVoiceChannelId(player.voiceChannel.id);
+  public async handle({ voiceChannel, member }: VoiceMemberUpdatedEvent): Promise<void> {
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue) return;
 
     const updatedMember = new Member({

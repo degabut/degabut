@@ -1,6 +1,6 @@
-import { TrackAudioStartedEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { TrackAudioStartedEvent } from "@queue-player/events";
 import { TrackDto } from "@queue/dtos";
 import { QueueProcessedEvent } from "@queue/events";
 

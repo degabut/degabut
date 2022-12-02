@@ -1,9 +1,9 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
-import { SeekCommand, SetPauseCommand, SkipCommand } from "@discord-bot/commands";
-import { GetQueuePlayerQuery } from "@discord-bot/queries";
 import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { SeekCommand, SetPauseCommand, SkipCommand } from "@queue-player/commands";
+import { GetQueuePlayerQuery } from "@queue-player/queries";
 
 type VoiceChannelIdParams = {
   voiceChannelId: string;

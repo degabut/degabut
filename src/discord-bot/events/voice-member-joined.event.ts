@@ -1,8 +1,7 @@
-import { QueuePlayer } from "@discord-bot/entities";
-import { GuildMember } from "discord.js";
+import { BaseGuildVoiceChannel, GuildMember } from "discord.js";
 
 export class VoiceMemberJoinedEvent {
-  public readonly player!: QueuePlayer;
+  public readonly voiceChannel!: BaseGuildVoiceChannel;
   public readonly member!: GuildMember;
 
   constructor(params: VoiceMemberJoinedEvent) {

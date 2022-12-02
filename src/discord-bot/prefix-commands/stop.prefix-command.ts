@@ -1,6 +1,6 @@
-import { StopCommand } from "@discord-bot/commands";
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
+import { StopCommand } from "@queue-player/commands";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";

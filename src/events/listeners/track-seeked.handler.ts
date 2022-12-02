@@ -1,7 +1,7 @@
-import { GuildMemberDto } from "@discord-bot/dtos";
-import { TrackSeekedEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { GuildMemberDto } from "@queue-player/dtos";
+import { TrackSeekedEvent } from "@queue-player/events";
 
 @EventsHandler(TrackSeekedEvent)
 export class TrackSeekedHandler implements IEventHandler<TrackSeekedEvent> {

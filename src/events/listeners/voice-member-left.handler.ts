@@ -6,7 +6,7 @@ import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 export class VoiceMemberLeftHandler implements IEventHandler<VoiceMemberLeftEvent> {
   constructor(private readonly gateway: EventsGateway) {}
 
-  public async handle({ player, member }: VoiceMemberLeftEvent): Promise<void> {
-    this.gateway.send([member.id], "queue-left", { voiceChannelId: player.voiceChannel.id });
+  public async handle({ voiceChannel, member }: VoiceMemberLeftEvent): Promise<void> {
+    this.gateway.send([member.id], "queue-left", { voiceChannelId: voiceChannel.id });
   }
 }

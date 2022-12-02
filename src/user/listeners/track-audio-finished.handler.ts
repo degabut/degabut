@@ -1,5 +1,5 @@
-import { TrackAudioFinishedEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { TrackAudioFinishedEvent } from "@queue-player/events";
 import { UserPlayHistory } from "@user/entities";
 import { UserPlayHistoryRepository } from "@user/repositories";
 

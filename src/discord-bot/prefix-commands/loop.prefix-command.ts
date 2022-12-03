@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { ChangeLoopTypeCommand } from "@queue/commands";
-import { LoopType } from "@queue/entities";
+import { ChangeLoopModeCommand } from "@queue/commands";
+import { LoopMode } from "@queue/entities";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
@@ -17,14 +17,14 @@ export class LoopPrefixCommand implements IPrefixCommand {
   public async handler(message: Message): Promise<PrefixCommandResult> {
     if (!message.member?.voice.channelId) return;
 
-    const command = new ChangeLoopTypeCommand({
+    const command = new ChangeLoopModeCommand({
       voiceChannelId: message.member.voice.channelId,
-      loopType: LoopType.Song,
+      loopMode: LoopMode.Track,
       executor: { id: message.author.id },
     });
 
-    const loopType = await this.commandBus.execute(command);
+    const loopMode = await this.commandBus.execute(command);
 
-    return loopType === LoopType.Song ? "🔂 **Looping Song**" : "▶ **Loop Song Disabled**";
+    return loopMode === LoopMode.Track ? "🔂 **Looping curent track**" : "▶ **Loop Disabled**";
   }
 }

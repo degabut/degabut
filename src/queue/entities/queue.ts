@@ -7,9 +7,9 @@ interface ConstructorProps {
   voiceChannel: VoiceChannel;
 }
 
-export enum LoopType {
+export enum LoopMode {
   Disabled = "DISABLED",
-  Song = "SONG",
+  Track = "TRACK",
   Queue = "QUEUE",
 }
 
@@ -20,7 +20,7 @@ export class Queue {
   public history: Track[];
   public nowPlaying: Track | null;
   public nextTrack: Track | null;
-  public loopType: LoopType;
+  public loopMode: LoopMode;
   public shuffle: boolean;
   public shuffleHistoryIds: string[];
   public previousShuffleHistoryIds: string[];
@@ -33,7 +33,7 @@ export class Queue {
     this.nowPlaying = null;
     this.tracks = [];
     this.history = [];
-    this.loopType = LoopType.Disabled;
+    this.loopMode = LoopMode.Disabled;
     this.shuffle = false;
     this.shuffleHistoryIds = [];
     this.previousShuffleHistoryIds = [];

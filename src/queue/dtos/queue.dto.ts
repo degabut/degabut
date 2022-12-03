@@ -1,6 +1,6 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
-import { LoopType, Queue } from "../entities";
+import { LoopMode, Queue } from "../entities";
 import { TrackDto } from "./track.dto";
 import { VoiceChannelDto } from "./voice-channel.dto";
 
@@ -18,7 +18,7 @@ export class QueueDto {
   public shuffle!: boolean;
 
   @Expose()
-  public loopType!: LoopType;
+  public loopMode!: LoopMode;
 
   @Expose()
   @Type(() => TrackDto)

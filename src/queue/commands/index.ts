@@ -2,7 +2,7 @@ import { Constructor, ICommandHandler } from "@nestjs/cqrs";
 
 import { AddTrackHandler } from "./add-track";
 import { AddTracksHandler } from "./add-tracks";
-import { ChangeLoopTypeHandler } from "./change-loop-type";
+import { ChangeLoopModeHandler } from "./change-loop-mode";
 import { ChangeTrackOrderHandler } from "./change-track-order";
 import { ClearQueueHandler } from "./clear-queue";
 import { JamHandler } from "./jam";
@@ -12,7 +12,7 @@ import { ToggleShuffleHandler } from "./toggle-shuffle";
 
 export * from "./add-track";
 export * from "./add-tracks";
-export * from "./change-loop-type";
+export * from "./change-loop-mode";
 export * from "./change-track-order";
 export * from "./clear-queue";
 export * from "./jam";
@@ -23,7 +23,7 @@ export * from "./toggle-shuffle";
 export const Commands: Constructor<ICommandHandler>[] = [
   AddTrackHandler,
   AddTracksHandler,
-  ChangeLoopTypeHandler,
+  ChangeLoopModeHandler,
   ChangeTrackOrderHandler,
   ClearQueueHandler,
   PlayTrackHandler,

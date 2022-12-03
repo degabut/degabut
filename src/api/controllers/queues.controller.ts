@@ -1,11 +1,11 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddTrackCommand,
   AddTracksCommand,
-  ChangeLoopTypeCommand,
+  ChangeLoopModeCommand,
   ChangeTrackOrderCommand,
   ClearQueueCommand,
   JamCommand,
@@ -13,7 +13,7 @@ import {
   RemoveTrackCommand,
   ToggleShuffleCommand,
 } from "@queue/commands";
-import { LoopType } from "@queue/entities";
+import { LoopMode } from "@queue/entities";
 import { GetQueueQuery } from "@queue/queries";
 
 type VoiceChannelIdParams = {
@@ -33,7 +33,7 @@ type AddTracksBody = {
 
 type ChangeTrackOrderBody = { to: number };
 
-type ChangeLoopTypeBody = { loopType: LoopType };
+type ChangeLoopModeBody = { loopMode: LoopMode };
 
 type JamBody = { count: number };
 
@@ -82,7 +82,7 @@ export class QueuesController {
     }
   }
 
-  @Patch("/:voiceChannelId/tracks/:trackId")
+  @Post("/:voiceChannelId/tracks/:trackId/order")
   @UseGuards(AuthGuard)
   async changeTrackOrder(
     @Body() body: ChangeTrackOrderBody,
@@ -98,15 +98,15 @@ export class QueuesController {
     );
   }
 
-  @Patch("/:voiceChannelId/loop-type")
+  @Post("/:voiceChannelId/loop-mode")
   @UseGuards(AuthGuard)
-  async changeLoopType(
-    @Body() body: ChangeLoopTypeBody,
+  async changeLoopMode(
+    @Body() body: ChangeLoopModeBody,
     @Param() params: VoiceChannelIdParams,
     @User() executor: AuthUser,
   ) {
     await this.commandBus.execute(
-      new ChangeLoopTypeCommand({
+      new ChangeLoopModeCommand({
         ...params,
         ...body,
         executor,
@@ -114,7 +114,7 @@ export class QueuesController {
     );
   }
 
-  @Patch("/:voiceChannelId/shuffle")
+  @Post("/:voiceChannelId/shuffle")
   @UseGuards(AuthGuard)
   async toggleShuffle(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(

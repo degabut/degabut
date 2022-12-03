@@ -1,7 +1,7 @@
 import { ArrayUtil, RandomUtil } from "@common/utils";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
-import { LoopType, Queue, Track } from "@queue/entities";
+import { LoopMode, Queue, Track } from "@queue/entities";
 import { TrackRemovedEvent } from "@queue/events";
 import { QueueProcessedEvent } from "@queue/events/queue-processed.event";
 
@@ -32,7 +32,7 @@ export class QueueService {
     const nowPlayingIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
     queue.nowPlaying = null;
 
-    if (queue.loopType === LoopType.Disabled && nowPlayingIndex >= 0) {
+    if (queue.loopMode === LoopMode.Disabled && nowPlayingIndex >= 0) {
       const removedTrack = queue.tracks[nowPlayingIndex];
       queue.tracks.splice(nowPlayingIndex, 1);
 
@@ -51,11 +51,11 @@ export class QueueService {
       nextIndex = Math.max(index, 0);
       queue.nextTrack = null;
     } else {
-      switch (queue.loopType) {
-        case LoopType.Song:
+      switch (queue.loopMode) {
+        case LoopMode.Track:
           nextIndex = Math.max(nowPlayingIndex, 0);
           break;
-        case LoopType.Queue:
+        case LoopMode.Queue:
           nextIndex = queue.shuffle ? this.getShuffledTrackIndex(queue) : nowPlayingIndex + 1;
           break;
         default:

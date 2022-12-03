@@ -3,11 +3,11 @@ import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueueDto } from "@queue/dtos";
 import {
   QueueDestroyedEvent,
-  QueueLoopTypeChangedEvent,
+  QueueLoopModeChangedEvent,
   QueueShuffleToggledEvent,
 } from "@queue/events";
 
-const events = [QueueDestroyedEvent, QueueLoopTypeChangedEvent, QueueShuffleToggledEvent];
+const events = [QueueDestroyedEvent, QueueLoopModeChangedEvent, QueueShuffleToggledEvent];
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)

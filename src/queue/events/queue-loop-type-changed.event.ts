@@ -1,10 +1,10 @@
 import { Member, Queue } from "@queue/entities";
 
-export class QueueLoopTypeChangedEvent {
+export class QueueLoopModeChangedEvent {
   public readonly queue!: Queue;
   public readonly member!: Member;
 
-  constructor(params: QueueLoopTypeChangedEvent) {
+  constructor(params: QueueLoopModeChangedEvent) {
     Object.assign(this, params);
   }
 }

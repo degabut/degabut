@@ -35,14 +35,15 @@ export class QueuePlayerService {
     playerOrId: string | QueuePlayer,
     reason: PlayerDestroyReason,
   ): Promise<void> {
-    this.logger.log(`Destroying player ${playerOrId}, reason: ${reason}`);
+    const player =
+      typeof playerOrId === "string"
+        ? this.playerRepository.getByVoiceChannelId(playerOrId)
+        : playerOrId;
 
-    let player: QueuePlayer | undefined;
-    if (typeof playerOrId === "string") {
-      player = this.playerRepository.getByVoiceChannelId(playerOrId);
-    } else {
-      player = playerOrId;
-    }
+    this.logger.log(
+      `Destroying player ${player?.voiceChannel.id || playerOrId}, reason: ${reason}`,
+    );
+
     if (!player) return;
 
     player.audioPlayer.disconnect();

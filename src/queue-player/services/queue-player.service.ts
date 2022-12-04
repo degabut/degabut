@@ -40,9 +40,11 @@ export class QueuePlayerService {
         ? this.playerRepository.getByVoiceChannelId(playerOrId)
         : playerOrId;
 
-    this.logger.log(
-      `Destroying player ${player?.voiceChannel.id || playerOrId}, reason: ${reason}`,
-    );
+    this.logger.log({
+      method: "destoyPlayer",
+      voiceChannelId: player?.voiceChannel.id,
+      reason,
+    });
 
     if (!player) return;
 
@@ -54,7 +56,12 @@ export class QueuePlayerService {
 
   public initPlayerConnection(player: QueuePlayer): void {
     player.audioPlayer.on("channelJoin", () => {
-      this.logger.log(`Joined ${player.voiceChannel.id} (${player.guild.id})`);
+      this.logger.log({
+        event: "channelJoin",
+        voiceChannelId: player.voiceChannel.id,
+        guildId: player.guild.id,
+      });
+
       this.eventBus.publish(new PlayerReadyEvent({ player }));
     });
 
@@ -84,10 +91,19 @@ export class QueuePlayerService {
       const lavaTrack = player.currentTrack;
       if (!lavaTrack) return;
       const { track } = lavaTrack;
+      player.currentTrack = null;
+
+      this.logger.log({
+        event: "trackEnd",
+        trackId: track.id,
+        videoId: track.video.id,
+        voiceChannelId: player.voiceChannel.id,
+        guildId: player.guild.id,
+        reason,
+      });
+
       this.eventBus.publish(new TrackAudioEndedEvent({ track }));
       if (reason === "FINISHED") this.eventBus.publish(new TrackAudioFinishedEvent({ track }));
-
-      player.currentTrack = null;
     });
 
     player.audioPlayer.on("trackException", (_, e) => {

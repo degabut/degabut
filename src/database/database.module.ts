@@ -1,7 +1,7 @@
+import { UserPlayHistoryModel } from "@history/repositories";
 import { Inject, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PlaylistModel, PlaylistVideoModel } from "@playlist/repositories";
-import { UserPlayHistoryModel } from "@user/repositories";
 import { Connection, KNEX_CONNECTION, ObjectionModule } from "@willsoto/nestjs-objection";
 import { ChannelModel, VideoModel } from "@youtube/repositories";
 import * as path from "path";

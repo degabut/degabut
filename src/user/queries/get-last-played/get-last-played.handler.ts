@@ -1,9 +1,9 @@
 import { ValidateParams } from "@common/decorators";
+import { UserPlayHistory } from "@history/entities";
+import { UserPlayHistoryRepository } from "@history/repositories";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
-import { UserPlayHistory } from "@user/entities";
-import { UserPlayHistoryRepository } from "@user/repositories";
 import { VideoCompactDto } from "@youtube/dtos";
 import { VideoRepository } from "@youtube/repositories";
 

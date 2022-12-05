@@ -1,11 +1,18 @@
 import { DiscordUtil } from "@common/utils";
-import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { TrackLoadFailedEvent } from "@queue-player/events";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueueProcessedEvent } from "@queue/events";
 
 @EventsHandler(QueueProcessedEvent)
 export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent> {
-  constructor(private readonly playerRepository: QueuePlayerRepository) {}
+  private logger = new Logger(QueueProcessedListener.name);
+
+  constructor(
+    private readonly eventBus: EventBus,
+    private readonly playerRepository: QueuePlayerRepository,
+  ) {}
 
   public async handle({ queue }: QueueProcessedEvent) {
     const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
@@ -14,6 +21,13 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     if (!queue.nowPlaying) player.audioPlayer.stop();
     else {
       const res = await player.audioPlayer.node.rest.loadTracks(queue.nowPlaying.video.id);
+
+      if (res.loadType !== "TRACK_LOADED") {
+        this.logger.log({ error: "Track load failed", ...res });
+        const event = new TrackLoadFailedEvent({ track: queue.nowPlaying });
+        return this.eventBus.publish(event);
+      }
+
       const [track] = res.tracks;
       if (!track) return;
 

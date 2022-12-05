@@ -7,20 +7,20 @@ import { Queue } from "./queue";
 interface ConstructorProps {
   queue: Queue;
   video: VideoCompact;
-  requestedBy: Member;
+  requestedBy?: Member;
 }
 
 export class Track {
   public readonly queue: Queue;
   public readonly id: string;
   public readonly video: VideoCompact;
-  public readonly requestedBy: Member;
+  public readonly requestedBy: Member | null;
   public playedAt: Date | null;
 
   constructor(props: ConstructorProps) {
     this.id = v4();
     this.video = props.video;
-    this.requestedBy = props.requestedBy;
+    this.requestedBy = props.requestedBy || null;
     this.queue = props.queue;
     this.playedAt = null;
   }

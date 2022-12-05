@@ -11,7 +11,7 @@ export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
     const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 
-    const requestedBy = tracks[0].requestedBy.id;
+    const requestedBy = tracks[0].requestedBy?.id;
     const length = tracks.length;
     const pluralOrSingular = length === 1 ? "track" : "tracks";
 
@@ -19,7 +19,9 @@ export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
       content: "🎵 **Added To Queue**",
       embeds: [
         new EmbedBuilder({
-          description: `**<@!${requestedBy}> added ${length} ${pluralOrSingular} to queue**`,
+          description: requestedBy
+            ? `**<@!${requestedBy}> added ${length} ${pluralOrSingular} to queue**`
+            : `${length} ${pluralOrSingular} added to queue`,
         }),
       ],
     });

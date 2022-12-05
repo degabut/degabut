@@ -1,21 +1,34 @@
+import { UserPlayHistoryRepository } from "@history/repositories";
+import { Logger } from "@nestjs/common";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { PlayerReadyEvent } from "@queue-player/events";
-import { Member, Queue, VoiceChannel } from "@queue/entities";
+import { Member, Queue, Track, VoiceChannel } from "@queue/entities";
 import { QueueCreatedEvent } from "@queue/events";
+import { MAX_QUEUE_HISTORY_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
+import { VideoRepository } from "@youtube/repositories";
 
 @EventsHandler(PlayerReadyEvent)
 export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
+  private readonly logger = new Logger(PlayerReadyListener.name);
+
   constructor(
     private readonly queueRepository: QueueRepository,
+    private readonly playHistoryRepository: UserPlayHistoryRepository,
+    private readonly videoRepository: VideoRepository,
     private readonly eventBus: EventBus,
   ) {}
 
   public async handle({ player }: PlayerReadyEvent): Promise<void> {
-    let queue = this.queueRepository.getByVoiceChannelId(player.voiceChannel.id);
-    if (queue) return;
+    const queueExists = !!this.queueRepository.getByVoiceChannelId(player.voiceChannel.id);
+    if (queueExists) {
+      return this.logger.error({
+        error: "Attempting to create a queue for a voice channel that already has one",
+        voiceChannelId: player.voiceChannel.id,
+      });
+    }
 
-    queue = new Queue({
+    const queue = new Queue({
       guildId: player.guild.id,
       voiceChannel: new VoiceChannel({
         id: player.voiceChannel.id,
@@ -33,6 +46,13 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
         ),
       }),
     });
+
+    const vcPlayHistory = await this.playHistoryRepository.getLastPlayedByVoiceChannelId(
+      player.voiceChannel.id,
+      { count: MAX_QUEUE_HISTORY_TRACKS },
+    );
+    const historyVideos = await this.videoRepository.getByIds(vcPlayHistory.map((h) => h.videoId));
+    queue.history = historyVideos.map((video) => new Track({ queue, video }));
 
     this.queueRepository.save(queue);
 

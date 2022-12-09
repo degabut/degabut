@@ -84,6 +84,7 @@ export class QueuePlayerService {
     player.audioPlayer.on("trackStart", () => {
       const lavaTrack = player.currentTrack;
       if (!lavaTrack) return;
+      if (player.audioPlayer.paused) player.audioPlayer.pause(true);
       this.eventBus.publish(new TrackAudioStartedEvent({ track: lavaTrack.track }));
     });
 

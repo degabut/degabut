@@ -4,10 +4,11 @@ import { Module } from "@nestjs/common";
 import { QueueModule } from "@queue/queue.module";
 import { YoutubeModule } from "@youtube/youtube.module";
 
+import { Commands } from "./commands";
 import { Queries } from "./queries";
 
 @Module({
   imports: [DatabaseModule, QueueModule, YoutubeModule, HistoryModule],
-  providers: [...Queries],
+  providers: [...Queries, ...Commands],
 })
 export class UserModule {}

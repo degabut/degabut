@@ -39,6 +39,10 @@ export class UserPlayHistoryRepository {
     await this.userPlayHistoryModel.query().insert(props).returning("*");
   }
 
+  public async removeUserVideoHistory(userId: string, videoId: string): Promise<void> {
+    await this.userPlayHistoryModel.query().delete().where({ user_id: userId, video_id: videoId });
+  }
+
   public async getLastPlayedByUserId(
     userId: string,
     options: GetLastPlayedOptions,

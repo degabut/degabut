@@ -1,6 +1,7 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
 import { LoopMode, Queue } from "../entities";
+import { GuildDto } from "./guild.dto";
 import { TrackDto } from "./track.dto";
 import { VoiceChannelDto } from "./voice-channel.dto";
 
@@ -27,6 +28,10 @@ export class QueueDto {
   @Expose()
   @Type(() => VoiceChannelDto)
   public voiceChannel!: VoiceChannelDto;
+
+  @Expose()
+  @Type(() => GuildDto)
+  public guild!: GuildDto;
 
   public static create(entity: Queue): QueueDto {
     return plainToInstance(QueueDto, entity);

@@ -2,7 +2,7 @@ import { UserPlayHistoryRepository } from "@history/repositories";
 import { Logger } from "@nestjs/common";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { PlayerReadyEvent } from "@queue-player/events";
-import { Member, Queue, Track, VoiceChannel } from "@queue/entities";
+import { Guild, Member, Queue, Track, VoiceChannel } from "@queue/entities";
 import { QueueCreatedEvent } from "@queue/events";
 import { MAX_QUEUE_HISTORY_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
@@ -29,7 +29,11 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
     }
 
     const queue = new Queue({
-      guildId: player.guild.id,
+      guild: new Guild({
+        id: player.guild.id,
+        name: player.guild.name,
+        icon: player.guild.iconURL(),
+      }),
       voiceChannel: new VoiceChannel({
         id: player.voiceChannel.id,
         name: player.voiceChannel.name,

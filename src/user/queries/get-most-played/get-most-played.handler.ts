@@ -44,7 +44,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
     if (params.userId) {
       histories = await this.repository.getMostPlayedByUserId(params.userId, options);
     } else if (params.guild && queue) {
-      histories = await this.repository.getMostPlayedByGuildId(queue.guildId, {
+      histories = await this.repository.getMostPlayedByGuildId(queue.guild.id, {
         ...options,
         excludeUserIds: [params.executor.id],
       });

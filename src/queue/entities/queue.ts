@@ -1,10 +1,11 @@
+import { Guild } from "./guild";
 import { Member } from "./member";
 import { Track } from "./track";
 import { VoiceChannel } from "./voice-channel";
 
 interface ConstructorProps {
-  guildId: string;
   voiceChannel: VoiceChannel;
+  guild: Guild;
 }
 
 export enum LoopMode {
@@ -14,7 +15,6 @@ export enum LoopMode {
 }
 
 export class Queue {
-  public readonly guildId: string;
   public voiceChannelId: string;
   public tracks: Track[];
   public history: Track[];
@@ -24,11 +24,11 @@ export class Queue {
   public shuffle: boolean;
   public shuffleHistoryIds: string[];
   public previousShuffleHistoryIds: string[];
+  public guild: Guild;
   public voiceChannel: VoiceChannel;
 
   constructor(props: ConstructorProps) {
     this.voiceChannelId = props.voiceChannel.id;
-    this.guildId = props.guildId;
     this.nextTrack = null;
     this.nowPlaying = null;
     this.tracks = [];
@@ -37,6 +37,7 @@ export class Queue {
     this.shuffle = false;
     this.shuffleHistoryIds = [];
     this.previousShuffleHistoryIds = [];
+    this.guild = props.guild;
     this.voiceChannel = props.voiceChannel;
   }
 

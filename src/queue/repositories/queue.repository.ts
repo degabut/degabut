@@ -8,7 +8,7 @@ export class QueueRepository {
   }
 
   public getByGuildId(guildId: string): Queue | undefined {
-    return [...this.queues.values()].find((q) => q.guildId === guildId);
+    return [...this.queues.values()].find((q) => q.guild.id === guildId);
   }
 
   public getByUserId(userId: string): Queue | undefined {

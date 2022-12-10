@@ -5,6 +5,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 
 import {
   AuthController,
+  MeController,
   PlayersController,
   PlaylistsController,
   QueuesController,
@@ -16,6 +17,7 @@ import {
   controllers: [
     AuthController,
     PlaylistsController,
+    MeController,
     UsersController,
     PlayersController,
     QueuesController,

@@ -7,7 +7,7 @@ import {
   ActionRowBuilder,
   EmbedBuilder,
   Message,
-  MessageActionRowComponentBuilder,
+  MessageActionRowComponentBuilder
 } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
@@ -34,7 +34,7 @@ export class RelatedPrefixCommand implements IPrefixCommand {
 
     if (!queue?.nowPlaying) return;
 
-    const video = await this.youtubeiProvider.getVideo(queue.nowPlaying.id);
+    const video = await this.youtubeiProvider.getVideo(queue.nowPlaying.video.id);
     if (!video) return;
 
     const buttons = video.related.map((v, i) => DiscordUtil.videoToMessageButton(v, i));

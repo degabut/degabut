@@ -7,7 +7,7 @@ import {
   ActionRowBuilder,
   EmbedBuilder,
   Message,
-  MessageActionRowComponentBuilder
+  MessageActionRowComponentBuilder,
 } from "discord.js";
 
 import { PrefixCommand } from "../decorators";

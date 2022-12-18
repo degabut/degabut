@@ -13,7 +13,7 @@ export class VoiceMemberUpdatedListener implements IEventHandler<VoiceMemberUpda
 
   public async handle({ voiceChannel, member }: VoiceMemberUpdatedEvent): Promise<void> {
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
-    if (!queue) return;
+    if (!queue || member.user.bot) return;
 
     const updatedMember = new Member({
       id: member.id,

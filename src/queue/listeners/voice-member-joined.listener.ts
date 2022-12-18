@@ -13,7 +13,7 @@ export class VoiceMemberJoinedListener implements IEventHandler<VoiceMemberJoine
 
   public async handle({ voiceChannel, member }: VoiceMemberJoinedEvent): Promise<void> {
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
-    if (!queue) return;
+    if (!queue || member.user.bot) return;
 
     const newMember = new Member({
       id: member.id,

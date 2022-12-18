@@ -23,11 +23,7 @@ export class DiscordBotGateway {
   @On("voiceStateUpdate")
   onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
     const userId = this.client.user?.id;
-    if (
-      oldState.channelId === newState.channelId ||
-      !newState.member ||
-      newState.member.id === userId
-    ) {
+    if (oldState.channelId === newState.channelId || !newState.member || newState.member.user.bot) {
       return;
     }
 
@@ -52,6 +48,8 @@ export class DiscordBotGateway {
 
   @On("guildMemberUpdate")
   onGuildMemberUpdate(_: GuildMember, member: GuildMember) {
+    if (member.user.bot) return;
+
     const voiceChannel = member.voice.channel;
     if (!voiceChannel) return;
     if (!voiceChannel.members.find((m) => m.id === this.client.user?.id)) return;

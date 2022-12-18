@@ -37,17 +37,19 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
       voiceChannel: new VoiceChannel({
         id: player.voiceChannel.id,
         name: player.voiceChannel.name,
-        members: player.voiceChannel.members.map(
-          (m) =>
-            new Member({
-              id: m.id,
-              username: m.user.username,
-              nickname: m.nickname,
-              displayName: m.displayName,
-              discriminator: m.user.discriminator,
-              avatar: m.user.avatarURL(),
-            }),
-        ),
+        members: player.voiceChannel.members
+          .filter((m) => !m.user.bot)
+          .map(
+            (m) =>
+              new Member({
+                id: m.id,
+                username: m.user.username,
+                nickname: m.nickname,
+                displayName: m.displayName,
+                discriminator: m.user.discriminator,
+                avatar: m.user.avatarURL(),
+              }),
+          ),
       }),
     });
 

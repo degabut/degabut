@@ -12,7 +12,7 @@ async function bootstrap() {
   });
   app.useLogger(app.get(Logger));
   app.useWebSocketAdapter(new WsAdapter(app));
-  app.listen(8080, "0.0.0.0");
+  app.listen(+(process.env.API_PORT || 8080), "0.0.0.0");
 }
 
 bootstrap();

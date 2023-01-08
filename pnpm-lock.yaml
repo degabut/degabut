@@ -55,7 +55,7 @@ specifiers:
   typescript: ^4.3.5
   uuid: ^8.3.2
   webpack: ^5.0.0
-  youtubei: ^1.1.0
+  youtubei: ^1.1.1
 
 dependencies:
   '@discord-nestjs/common': 4.0.4_i3yx7xdyi5ppvg32uglz4c62fi
@@ -85,7 +85,7 @@ dependencies:
   rimraf: 3.0.2
   rxjs: 7.5.6
   uuid: 8.3.2
-  youtubei: 1.1.0
+  youtubei: 1.1.1
 
 devDependencies:
   '@nestjs/cli': 8.2.8
@@ -5831,8 +5831,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /youtubei/1.1.0:
-    resolution: {integrity: sha512-2QrfWqG6uLiegGT2hAF9ug97NpVyeOcyU/ogt3R2PDay3V0ePOfs7HXtu7MlT5hOh7RJ2ylpmmFctE7EEcsbzQ==}
+  /youtubei/1.1.1:
+    resolution: {integrity: sha512-7mZ82CFr0E+JYv8Zqk1rTUel6KJu5rbv1NDfuj8VuzCR8VCyV/cAY0xqJ7lBjCO44axFGSpATGS507tdkYV0Pw==}
     dependencies:
       node-fetch: 2.6.7
       protocol-buffers: 5.0.0

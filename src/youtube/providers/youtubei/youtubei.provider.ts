@@ -1,23 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { Channel, PlaylistCompact, Transcript, Video, VideoCompact } from "@youtube/entities";
+import { Channel, Video, VideoCompact } from "@youtube/entities";
 import { MAX_PLAYLIST_VIDEOS_PAGE } from "@youtube/youtube.constants";
 import {
   Client as YoutubeiClient,
   LiveVideo,
   MixPlaylist,
-  PlaylistCompact as YoutubeiPlaylistCompact,
   Video as YoutubeiVideo,
   VideoCompact as YoutubeiVideoCompact,
 } from "youtubei";
 
-@Injectable()
-export class YoutubeiProvider {
-  private readonly youtubeClient = new YoutubeiClient();
+import { IYoutubeiProvider } from "./youtubei.interface";
 
-  public async searchPlaylist(keyword: string): Promise<PlaylistCompact[]> {
-    const playlist = await this.youtubeClient.search(keyword, { type: "playlist" });
-    return playlist.items.map(this.playlistCompactToEntity);
-  }
+@Injectable()
+export class YoutubeiProvider implements IYoutubeiProvider {
+  private readonly youtubeClient = new YoutubeiClient();
 
   public async searchVideo(keyword: string): Promise<VideoCompact[]> {
     const videos = await this.youtubeClient.search(keyword, { type: "video" });
@@ -29,11 +25,6 @@ export class YoutubeiProvider {
     if (!video) return;
 
     return this.videoToEntity(video);
-  }
-
-  public async getVideoTranscript(id: string): Promise<Transcript[] | undefined> {
-    const transcript = await this.youtubeClient.getVideoTranscript(id);
-    return transcript?.map((t) => new Transcript(t));
   }
 
   public async getPlaylistVideos(youtubePlaylistId: string): Promise<VideoCompact[]> {
@@ -82,22 +73,6 @@ export class YoutubeiProvider {
             thumbnails: video.channel.thumbnails || [],
           })
         : null,
-    });
-  }
-
-  private playlistCompactToEntity(playlist: YoutubeiPlaylistCompact) {
-    return new PlaylistCompact({
-      id: playlist.id,
-      title: playlist.title,
-      videoCount: playlist.videoCount,
-      channel: playlist.channel
-        ? new Channel({
-            id: playlist.channel.id,
-            name: playlist.channel.name,
-            thumbnails: playlist.channel.thumbnails || [],
-          })
-        : null,
-      thumbnails: playlist.thumbnails,
     });
   }
 }

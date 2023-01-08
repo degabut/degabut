@@ -1,6 +1,7 @@
 import { DiscordUtil } from "@common/utils";
-import { Injectable } from "@nestjs/common";
-import { YoutubeiProvider } from "@youtube/providers";
+import { Inject, Injectable } from "@nestjs/common";
+import { IYoutubeiProvider } from "@youtube/providers";
+import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 import {
   ActionRowBuilder,
   EmbedBuilder,
@@ -21,7 +22,10 @@ export class SearchPrefixCommand implements IPrefixCommand {
   public readonly aliases = ["s"];
   public readonly description = "Search for a song";
 
-  constructor(private readonly youtubeiProvider: YoutubeiProvider) {}
+  constructor(
+    @Inject(YOUTUBEI_PROVIDER)
+    private readonly youtubeiProvider: IYoutubeiProvider,
+  ) {}
 
   public async handler(message: Message, args: string[]): Promise<PrefixCommandResult> {
     const keyword = args.join(" ");

@@ -1,5 +1,5 @@
 import { ValidateParams } from "@common/decorators";
-import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Inject, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistRepository, PlaylistVideoRepository } from "@playlist/repositories";
 import { Track } from "@queue/entities";
@@ -8,7 +8,8 @@ import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
 import { VideoCompact } from "@youtube/entities";
-import { YoutubeiProvider } from "@youtube/providers";
+import { IYoutubeiProvider } from "@youtube/providers";
+import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 
 import { AddTracksCommand, AddTracksParamSchema, AddTracksResult } from "./add-tracks.command";
 
@@ -19,7 +20,8 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistVideoRepository,
     private readonly queueService: QueueService,
-    private readonly youtubeProvider: YoutubeiProvider,
+    @Inject(YOUTUBEI_PROVIDER)
+    private readonly youtubeProvider: IYoutubeiProvider,
     private readonly eventBus: EventBus,
   ) {}
 

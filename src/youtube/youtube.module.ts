@@ -1,22 +1,41 @@
 import { DatabaseModule } from "@database/database.module";
-import { HttpModule } from "@nestjs/axios";
+import { HttpModule, HttpService } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
+import { YoutubeConfigModule } from "./config";
 import { Listeners } from "./listeners";
-import { YoutubeEmbedProvider, YoutubeiProvider } from "./providers";
+import { DegabutYoutubeiProvider, YoutubeEmbedProvider, YoutubeiProvider } from "./providers";
+import { IYoutubeiProvider } from "./providers/youtubei/youtubei.interface";
 import { ChannelRepository, VideoRepository } from "./repositories";
 import { YoutubeCachedService } from "./services";
+import { YOUTUBEI_PROVIDER } from "./youtube.constants";
 
 @Module({
-  imports: [HttpModule, DatabaseModule],
+  imports: [
+    ConfigModule,
+    YoutubeConfigModule,
+    DatabaseModule,
+    HttpModule.register({ validateStatus: () => true }),
+  ],
   providers: [
-    YoutubeiProvider,
+    {
+      provide: YOUTUBEI_PROVIDER,
+      inject: [ConfigService, HttpService],
+      useFactory: (config: ConfigService, http: HttpService): IYoutubeiProvider => {
+        const baseUrl = config.get("youtube.degabutYoutubeBaseUrl");
+        const authToken = config.get("youtube.degabutYoutubeAuthToken");
+
+        if (baseUrl && authToken) return new DegabutYoutubeiProvider(http, baseUrl, authToken);
+        else return new YoutubeiProvider();
+      },
+    },
     YoutubeEmbedProvider,
     VideoRepository,
     ChannelRepository,
     YoutubeCachedService,
     ...Listeners,
   ],
-  exports: [YoutubeiProvider, YoutubeCachedService, VideoRepository, ChannelRepository],
+  exports: [YOUTUBEI_PROVIDER, YoutubeCachedService, VideoRepository, ChannelRepository],
 })
 export class YoutubeModule {}

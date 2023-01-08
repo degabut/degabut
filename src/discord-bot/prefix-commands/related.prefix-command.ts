@@ -1,8 +1,9 @@
 import { DiscordUtil } from "@common/utils";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";
-import { YoutubeiProvider } from "@youtube/providers";
+import { IYoutubeiProvider } from "@youtube/providers";
+import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 import {
   ActionRowBuilder,
   EmbedBuilder,
@@ -20,7 +21,8 @@ import { IPrefixCommand } from "../interfaces";
 export class RelatedPrefixCommand implements IPrefixCommand {
   constructor(
     private readonly queryBus: QueryBus,
-    private readonly youtubeiProvider: YoutubeiProvider,
+    @Inject(YOUTUBEI_PROVIDER)
+    private readonly youtubeiProvider: IYoutubeiProvider,
   ) {}
 
   public async handler(message: Message): Promise<void> {

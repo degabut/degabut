@@ -1,9 +1,10 @@
 import { TimeUtil } from "@common/utils";
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Channel, Video, VideoCompact } from "@youtube/entities";
-import { YoutubeEmbedProvider, YoutubeiProvider } from "@youtube/providers";
+import { YoutubeEmbedProvider } from "@youtube/providers";
+import { IYoutubeiProvider } from "@youtube/providers/youtubei/youtubei.interface";
 import { ChannelRepository, VideoRepository } from "@youtube/repositories";
-import { MAX_VIDEO_AGE } from "@youtube/youtube.constants";
+import { MAX_VIDEO_AGE, YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 
 @Injectable()
 export class YoutubeCachedService {
@@ -12,7 +13,8 @@ export class YoutubeCachedService {
   constructor(
     private readonly videoRepository: VideoRepository,
     private readonly channelRepository: ChannelRepository,
-    private readonly youtubeProvider: YoutubeiProvider,
+    @Inject(YOUTUBEI_PROVIDER)
+    private readonly youtubeProvider: IYoutubeiProvider,
     private readonly youtubeEmbedProvider: YoutubeEmbedProvider,
   ) {}
 

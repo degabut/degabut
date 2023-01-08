@@ -13,13 +13,13 @@ export class DegabutYoutubeiProvider implements IYoutubeiProvider {
 
   public async searchVideo(keyword: string): Promise<VideoCompact[]> {
     const response = await this.get("/videos", { keyword });
-    return response.data;
+    return response.data || [];
   }
 
   public async getVideo(id: string): Promise<Video | undefined> {
     const response = await this.get(`/videos/${id}`);
     if (response.status === 404) return;
-    return response.data;
+    return response.data || undefined;
   }
 
   public async getPlaylistVideos(id: string): Promise<VideoCompact[]> {
@@ -46,9 +46,9 @@ export class DegabutYoutubeiProvider implements IYoutubeiProvider {
 
   private async get(path: string, params?: Record<string, string>) {
     const response = await this.httpService.axiosRef.get(this.baseUrl + path, {
-      params: { ...params, auth: this.authToken },
+      params,
       headers: { Authorization: "Bearer " + this.authToken },
     });
-    return response.data;
+    return response;
   }
 }

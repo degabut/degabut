@@ -38,10 +38,13 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
 
       await Promise.all([
         player.audioPlayer.play(track),
-        player.notify({
-          content: "🎶 **Now Playing**",
-          embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
-        }),
+        player.notify(
+          {
+            content: "🎶 **Now Playing**",
+            embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
+          },
+          "NOW_PLAYING",
+        ),
       ]);
     }
   }

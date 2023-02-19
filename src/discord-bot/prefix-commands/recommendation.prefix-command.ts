@@ -1,4 +1,4 @@
-import { ArrayUtil, DiscordUtil } from "@common/utils";
+import { DiscordUtil } from "@common/utils";
 import { Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
@@ -25,13 +25,13 @@ export class RecommendationPrefixCommand implements IPrefixCommand {
     const executor = { id: message.author.id };
 
     const lastPlayedQuery = new GetLastPlayedQuery({
-      count: 5,
+      count: 10,
       userId,
       executor,
     });
     const mostPlayedQuery = new GetMostPlayedQuery({
-      days: 5,
-      count: 5,
+      days: 30,
+      count: 10,
       userId,
       executor,
     });
@@ -40,14 +40,11 @@ export class RecommendationPrefixCommand implements IPrefixCommand {
       this.queryBus.execute(mostPlayedQuery),
     ]);
 
-    const filteredLastPlayed = ArrayUtil.shuffle(lastPlayed).filter(
-      (v) => !mostPlayed.find((l) => l.id === v.id),
-    );
-    const slicedMostPlayed = ArrayUtil.shuffle(
-      mostPlayed.slice(0, Math.max(7, 10 - filteredLastPlayed.length)),
-    );
-    const slicedLastPlayed = filteredLastPlayed.slice(0, 10 - slicedMostPlayed.length);
-    const videos = [...slicedLastPlayed, ...slicedMostPlayed];
+    const slicedMostPlayed = mostPlayed.slice(0, 5);
+    const slicedLastPlayed = lastPlayed
+      .filter((v) => !mostPlayed.find((l) => l.id === v.id))
+      .slice(0, 10 - slicedMostPlayed.length);
+    const videos = [...slicedMostPlayed, ...slicedLastPlayed];
     if (!videos.length) return "No recommendation found";
 
     const buttons = videos.map((v, i) => DiscordUtil.videoToMessageButton(v, i));

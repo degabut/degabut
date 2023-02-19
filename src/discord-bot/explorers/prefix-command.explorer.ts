@@ -49,7 +49,9 @@ export class PrefixCommandExplorer {
 
   private registerPrefixCommands(commands: DecoratedPrefixCommand<IPrefixCommand>[]) {
     const prefix = this.configService.getOrThrow("discord-bot.prefix");
-    this.discordClient.prefixCommands = commands;
+    this.discordClient.prefixCommands = commands.sort((a, b) =>
+      a.options.name.localeCompare(b.options.name),
+    );
 
     this.discordClient.on("messageCreate", async (message) => {
       if (message.author.bot || !message.content.startsWith(prefix) || !message.guild) return;

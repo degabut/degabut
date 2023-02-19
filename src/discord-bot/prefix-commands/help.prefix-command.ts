@@ -18,11 +18,7 @@ export class HelpPrefixCommand implements IPrefixCommand {
   }
 
   public async handler(message: Message): Promise<void> {
-    const commands = message.client.prefixCommands.sort((a, b) =>
-      a.options.name.localeCompare(b.options.name),
-    );
-
-    const description = commands
+    const description = message.client.prefixCommands
       .map((c) => {
         const { name, aliases } = c.options;
         let d = this.formatCommand(name);

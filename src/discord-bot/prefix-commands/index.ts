@@ -3,6 +3,7 @@ import { Constructor } from "@nestjs/cqrs";
 
 import { ClearAllPrefixCommand } from "./clear-all.prefix-command";
 import { ClearPrefixCommand } from "./clear.prefix-command";
+import { HelpPrefixCommand } from "./help.prefix-command";
 import { JoinPrefixCommand } from "./join.prefix-command";
 import { LoopQueuePrefixCommand } from "./loop-queue.prefix-command";
 import { LoopPrefixCommand } from "./loop.prefix-command";
@@ -23,6 +24,7 @@ import { UnpausePrefixCommand } from "./unpause.prefix-command";
 
 export * from "./clear-all.prefix-command";
 export * from "./clear.prefix-command";
+export * from "./help.prefix-command";
 export * from "./index";
 export * from "./join.prefix-command";
 export * from "./loop-queue.prefix-command";
@@ -62,4 +64,5 @@ export const PrefixCommands: Constructor<IPrefixCommand>[] = [
   StopPrefixCommand,
   TogetherPrefixCommand,
   UnpausePrefixCommand,
+  HelpPrefixCommand,
 ];

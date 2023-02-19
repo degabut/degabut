@@ -1,23 +1,29 @@
 import { InjectDiscordClient, On, Once } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { EventBus } from "@nestjs/cqrs";
-import { Client, GuildMember, VoiceState } from "discord.js";
+import { ActivityType, Client, GuildMember, VoiceState } from "discord.js";
 
 import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent, VoiceMemberUpdatedEvent } from "./events";
 
 @Injectable()
 export class DiscordBotGateway {
   private readonly logger = new Logger(DiscordBotGateway.name);
+  private prefix: string;
 
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
     private readonly eventBus: EventBus,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.prefix = this.configService.getOrThrow("discord-bot.prefix");
+  }
 
   @Once("ready")
   onReady() {
     this.logger.log("Discord bot ready");
+    this.client.user?.setActivity(`${this.prefix}help`, { type: ActivityType.Listening });
   }
 
   @On("voiceStateUpdate")

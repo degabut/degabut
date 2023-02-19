@@ -8,7 +8,7 @@ import { Client, DiscordAPIError } from "discord.js";
 import { PrefixCommandOptions, PREFIX_COMMAND } from "../decorators";
 import { IPrefixCommand } from "../interfaces";
 
-type Decorated<T> = {
+export type DecoratedPrefixCommand<T> = {
   instanceWrapper: InstanceWrapper<T>;
   options: PrefixCommandOptions;
 };
@@ -32,7 +32,9 @@ export class PrefixCommandExplorer {
     this.registerPrefixCommands(prefixCommands);
   }
 
-  private getPrefixCommands(providers: InstanceWrapper[]): Decorated<IPrefixCommand>[] {
+  private getPrefixCommands(
+    providers: InstanceWrapper[],
+  ): DecoratedPrefixCommand<IPrefixCommand>[] {
     const prefixCommands = providers.reduce((val, i) => {
       if (!i.instance || typeof i.instance !== "object") return val;
       const options = Reflect.getMetadata(PREFIX_COMMAND, i.instance);
@@ -40,13 +42,14 @@ export class PrefixCommandExplorer {
 
       val.push({ instanceWrapper: i, options });
       return val;
-    }, [] as Decorated<IPrefixCommand>[]);
+    }, [] as DecoratedPrefixCommand<IPrefixCommand>[]);
 
     return prefixCommands;
   }
 
-  private registerPrefixCommands(commands: Decorated<IPrefixCommand>[]) {
+  private registerPrefixCommands(commands: DecoratedPrefixCommand<IPrefixCommand>[]) {
     const prefix = this.configService.getOrThrow("discord-bot.prefix");
+    this.discordClient.prefixCommands = commands;
 
     this.discordClient.on("messageCreate", async (message) => {
       if (message.author.bot || !message.content.startsWith(prefix) || !message.guild) return;

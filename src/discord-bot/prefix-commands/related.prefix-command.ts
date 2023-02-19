@@ -45,7 +45,7 @@ export class RelatedPrefixCommand implements IPrefixCommand {
       content: `⭐ **Songs related with ${queue.nowPlaying.video.title}**`,
       embeds: [
         new EmbedBuilder({
-          fields: video.related.map(DiscordUtil.videoToEmbedField),
+          fields: video.related.slice(0, 10).map(DiscordUtil.videoToEmbedField),
         }),
       ],
       components: [

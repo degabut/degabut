@@ -1,9 +1,8 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@discord-nestjs/common': ^4.0.4
-  '@discord-nestjs/core': ^4.1.1
-  '@discordjs/voice': ^0.11.0
+  '@discord-nestjs/common': ^5.1.5
+  '@discord-nestjs/core': ^5.3.0
   '@nestjs/axios': ^0.1.0
   '@nestjs/cli': ^8.0.0
   '@nestjs/common': ^8.0.0
@@ -58,9 +57,8 @@ specifiers:
   youtubei: ^1.1.1
 
 dependencies:
-  '@discord-nestjs/common': 4.0.4_i3yx7xdyi5ppvg32uglz4c62fi
-  '@discord-nestjs/core': 4.1.1_j57lfh3b4q7o6cf5flsbwneieu
-  '@discordjs/voice': 0.11.0
+  '@discord-nestjs/common': 5.1.5_yuny4o435ahog7z2socqzuhixm
+  '@discord-nestjs/core': 5.3.0_j57lfh3b4q7o6cf5flsbwneieu
   '@nestjs/axios': 0.1.0_zyw32gfu5yv6lfoz64j5eiekme
   '@nestjs/common': 8.4.7_aniaiezvefq2fqnommj6u5l4zi
   '@nestjs/config': 2.2.0_zyw32gfu5yv6lfoz64j5eiekme
@@ -641,8 +639,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@discord-nestjs/common/4.0.4_i3yx7xdyi5ppvg32uglz4c62fi:
-    resolution: {integrity: sha512-lIUDFXWsxGbDKPd3VPbDCWZUGSnN4n7dZ0kHZAnIptR/ayboYZU6XP5ZMmY8fq5Ga6spQJIsutHF0S2/ZnjAxw==}
+  /@discord-nestjs/common/5.1.5_yuny4o435ahog7z2socqzuhixm:
+    resolution: {integrity: sha512-Tuk1l8ypJd7euqeV9U+u/OaVrqFi3vdwDlYVi0k4IurUlxGBpAl1r9tJXL2ouWPAmPA6+ZgQCGro9/m91YmBcQ==}
     peerDependencies:
       '@discord-nestjs/core': '*'
       '@nestjs/common': 8.* || 9.*
@@ -651,19 +649,19 @@ packages:
       reflect-metadata: ^0.1.13
       rxjs: ^7.*
     dependencies:
-      '@discord-nestjs/core': 4.1.1_j57lfh3b4q7o6cf5flsbwneieu
+      '@discord-nestjs/core': 5.3.0_j57lfh3b4q7o6cf5flsbwneieu
       '@nestjs/common': 8.4.7_aniaiezvefq2fqnommj6u5l4zi
       '@nestjs/core': 8.4.7_bjtfiiridwihc7wxxby3fbcaoe
-      '@nestjs/mapped-types': 1.1.0_7zw7e46jhcfuw5vwuwho2brjki
+      '@nestjs/mapped-types': 1.2.0_xillpi77amqalqjnhz2vbfya5a
       class-transformer: 0.5.1
-      class-validator: 0.13.2
+      class-validator: 0.14.0
       discord.js: 14.1.1
       reflect-metadata: 0.1.13
       rxjs: 7.5.6
     dev: false
 
-  /@discord-nestjs/core/4.1.1_j57lfh3b4q7o6cf5flsbwneieu:
-    resolution: {integrity: sha512-TkfImseC7pn08DETg0YKvgqSLugnE3fL/05RA5vHsL6hUMw9iJZ2wxqtx5l09ZxisnYQfhtROWeRrhh3KoezoQ==}
+  /@discord-nestjs/core/5.3.0_j57lfh3b4q7o6cf5flsbwneieu:
+    resolution: {integrity: sha512-eHVzuPCu3EbQyTln+ZEH0/Jwe0xPG7Z1eZV655jZoCSpq7RmvxWcTG/REf3XMSgtYFN27HaXa9vPCsgUOnp9xQ==}
     peerDependencies:
       '@nestjs/common': 8.* || 9.*
       '@nestjs/core': 8.* || 9.*
@@ -706,24 +704,6 @@ packages:
       file-type: 17.1.4
       tslib: 2.4.0
       undici: 5.8.0
-    dev: false
-
-  /@discordjs/voice/0.11.0:
-    resolution: {integrity: sha512-6+9cj1dxzBJm7WJ9qyG2XZZQ8rcLl6x2caW0C0OxuTtMLAaEDntpb6lqMTFiBg/rDc4Rd59g1w0gJmib33CuHw==}
-    engines: {node: '>=16.9.0'}
-    dependencies:
-      '@types/ws': 8.5.3
-      discord-api-types: 0.36.3
-      prism-media: 1.3.4
-      tslib: 2.4.0
-      ws: 8.8.1
-    transitivePeerDependencies:
-      - '@discordjs/opus'
-      - bufferutil
-      - ffmpeg-static
-      - node-opus
-      - opusscript
-      - utf-8-validate
     dev: false
 
   /@eslint/eslintrc/1.3.0:
@@ -1251,8 +1231,8 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@nestjs/mapped-types/1.1.0_7zw7e46jhcfuw5vwuwho2brjki:
-    resolution: {integrity: sha512-+2kSly4P1QI+9eGt+/uGyPdEG1hVz7nbpqPHWZVYgoqz8eOHljpXPag+UCVRw9zo2XCu4sgNUIGe8Uk0+OvUQg==}
+  /@nestjs/mapped-types/1.2.0_xillpi77amqalqjnhz2vbfya5a:
+    resolution: {integrity: sha512-NTFwPZkQWsArQH8QSyFWGZvJ08gR+R4TofglqZoihn/vU+ktHEJjMqsIsADwb7XD97DhiD+TVv5ac+jG33BHrg==}
     peerDependencies:
       '@nestjs/common': ^7.0.8 || ^8.0.0 || ^9.0.0
       class-transformer: ^0.2.0 || ^0.3.0 || ^0.4.0 || ^0.5.0
@@ -1266,7 +1246,7 @@ packages:
     dependencies:
       '@nestjs/common': 8.4.7_aniaiezvefq2fqnommj6u5l4zi
       class-transformer: 0.5.1
-      class-validator: 0.13.2
+      class-validator: 0.14.0
       reflect-metadata: 0.1.13
     dev: false
 
@@ -1677,6 +1657,10 @@ packages:
   /@types/uuid/8.3.4:
     resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: true
+
+  /@types/validator/13.7.12:
+    resolution: {integrity: sha512-YVtyAPqpefU+Mm/qqnOANW6IkqKpCSrarcyV269C8MA8Ux0dbkEuQwM/4CjL47kVEM2LgBef/ETfkH+c6+moFA==}
+    dev: false
 
   /@types/ws/8.5.3:
     resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
@@ -2384,11 +2368,12 @@ packages:
   /class-transformer/0.5.1:
     resolution: {integrity: sha512-SQa1Ws6hUbfC98vKGxZH3KFY0Y1lm5Zm0SY8XX9zbK7FJCyVEac3ATW0RIpwzW+oOfmHE5PMPufDG9hCfoEOMw==}
 
-  /class-validator/0.13.2:
-    resolution: {integrity: sha512-yBUcQy07FPlGzUjoLuUfIOXzgynnQPPruyK1Ge2B74k9ROwnle1E+NxLWnUv5OLU8hA/qL5leAE9XnXq3byaBw==}
+  /class-validator/0.14.0:
+    resolution: {integrity: sha512-ct3ltplN8I9fOwUd8GrP8UQixwff129BkEtuWDKL5W45cQuLd19xqmTLu5ge78YDm/fdje6FMt0hGOhl0lii3A==}
     dependencies:
-      libphonenumber-js: 1.10.10
-      validator: 13.7.0
+      '@types/validator': 13.7.12
+      libphonenumber-js: 1.10.20
+      validator: 13.9.0
     dev: false
 
   /cli-boxes/2.2.1:
@@ -4191,8 +4176,8 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /libphonenumber-js/1.10.10:
-    resolution: {integrity: sha512-JzYUapWcHkUe5n6OFqxJtHfCfuU0juqkqc9P+hrfzgmJODaREYLUgceiNAmIGx5j3Gjp7KVxi3koFo7OJFSTxg==}
+  /libphonenumber-js/1.10.20:
+    resolution: {integrity: sha512-kQovlKNdLcVzerbTPmJ+Fx4R+7/pYXmPDIllHjg7IxL4X6MsMG7jaT5opfYrBok0uqkByVif//JUR8e11l/V7w==}
     dev: false
 
   /light-my-request/5.3.0:
@@ -4760,24 +4745,6 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
     dev: true
-
-  /prism-media/1.3.4:
-    resolution: {integrity: sha512-eW7LXORkTCQznZs+eqe9VjGOrLBxcBPXgNyHXMTSRVhphvd/RrxgIR7WaWt4fkLuhshcdT5KHL88LAfcvS3f5g==}
-    peerDependencies:
-      '@discordjs/opus': ^0.8.0
-      ffmpeg-static: ^5.0.2 || ^4.2.7 || ^3.0.0 || ^2.4.0
-      node-opus: ^0.3.3
-      opusscript: ^0.0.8
-    peerDependenciesMeta:
-      '@discordjs/opus':
-        optional: true
-      ffmpeg-static:
-        optional: true
-      node-opus:
-        optional: true
-      opusscript:
-        optional: true
-    dev: false
 
   /process-warning/2.0.0:
     resolution: {integrity: sha512-+MmoAXoUX+VTHAlwns0h+kFUWFs/3FZy+ZuchkgjyOu3oioLAo2LB5aCfKPh2+P9O18i3m43tUEv3YqttSy0Ww==}
@@ -5620,8 +5587,8 @@ packages:
       convert-source-map: 1.8.0
     dev: true
 
-  /validator/13.7.0:
-    resolution: {integrity: sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==}
+  /validator/13.9.0:
+    resolution: {integrity: sha512-B+dGG8U3fdtM0/aNK4/X8CXq/EcxU2WPrPEkJGslb47qyHsxmbggTWK0yEA4qnYVNF+nxNlN88o14hIcPmSIEA==}
     engines: {node: '>= 0.10'}
     dev: false
 

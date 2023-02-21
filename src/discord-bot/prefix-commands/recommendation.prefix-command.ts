@@ -40,7 +40,7 @@ export class RecommendationPrefixCommand implements IPrefixCommand {
       this.queryBus.execute(mostPlayedQuery),
     ]);
 
-    const slicedMostPlayed = mostPlayed.slice(0, 5);
+    const slicedMostPlayed = mostPlayed.slice(0, 7);
     const slicedLastPlayed = lastPlayed
       .filter((v) => !mostPlayed.find((l) => l.id === v.id))
       .slice(0, 10 - slicedMostPlayed.length);

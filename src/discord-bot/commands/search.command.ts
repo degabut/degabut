@@ -1,4 +1,5 @@
 import { DiscordUtil } from "@common/utils";
+import { CommandResult, IPrefixCommand } from "@discord-bot/interfaces";
 import { Inject, Injectable } from "@nestjs/common";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
@@ -10,14 +11,13 @@ import {
 } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand, PrefixCommandResult } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
   name: "search",
   aliases: ["s"],
 })
-export class SearchPrefixCommand implements IPrefixCommand {
+export class SearchDiscordCommand implements IPrefixCommand {
   public readonly name = "search";
   public readonly aliases = ["s"];
   public readonly description = "Search for a song";
@@ -27,7 +27,7 @@ export class SearchPrefixCommand implements IPrefixCommand {
     private readonly youtubeiProvider: IYoutubeiProvider,
   ) {}
 
-  public async handler(message: Message, args: string[]): Promise<PrefixCommandResult> {
+  public async prefixHandler(message: Message, args: string[]): Promise<CommandResult> {
     const keyword = args.join(" ");
 
     const videos = await this.youtubeiProvider.searchVideo(keyword);

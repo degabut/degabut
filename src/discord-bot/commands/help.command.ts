@@ -1,23 +1,23 @@
+import { IPrefixCommand } from "@discord-bot/interfaces";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { EmbedBuilder, Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
   name: "help",
   aliases: ["h"],
 })
-export class HelpPrefixCommand implements IPrefixCommand {
+export class HelpDiscordCommand implements IPrefixCommand {
   private prefix: string;
 
   constructor(private readonly configService: ConfigService) {
     this.prefix = this.configService.getOrThrow("discord-bot.prefix");
   }
 
-  public async handler(message: Message): Promise<void> {
+  public async prefixHandler(message: Message): Promise<void> {
     const description = message.client.prefixCommands
       .map((c) => {
         const { name, aliases } = c.options;

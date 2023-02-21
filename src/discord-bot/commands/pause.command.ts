@@ -1,25 +1,24 @@
+import { IPrefixCommand } from "@discord-bot/interfaces";
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { SetPauseCommand } from "@queue-player/commands";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
-  name: "unpause",
-  aliases: ["resume"],
+  name: "pause",
 })
-export class UnpausePrefixCommand implements IPrefixCommand {
+export class PauseDiscordCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
-  public async handler(message: Message): Promise<void> {
+  public async prefixHandler(message: Message): Promise<void> {
     if (!message.member?.voice.channelId) return;
 
     const command = new SetPauseCommand({
       voiceChannelId: message.member.voice.channelId,
-      isPaused: false,
+      isPaused: true,
       executor: { id: message.author.id },
     });
     await this.commandBus.execute(command);

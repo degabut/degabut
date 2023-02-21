@@ -1,29 +1,23 @@
+import { IPrefixCommand } from "@discord-bot/interfaces";
 import { Injectable } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { ChangeTrackOrderCommand } from "@queue/commands";
+import { SkipCommand } from "@queue-player/commands";
 import { Message } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
-  name: "order",
-  aliases: ["o", "move", "mv"],
+  name: "skip",
 })
-export class OrderPrefixCommand implements IPrefixCommand {
+export class SkipDiscordCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}
 
-  public async handler(message: Message, args: string[]): Promise<void> {
+  public async prefixHandler(message: Message): Promise<void> {
     if (!message.member?.voice.channelId) return;
 
-    const from = +args[0] - 1;
-    const to = +args[1] - 1;
-
-    const command = new ChangeTrackOrderCommand({
+    const command = new SkipCommand({
       voiceChannelId: message.member.voice.channelId,
-      from,
-      to,
       executor: { id: message.author.id },
     });
 

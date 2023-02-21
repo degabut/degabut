@@ -1,4 +1,5 @@
 import { DiscordUtil } from "@common/utils";
+import { CommandResult, IPrefixCommand } from "@discord-bot/interfaces";
 import { Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
@@ -10,16 +11,15 @@ import {
 } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand, PrefixCommandResult } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
   name: "recommendation",
   aliases: ["recommend", "recommendations"],
 })
-export class RecommendationPrefixCommand implements IPrefixCommand {
+export class RecommendationDiscordCommand implements IPrefixCommand {
   constructor(private readonly queryBus: QueryBus) {}
-  public async handler(message: Message): Promise<PrefixCommandResult> {
+  public async prefixHandler(message: Message): Promise<CommandResult> {
     const userId = message.mentions.users.first()?.id || message.author.id;
 
     const executor = { id: message.author.id };

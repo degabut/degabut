@@ -1,4 +1,5 @@
 import { DiscordUtil } from "@common/utils";
+import { IPrefixCommand } from "@discord-bot/interfaces";
 import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";
@@ -12,20 +13,19 @@ import {
 } from "discord.js";
 
 import { PrefixCommand } from "../decorators";
-import { IPrefixCommand } from "../interfaces";
 
 @Injectable()
 @PrefixCommand({
   name: "related",
 })
-export class RelatedPrefixCommand implements IPrefixCommand {
+export class RelatedDiscordCommand implements IPrefixCommand {
   constructor(
     private readonly queryBus: QueryBus,
     @Inject(YOUTUBEI_PROVIDER)
     private readonly youtubeiProvider: IYoutubeiProvider,
   ) {}
 
-  public async handler(message: Message): Promise<void> {
+  public async prefixHandler(message: Message): Promise<void> {
     if (!message.member?.voice.channelId) return;
 
     const query = new GetQueueQuery({

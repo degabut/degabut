@@ -1,2 +1,2 @@
 export * from "./button-interaction.interface";
-export * from "./prefix-command.interface";
+export * from "./command.interface";

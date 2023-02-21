@@ -65,7 +65,7 @@ export class PrefixCommandExplorer {
       if (!command) return;
 
       try {
-        const reply = await command.instanceWrapper.instance.handler(message, args);
+        const reply = await command.instanceWrapper.instance.prefixHandler(message, args);
         if (reply) message.reply(reply);
       } catch (error) {
         if (error instanceof DiscordAPIError && (error.code === 10003 || error.code === 50013)) {

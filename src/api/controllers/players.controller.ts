@@ -1,8 +1,14 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { JoinCommand, SeekCommand, SetPauseCommand, SkipCommand } from "@queue-player/commands";
+import {
+  JoinCommand,
+  SeekCommand,
+  SetPauseCommand,
+  SkipCommand,
+  StopCommand,
+} from "@queue-player/commands";
 import { GetQueuePlayerQuery } from "@queue-player/queries";
 
 type VoiceChannelIdParams = {
@@ -33,6 +39,17 @@ export class PlayersController {
   async getPlayer(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     return await this.queryBus.execute(
       new GetQueuePlayerQuery({
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Delete("/:voiceChannelId")
+  @UseGuards(AuthGuard)
+  async destroyPlayer(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    return await this.commandBus.execute(
+      new StopCommand({
         ...params,
         executor,
       }),

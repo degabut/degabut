@@ -16,7 +16,7 @@ import {
 import { PrefixCommand } from "../decorators";
 
 class PlayDto {
-  @Param({ description: "Keyword", required: true, type: ParamType.STRING })
+  @Param({ description: "Keyword", required: true, minLength: 1, type: ParamType.STRING })
   keyword!: string;
 }
 
@@ -40,7 +40,7 @@ type JoinOptions = {
 })
 @Command({
   name: "play",
-  description: "Play a song by keyword",
+  description: "Add a song to queue by keyword",
 })
 export class PlayDiscordCommand implements IPrefixCommand {
   constructor(private readonly commandBus: CommandBus) {}

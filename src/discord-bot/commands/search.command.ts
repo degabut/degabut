@@ -1,5 +1,7 @@
 import { DiscordUtil } from "@common/utils";
 import { CommandResult, IPrefixCommand } from "@discord-bot/interfaces";
+import { SlashCommandPipe } from "@discord-nestjs/common";
+import { Command, Handler, InteractionEvent, Param, ParamType } from "@discord-nestjs/core";
 import { Inject, Injectable } from "@nestjs/common";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
@@ -12,10 +14,19 @@ import {
 
 import { PrefixCommand } from "../decorators";
 
+class SearchDto {
+  @Param({ description: "Keyword", required: true, minLength: 1, type: ParamType.STRING })
+  keyword!: string;
+}
+
 @Injectable()
 @PrefixCommand({
   name: "search",
   aliases: ["s"],
+})
+@Command({
+  name: "search",
+  description: "Search for YouTube videos",
 })
 export class SearchDiscordCommand implements IPrefixCommand {
   public readonly name = "search";
@@ -27,9 +38,18 @@ export class SearchDiscordCommand implements IPrefixCommand {
     private readonly youtubeiProvider: IYoutubeiProvider,
   ) {}
 
-  public async prefixHandler(message: Message, args: string[]): Promise<CommandResult> {
-    const keyword = args.join(" ");
+  @Handler()
+  async slashHandler(@InteractionEvent(SlashCommandPipe) options: SearchDto) {
+    const { keyword } = options;
+    return await this.handler(keyword);
+  }
 
+  public async prefixHandler(_: Message, args: string[]): Promise<CommandResult> {
+    const keyword = args.join(" ");
+    return await this.handler(keyword);
+  }
+
+  private async handler(keyword: string) {
     const videos = await this.youtubeiProvider.searchVideo(keyword);
     const splicedVideos = videos.slice(0, 10);
 

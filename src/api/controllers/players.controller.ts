@@ -15,6 +15,10 @@ type VoiceChannelIdParams = {
   voiceChannelId: string;
 };
 
+type JoinParams = VoiceChannelIdParams & {
+  textChannelId?: string;
+};
+
 type SeekBody = {
   position: number;
 };
@@ -25,7 +29,7 @@ export class PlayersController {
 
   @Post("/")
   @UseGuards(AuthGuard)
-  async createPlayer(@Body() body: VoiceChannelIdParams, @User() executor: AuthUser) {
+  async createPlayer(@Body() body: JoinParams, @User() executor: AuthUser) {
     return await this.commandBus.execute(
       new JoinCommand({
         ...body,

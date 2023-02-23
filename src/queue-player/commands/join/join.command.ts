@@ -8,6 +8,7 @@ export class JoinCommand extends Command {
   public readonly voiceChannel?: BaseGuildVoiceChannel;
   public readonly textChannel?: BaseGuildTextChannel;
   public readonly voiceChannelId?: string;
+  public readonly textChannelId?: string;
   public readonly executor!: Executor;
 
   constructor(params: JoinCommand) {
@@ -24,6 +25,7 @@ export const JoinParamSchema = Joi.alternatives(
   }),
   Joi.object({
     voiceChannelId: Joi.string().required(),
+    textChannelId: Joi.string().optional(),
     executor: ExecutorSchema,
   }),
 ).required();

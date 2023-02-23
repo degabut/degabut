@@ -24,13 +24,37 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
     let voiceChannel: BaseGuildVoiceChannel | null = null;
     let textChannel: BaseGuildTextChannel | null = null;
 
+    // resolve channels
     if (params.voiceChannelId) {
+      // using ids
       const fetchedVoiceChannel = await this.client.channels.fetch(params.voiceChannelId);
       if (fetchedVoiceChannel && !(fetchedVoiceChannel instanceof BaseGuildVoiceChannel)) {
         throw new BadRequestException("Invalid voice channel id");
       }
       voiceChannel = fetchedVoiceChannel;
+
+      if (params.textChannelId) {
+        const fetchedTextChannel = await this.client.channels.fetch(params.textChannelId);
+        if (fetchedTextChannel && !(fetchedTextChannel instanceof BaseGuildTextChannel)) {
+          throw new BadRequestException("Invalid text channel id");
+        }
+
+        if (fetchedTextChannel) {
+          const user = await fetchedTextChannel.guild.members.fetch(params.executor.id);
+          const me = fetchedTextChannel.guild.members.me;
+
+          if (
+            !me ||
+            !fetchedTextChannel.permissionsFor(user)?.has("SendMessages") ||
+            !fetchedTextChannel.permissionsFor(me).has("SendMessages")
+          ) {
+            throw new BadRequestException("No permission to send messages to text channel");
+          }
+        }
+        textChannel = fetchedTextChannel;
+      }
     } else {
+      // using channel object
       voiceChannel = params.voiceChannel || null;
       textChannel = params.textChannel || null;
     }

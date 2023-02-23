@@ -12,6 +12,7 @@ import { PauseDiscordCommand } from "./pause.command";
 import { PlayDiscordCommand } from "./play.command";
 import { QueueDiscordCommand } from "./queue.command";
 import { RecommendationDiscordCommand } from "./recommendation.command";
+import { RedirectDiscordCommand } from "./redirect.command";
 import { RelatedDiscordCommand } from "./related.command";
 import { RemoveDiscordCommand } from "./remove.command";
 import { SearchDiscordCommand } from "./search.command";
@@ -40,4 +41,5 @@ export const DiscordCommands: Provider[] = [
   StopDiscordCommand,
   UnpauseDiscordCommand,
   HelpDiscordCommand,
+  RedirectDiscordCommand,
 ];

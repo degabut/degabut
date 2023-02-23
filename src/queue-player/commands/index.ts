@@ -1,6 +1,7 @@
 import { Constructor, ICommandHandler } from "@nestjs/cqrs";
 
 import { JoinHandler } from "./join";
+import { RedirectHandler } from "./redirect";
 import { SeekHandler } from "./seek";
 import { SetFiltersHandler } from "./set-filters";
 import { SetPauseHandler } from "./set-pause";
@@ -8,6 +9,7 @@ import { SkipHandler } from "./skip";
 import { StopHandler } from "./stop";
 
 export * from "./join";
+export * from "./redirect";
 export * from "./seek";
 export * from "./set-filters";
 export * from "./set-pause/";
@@ -21,4 +23,5 @@ export const Commands: Constructor<ICommandHandler>[] = [
   SeekHandler,
   SetFiltersHandler,
   SetPauseHandler,
+  RedirectHandler,
 ];

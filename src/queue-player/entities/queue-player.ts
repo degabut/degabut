@@ -23,7 +23,7 @@ interface ConstructorProps {
 export class QueuePlayer {
   public readonly guild: BaseGuild;
   public readonly audioPlayer: Player<Node>;
-  private textChannel: BaseGuildTextChannel | null;
+  public textChannel: BaseGuildTextChannel | null;
   public voiceChannel: BaseGuildVoiceChannel;
   public currentTrack: LavaTrack | null;
   public disconnectTimeout: NodeJS.Timeout | null;

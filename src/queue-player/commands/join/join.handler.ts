@@ -1,6 +1,6 @@
 import { ValidateParams } from "@common/decorators";
 import { InjectDiscordClient } from "@discord-nestjs/core";
-import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueuePlayer } from "@queue-player/entities";
 import { QueuePlayerRepository } from "@queue-player/repositories";
@@ -63,7 +63,7 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
       throw new BadRequestException("Voice channel not found");
     }
     if (textChannel && voiceChannel.guildId !== textChannel.guildId) {
-      throw new InternalServerErrorException("Invalid voice channel and text channel combination");
+      throw new BadRequestException("Invalid voice channel and text channel combination");
     }
     if (this.playerRepository.getByGuildId(voiceChannel.guild.id)) {
       throw new BadRequestException("Queue Already Exists");

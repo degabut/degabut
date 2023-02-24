@@ -7,9 +7,7 @@ import { TrackAddedEvent } from "@queue/events";
 export class TrackAddedListener implements IEventHandler<TrackAddedEvent> {
   constructor(private readonly playerRepository: QueuePlayerRepository) {}
 
-  public async handle({ track, isPlayedImmediately }: TrackAddedEvent): Promise<void> {
-    if (isPlayedImmediately) return;
-
+  public async handle({ track }: TrackAddedEvent): Promise<void> {
     const player = this.playerRepository.getByVoiceChannelId(track.queue.voiceChannelId);
     if (!player) return;
 

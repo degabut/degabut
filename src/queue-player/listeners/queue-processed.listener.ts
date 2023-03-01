@@ -4,6 +4,12 @@ import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { TrackLoadFailedEvent } from "@queue-player/events";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueueProcessedEvent } from "@queue/events";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  MessageActionRowComponentBuilder,
+} from "discord.js";
 
 @EventsHandler(QueueProcessedEvent)
 export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent> {
@@ -42,6 +48,22 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
           {
             content: "🎶 **Now Playing**",
             embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],
+            components: [
+              new ActionRowBuilder<MessageActionRowComponentBuilder>({
+                components: [
+                  new ButtonBuilder({
+                    customId: "skip",
+                    label: "Skip",
+                    style: ButtonStyle.Secondary,
+                  }),
+                  new ButtonBuilder({
+                    customId: `remove-track/${queue.nowPlaying.id}`,
+                    label: "Remove",
+                    style: ButtonStyle.Danger,
+                  }),
+                ],
+              }),
+            ],
           },
           "NOW_PLAYING",
         ),

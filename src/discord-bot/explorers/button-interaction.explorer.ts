@@ -62,11 +62,9 @@ export class ButtonInteractionExplorer {
 
       try {
         const reply = await command.instanceWrapper.instance.handler(interaction, params);
-        if (reply) interaction.channel?.send(reply);
+        if (reply) interaction.reply(reply);
       } catch (error) {
-        await interaction.channel?.send(
-          `Failed to execute the command: ${(error as Error).message}`,
-        );
+        await interaction.reply(`Failed to execute the command: ${(error as Error).message}`);
       }
     });
 

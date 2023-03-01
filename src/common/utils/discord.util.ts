@@ -76,17 +76,30 @@ export class DiscordUtil {
       {
         name: "Duration",
         value: TimeUtil.secondToTime(track.video.duration),
+        inline: true,
       },
     ];
-    const descriptions: string[] = [];
-    if (track.video.channel) descriptions.push(`**${track.video.channel.name}**`);
-    if (track.requestedBy) descriptions.push(`Requested by <@!${track.requestedBy.id}>`);
+
+    if (track.requestedBy) {
+      fields.unshift({
+        name: "Requested By",
+        value: `<@!${track.requestedBy.id}>`,
+        inline: true,
+      });
+    }
+
+    if (track.video.channel) {
+      fields.unshift({
+        name: "Channel",
+        value: `[${track.video.channel.name}](https://www.youtube.com/channel/${track.video.channel.id})`,
+        inline: true,
+      });
+    }
 
     const thumbnail = track.video.thumbnails.at(-1);
 
     return new EmbedBuilder({
       title: track.video.title,
-      description: descriptions.join("\r\n"),
       url: track.url,
       thumbnail: thumbnail ? { url: thumbnail.url } : undefined,
       fields,

@@ -88,7 +88,7 @@ export class DiscordUtil {
       title: track.video.title,
       description: descriptions.join("\r\n"),
       url: track.url,
-      image: thumbnail ? { url: thumbnail.url } : undefined,
+      thumbnail: thumbnail ? { url: thumbnail.url } : undefined,
       fields,
     });
   }

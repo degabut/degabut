@@ -2,6 +2,12 @@ import { DiscordUtil } from "@common/utils";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { TrackAddedEvent } from "@queue/events";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  MessageActionRowComponentBuilder,
+} from "discord.js";
 
 @EventsHandler(TrackAddedEvent)
 export class TrackAddedListener implements IEventHandler<TrackAddedEvent> {
@@ -14,6 +20,17 @@ export class TrackAddedListener implements IEventHandler<TrackAddedEvent> {
     await player.notify({
       content: `🎵 **Added To Queue** (${track.queue.tracks.length})`,
       embeds: [DiscordUtil.trackToEmbed(track)],
+      components: [
+        new ActionRowBuilder<MessageActionRowComponentBuilder>({
+          components: [
+            new ButtonBuilder({
+              customId: `remove/${track.id}`,
+              label: "Remove",
+              style: ButtonStyle.Danger,
+            }),
+          ],
+        }),
+      ],
     });
   }
 }

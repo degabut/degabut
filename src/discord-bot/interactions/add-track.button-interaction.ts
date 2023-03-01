@@ -5,10 +5,10 @@ import { AddTrackCommand } from "@queue/commands";
 import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
-  name: "play",
-  key: "play/:id",
+  name: "add-track",
+  key: "add-track/:id",
 })
-export class PlayButtonInteraction implements IButtonInteraction {
+export class AddTrackButtonInteraction implements IButtonInteraction {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(

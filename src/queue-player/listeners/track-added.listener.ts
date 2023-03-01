@@ -24,7 +24,12 @@ export class TrackAddedListener implements IEventHandler<TrackAddedEvent> {
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
           components: [
             new ButtonBuilder({
-              customId: `remove/${track.id}`,
+              customId: `play-track/${track.id}`,
+              label: "Play",
+              style: ButtonStyle.Success,
+            }),
+            new ButtonBuilder({
+              customId: `remove-track/${track.id}`,
               label: "Remove",
               style: ButtonStyle.Danger,
             }),

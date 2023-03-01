@@ -49,7 +49,7 @@ export class DiscordUtil {
     index: number,
   ): ButtonBuilder {
     return new ButtonBuilder({
-      customId: `play/${video.id}`,
+      customId: `add-track/${video.id}`,
       label: video.title.length < 20 ? video.title : video.title.substring(0, 20) + "...",
       style: ButtonStyle.Success,
       emoji: numbers[index],

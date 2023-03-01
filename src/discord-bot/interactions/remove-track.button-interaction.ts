@@ -5,10 +5,10 @@ import { RemoveTrackCommand } from "@queue/commands";
 import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
-  name: "remove",
-  key: "remove/:id",
+  name: "remove-track",
+  key: "remove-track/:id",
 })
-export class RemoveButtonInteraction implements IButtonInteraction {
+export class RemoveTrackButtonInteraction implements IButtonInteraction {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(

@@ -9,13 +9,13 @@ type ThumbnailProps = {
 export type ChannelModelProps = {
   id: string;
   name: string;
-  thumbnails: ThumbnailProps[];
+  thumbnails?: ThumbnailProps[];
 };
 
 export class ChannelModel extends Model implements ChannelModelProps {
   id!: string;
   name!: string;
-  thumbnails!: ThumbnailProps[];
+  thumbnails?: ThumbnailProps[];
 
   static tableName = "channel";
   static jsonAttributes = ["thumbnails"];

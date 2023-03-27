@@ -17,7 +17,7 @@ export class ChannelRepositoryMapper {
     const entity = new Channel({
       id: model.id,
       name: model.name,
-      thumbnails: model.thumbnails.map((t) => new Thumbnail(t)),
+      thumbnails: model.thumbnails?.map((t) => new Thumbnail(t)) || [],
     });
 
     return entity;

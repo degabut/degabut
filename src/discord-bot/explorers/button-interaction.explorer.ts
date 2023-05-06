@@ -4,7 +4,7 @@ import { DiscoveryService } from "@nestjs/core";
 import { InstanceWrapper } from "@nestjs/core/injector/instance-wrapper";
 import { Client } from "discord.js";
 
-import { ButtonInteractionOptions, BUTTON_INTERACTION } from "../decorators";
+import { BUTTON_INTERACTION, ButtonInteractionOptions } from "../decorators";
 import { IButtonInteraction } from "../interfaces";
 
 type Decorated<T> = {

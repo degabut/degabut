@@ -5,7 +5,7 @@ import {
   DiscordAPIError,
   GuildMember,
   Message,
-  MessageOptions,
+  MessageCreateOptions,
   MessagePayload,
 } from "discord.js";
 import { Node, Player } from "lavaclient";
@@ -44,7 +44,7 @@ export class QueuePlayer {
   }
 
   async notify(
-    message: string | MessagePayload | MessageOptions,
+    message: string | MessagePayload | MessageCreateOptions,
     key?: NotifyKey,
   ): Promise<Message | undefined> {
     let sentMessage: Message | undefined = undefined;

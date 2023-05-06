@@ -41,7 +41,7 @@ export class QueuePlayerService {
         : playerOrId;
 
     this.logger.log({
-      method: "destoyPlayer",
+      method: "destroyPlayer",
       voiceChannelId: player?.voiceChannel.id,
       reason,
     });

@@ -1,11 +1,12 @@
 import { ValidateParams } from "@common/decorators";
 import { InjectDiscordClient } from "@discord-nestjs/core";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueuePlayer } from "@queue-player/entities";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueuePlayerService } from "@queue-player/services";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, Client, ClientUser } from "discord.js";
+import { NodeState } from "lavaclient";
 
 import { JoinCommand, JoinParamSchema } from "./join.command";
 
@@ -23,6 +24,10 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
     // resolve voice and text channel
     let voiceChannel: BaseGuildVoiceChannel | null = null;
     let textChannel: BaseGuildTextChannel | null = null;
+
+    if (this.client.lavalink.state !== NodeState.Connected) {
+      throw new InternalServerErrorException("Lavalink node is not connected");
+    }
 
     // resolve channels
     if (params.voiceChannelId) {

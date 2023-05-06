@@ -23,4 +23,8 @@ export class QueueRepository {
     this.queues.set(queue.voiceChannelId, queue);
     return queue;
   }
+
+  public clear(): void {
+    this.queues.clear();
+  }
 }

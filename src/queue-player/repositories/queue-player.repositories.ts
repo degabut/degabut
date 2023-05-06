@@ -23,4 +23,12 @@ export class QueuePlayerRepository {
     this.players.set(player.voiceChannel.id, player);
     return player;
   }
+
+  public clear(): void {
+    for (const player of this.players.values()) {
+      player.audioPlayer.removeAllListeners();
+      player.audioPlayer.disconnect();
+    }
+    this.players.clear();
+  }
 }

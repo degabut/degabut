@@ -2,6 +2,7 @@ import { DiscordBotModule } from "@discord-bot/discord-bot.module";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
+import { QueueModule } from "@queue/queue.module";
 import { YoutubeModule } from "@youtube/youtube.module";
 
 import { Commands } from "./commands";
@@ -13,7 +14,14 @@ import { QueuePlayerRepository } from "./repositories";
 import { QueuePlayerService } from "./services";
 
 @Module({
-  imports: [CqrsModule, DiscordBotModule, ConfigModule, QueuePlayerConfigModule, YoutubeModule],
+  imports: [
+    CqrsModule,
+    DiscordBotModule,
+    ConfigModule,
+    QueuePlayerConfigModule,
+    QueueModule,
+    YoutubeModule,
+  ],
   providers: [
     QueuePlayerService,
     QueuePlayerRepository,

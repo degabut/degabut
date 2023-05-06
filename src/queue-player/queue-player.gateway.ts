@@ -2,8 +2,9 @@ import { InjectDiscordClient, Once } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { EventBus } from "@nestjs/cqrs";
+import { QueueRepository } from "@queue/repositories";
 import { Client, GatewayDispatchEvents } from "discord.js";
-import { Node } from "lavaclient";
+import { Node, NodeState } from "lavaclient";
 
 import { PlayerTickEvent } from "./events";
 import { QueuePlayerRepository } from "./repositories";
@@ -11,13 +12,15 @@ import { QueuePlayerRepository } from "./repositories";
 @Injectable()
 export class QueuePlayerGateway {
   private readonly logger = new Logger(QueuePlayerGateway.name);
+  private isNodeReconnecting = false;
 
   constructor(
     @InjectDiscordClient()
     private readonly client: Client,
     private readonly config: ConfigService,
-    private readonly playerRepository: QueuePlayerRepository,
     private readonly eventBus: EventBus,
+    private readonly playerRepository: QueuePlayerRepository,
+    private readonly queueRepository: QueueRepository,
   ) {
     const node = new Node({
       sendGatewayPayload: (id, payload) => client.guilds.cache.get(id)?.shard?.send(payload),
@@ -33,17 +36,17 @@ export class QueuePlayerGateway {
     client.lavalink = node;
 
     node.on("connect", () => {
-      this.logger.error("Lavalink connected");
+      this.logger.log("Lavalink connected");
     });
 
-    node.on("disconnect", (e) => {
+    node.on("disconnect", async (e) => {
       this.logger.error({ error: "Lavalink disconnected", e });
-      process.exit(0);
+      this.reconnectNode();
     });
 
-    node.on("error", (e) => {
+    node.on("error", async (e) => {
       this.logger.error({ error: "Lavalink error", e });
-      process.exit(0);
+      if (node.state !== NodeState.Connected) this.reconnectNode();
     });
 
     node.on("raw", (e) => {
@@ -60,5 +63,21 @@ export class QueuePlayerGateway {
   @Once("ready")
   onReady() {
     this.client.lavalink.connect(this.client.user?.id);
+  }
+
+  private async reconnectNode(delay = 10000) {
+    const node = this.client.lavalink;
+    if (this.isNodeReconnecting) return;
+
+    this.isNodeReconnecting = true;
+
+    this.queueRepository.clear();
+    this.playerRepository.clear();
+
+    this.logger.log(`Reconnecting to lavalink in ${delay}ms`);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    node.conn.reconnect();
+
+    this.isNodeReconnecting = false;
   }
 }

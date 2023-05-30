@@ -68,8 +68,13 @@ export class QueuePlayer {
 
     if (sentMessage && key) {
       const lastMessage = this.keyedMessage[key];
-      if (lastMessage) await lastMessage.delete();
-      this.keyedMessage[key] = sentMessage;
+      try {
+        if (lastMessage) await lastMessage.delete();
+        this.keyedMessage[key] = sentMessage;
+      } catch (err) {
+        if (!(err instanceof DiscordAPIError)) return;
+        delete this.keyedMessage[key];
+      }
     }
 
     return sentMessage;

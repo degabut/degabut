@@ -1,10 +1,12 @@
 import { Guild } from "./guild";
 import { Member } from "./member";
+import { TextChannel } from "./text-channel";
 import { Track } from "./track";
 import { VoiceChannel } from "./voice-channel";
 
 interface ConstructorProps {
   voiceChannel: VoiceChannel;
+  textChannel?: TextChannel | null;
   guild: Guild;
 }
 
@@ -26,6 +28,7 @@ export class Queue {
   public previousShuffleHistoryIds: string[];
   public guild: Guild;
   public voiceChannel: VoiceChannel;
+  public textChannel: TextChannel | null;
 
   constructor(props: ConstructorProps) {
     this.voiceChannelId = props.voiceChannel.id;
@@ -39,6 +42,7 @@ export class Queue {
     this.previousShuffleHistoryIds = [];
     this.guild = props.guild;
     this.voiceChannel = props.voiceChannel;
+    this.textChannel = props.textChannel || null;
   }
 
   public getMember(userId: string): Member | undefined {

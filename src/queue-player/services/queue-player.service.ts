@@ -1,10 +1,12 @@
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
+import { NotifyKey } from "@queue-player/entities";
 import { QueuePlayer } from "@queue-player/entities/queue-player";
 import {
   PlayerDestroyedEvent,
   PlayerReadyEvent,
+  PlayerTextChannelChangedEvent,
   PlayerVoiceChannelChangedEvent,
   TrackAudioEndedEvent,
   TrackAudioErrorEvent,
@@ -12,7 +14,14 @@ import {
   TrackAudioStartedEvent,
 } from "@queue-player/events";
 import { QueuePlayerRepository } from "@queue-player/repositories";
-import { Client, VoiceChannel } from "discord.js";
+import {
+  Client,
+  DiscordAPIError,
+  Message,
+  MessageCreateOptions,
+  MessagePayload,
+  VoiceChannel,
+} from "discord.js";
 
 export enum PlayerDestroyReason {
   COMMAND = "COMMAND",
@@ -115,5 +124,46 @@ export class QueuePlayerService {
     });
 
     player.audioPlayer.connect(player.voiceChannel.id, { deafened: true });
+  }
+
+  public async notify(
+    player: QueuePlayer,
+    message: string | MessagePayload | MessageCreateOptions,
+    key?: NotifyKey,
+  ): Promise<Message | undefined> {
+    let sentMessage: Message | undefined = undefined;
+    if (player.textChannel) {
+      try {
+        sentMessage = await player.textChannel.send(message);
+      } catch (err) {
+        if (!(err instanceof DiscordAPIError)) return;
+        if (err.code === 10003) {
+          player.textChannel = null;
+          this.eventBus.publish(new PlayerTextChannelChangedEvent({ player }));
+        }
+      }
+    }
+
+    if (!sentMessage) {
+      if (!player.voiceChannel.isTextBased()) return;
+      try {
+        sentMessage = await player.voiceChannel.send(message);
+      } catch {
+        // ignore
+      }
+    }
+
+    if (sentMessage && key) {
+      const lastMessage = player.keyedMessage[key];
+      try {
+        if (lastMessage) await lastMessage.delete();
+        player.keyedMessage[key] = sentMessage;
+      } catch (err) {
+        if (!(err instanceof DiscordAPIError)) return;
+        delete player.keyedMessage[key];
+      }
+    }
+
+    return sentMessage;
   }
 }

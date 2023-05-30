@@ -2,11 +2,8 @@ import {
   BaseGuild,
   BaseGuildTextChannel,
   BaseGuildVoiceChannel,
-  DiscordAPIError,
   GuildMember,
   Message,
-  MessageCreateOptions,
-  MessagePayload,
 } from "discord.js";
 import { Node, Player } from "lavaclient";
 
@@ -27,7 +24,7 @@ export class QueuePlayer {
   public voiceChannel: BaseGuildVoiceChannel;
   public currentTrack: LavaTrack | null;
   public disconnectTimeout: NodeJS.Timeout | null;
-  private keyedMessage: Record<string, Message>;
+  public keyedMessage: Record<string, Message>;
 
   constructor(props: ConstructorProps) {
     this.guild = props.voiceChannel.guild;
@@ -41,42 +38,5 @@ export class QueuePlayer {
 
   public getMember(userId: string): GuildMember | undefined {
     return this.voiceChannel.members.find((m) => m.id === userId);
-  }
-
-  async notify(
-    message: string | MessagePayload | MessageCreateOptions,
-    key?: NotifyKey,
-  ): Promise<Message | undefined> {
-    let sentMessage: Message | undefined = undefined;
-    if (this.textChannel) {
-      try {
-        sentMessage = await this.textChannel.send(message);
-      } catch (err) {
-        if (!(err instanceof DiscordAPIError)) return;
-        if (err.code === 10003) this.textChannel = null;
-      }
-    }
-
-    if (!sentMessage) {
-      if (!this.voiceChannel.isTextBased()) return;
-      try {
-        sentMessage = await this.voiceChannel.send(message);
-      } catch {
-        // ignore
-      }
-    }
-
-    if (sentMessage && key) {
-      const lastMessage = this.keyedMessage[key];
-      try {
-        if (lastMessage) await lastMessage.delete();
-        this.keyedMessage[key] = sentMessage;
-      } catch (err) {
-        if (!(err instanceof DiscordAPIError)) return;
-        delete this.keyedMessage[key];
-      }
-    }
-
-    return sentMessage;
   }
 }

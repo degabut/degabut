@@ -3,6 +3,7 @@ import { Logger } from "@nestjs/common";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { TrackLoadFailedEvent } from "@queue-player/events";
 import { QueuePlayerRepository } from "@queue-player/repositories";
+import { QueuePlayerService } from "@queue-player/services";
 import { QueueProcessedEvent } from "@queue/events";
 import {
   ActionRowBuilder,
@@ -18,6 +19,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
   constructor(
     private readonly eventBus: EventBus,
     private readonly playerRepository: QueuePlayerRepository,
+    private readonly playerService: QueuePlayerService,
   ) {}
 
   public async handle({ queue }: QueueProcessedEvent) {
@@ -44,7 +46,8 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
 
       await Promise.all([
         player.audioPlayer.play(track),
-        player.notify(
+        this.playerService.notify(
+          player,
           {
             content: "🎶 **Now Playing**",
             embeds: [DiscordUtil.trackToEmbed(queue.nowPlaying)],

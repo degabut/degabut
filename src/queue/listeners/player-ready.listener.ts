@@ -2,7 +2,7 @@ import { UserPlayHistoryRepository } from "@history/repositories";
 import { Logger } from "@nestjs/common";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { PlayerReadyEvent } from "@queue-player/events";
-import { Guild, Member, Queue, Track, VoiceChannel } from "@queue/entities";
+import { Guild, Member, Queue, TextChannel, Track, VoiceChannel } from "@queue/entities";
 import { QueueCreatedEvent } from "@queue/events";
 import { MAX_QUEUE_HISTORY_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
@@ -51,6 +51,12 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
               }),
           ),
       }),
+      textChannel: player.textChannel
+        ? new TextChannel({
+            id: player.textChannel.id,
+            name: player.textChannel.name,
+          })
+        : null,
     });
 
     const vcPlayHistory = await this.playHistoryRepository.getLastPlayedByVoiceChannelId(

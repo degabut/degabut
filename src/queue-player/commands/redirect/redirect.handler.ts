@@ -1,7 +1,8 @@
 import { ValidateParams } from "@common/decorators";
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
+import { PlayerTextChannelChangedEvent } from "@queue-player/events";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { BaseGuildTextChannel, Client } from "discord.js";
 
@@ -10,6 +11,7 @@ import { RedirectCommand, RedirectParamSchema } from "./redirect.command";
 @CommandHandler(RedirectCommand)
 export class RedirectHandler implements IInferredCommandHandler<RedirectCommand> {
   constructor(
+    private readonly eventBus: EventBus,
     @InjectDiscordClient()
     private readonly client: Client,
     private readonly playerRepository: QueuePlayerRepository,
@@ -45,5 +47,7 @@ export class RedirectHandler implements IInferredCommandHandler<RedirectCommand>
     }
 
     player.textChannel = textChannel;
+
+    this.eventBus.publish(new PlayerTextChannelChangedEvent({ player }));
   }
 }

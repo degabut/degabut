@@ -1,4 +1,4 @@
-import { Model, RelationMappingsThunk } from "objection";
+import { Model, RelationMappingsThunk, snakeCaseMappers } from "objection";
 
 import { ChannelModel } from "../channel/channel.model";
 
@@ -12,25 +12,28 @@ export type VideoModelProps = {
   id: string;
   title: string;
   duration: number;
-  view_count: number | null;
+  viewCount: number | null;
   thumbnails: ThumbnailProps[];
-  channel_id: string | null;
-  updated_at: Date;
+  channelId: string | null;
+  updatedAt: Date;
 };
 
 export class VideoModel extends Model implements VideoModelProps {
   id!: string;
   title!: string;
   duration!: number;
-  view_count!: number | null;
-  channel_id!: string | null;
+  viewCount!: number | null;
+  channelId!: string | null;
   thumbnails!: ThumbnailProps[];
-  updated_at!: Date;
+  updatedAt!: Date;
 
   channel?: ChannelModel;
 
   static tableName = "video";
   static jsonAttributes = ["thumbnails"];
+  static get columnNameMappers() {
+    return snakeCaseMappers();
+  }
   static relationMappings: RelationMappingsThunk = () => ({
     channel: {
       relation: Model.HasOneRelation,

@@ -1,21 +1,24 @@
-import { Model } from "objection";
+import { Model, snakeCaseMappers } from "objection";
 
 export type PlaylistModelProps = {
   id: string;
   name: string;
-  owner_id: string;
-  video_count: number;
-  created_at: Date;
-  updated_at: Date;
+  ownerId: string;
+  videoCount: number;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export class PlaylistModel extends Model implements PlaylistModelProps {
   id!: string;
   name!: string;
-  owner_id!: string;
-  video_count!: number;
-  created_at!: Date;
-  updated_at!: Date;
+  ownerId!: string;
+  videoCount!: number;
+  createdAt!: Date;
+  updatedAt!: Date;
 
   static tableName = "playlist";
+  static get columnNameMappers() {
+    return snakeCaseMappers();
+  }
 }

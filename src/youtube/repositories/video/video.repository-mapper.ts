@@ -9,10 +9,10 @@ export class VideoRepositoryMapper {
       id: entity.id,
       title: entity.title,
       duration: entity.duration,
-      view_count: entity.viewCount,
+      viewCount: entity.viewCount,
       thumbnails: entity.thumbnails,
-      channel_id: entity.channel?.id || null,
-      updated_at: entity.updatedAt,
+      channelId: entity.channel?.id || null,
+      updatedAt: entity.updatedAt,
     };
 
     return props;
@@ -20,13 +20,11 @@ export class VideoRepositoryMapper {
 
   public static toDomainEntity(model: VideoModel): VideoCompact {
     const entity = new VideoCompact({
-      id: model.id,
-      title: model.title,
-      duration: model.duration,
-      viewCount: model.view_count,
+      ...model,
+      viewCount: model.viewCount ? +model.viewCount : null,
       channel: model.channel ? ChannelRepositoryMapper.toDomainEntity(model.channel) : null,
       thumbnails: model.thumbnails.map((t) => new Thumbnail(t)),
-      updatedAt: model.updated_at,
+      updatedAt: model.updatedAt,
     });
 
     return entity;

@@ -1,4 +1,4 @@
-import { Model } from "objection";
+import { Model, snakeCaseMappers } from "objection";
 
 type ThumbnailProps = {
   url: string;
@@ -19,4 +19,7 @@ export class ChannelModel extends Model implements ChannelModelProps {
 
   static tableName = "channel";
   static jsonAttributes = ["thumbnails"];
+  static get columnNameMappers() {
+    return snakeCaseMappers();
+  }
 }

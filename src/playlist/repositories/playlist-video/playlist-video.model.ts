@@ -1,24 +1,27 @@
 import { VideoModel } from "@youtube/repositories";
-import { Model, RelationMappingsThunk } from "objection";
+import { Model, RelationMappingsThunk, snakeCaseMappers } from "objection";
 
 export type PlaylistVideoModelProps = {
   id: string;
-  playlist_id: string;
-  video_id: string;
-  created_by: string;
-  created_at: Date;
+  playlistId: string;
+  videoId: string;
+  createdBy: string;
+  createdAt: Date;
 };
 
 export class PlaylistVideoModel extends Model implements PlaylistVideoModelProps {
   id!: string;
-  playlist_id!: string;
-  video_id!: string;
-  created_by!: string;
-  created_at!: Date;
+  playlistId!: string;
+  videoId!: string;
+  createdBy!: string;
+  createdAt!: Date;
 
   video!: VideoModel;
 
   static tableName = "playlist_video";
+  static get columnNameMappers() {
+    return snakeCaseMappers();
+  }
   static relationMappings: RelationMappingsThunk = () => ({
     video: {
       relation: Model.BelongsToOneRelation,

@@ -1,19 +1,22 @@
-import { Model } from "objection";
+import { Model, snakeCaseMappers } from "objection";
 
 export type UserPlayHistoryModelProps = {
-  user_id: string;
-  video_id: string;
-  voice_channel_id: string | null;
-  guild_id: string | null;
-  played_at: Date;
+  userId: string;
+  videoId: string;
+  voiceChannelId: string | null;
+  guildId: string | null;
+  playedAt: Date;
 };
 
 export class UserPlayHistoryModel extends Model implements UserPlayHistoryModelProps {
-  user_id!: string;
-  video_id!: string;
-  voice_channel_id!: string | null;
-  guild_id!: string | null;
-  played_at!: Date;
+  userId!: string;
+  videoId!: string;
+  voiceChannelId!: string | null;
+  guildId!: string | null;
+  playedAt!: Date;
 
   static tableName = "user_play_history";
+  static get columnNameMappers() {
+    return snakeCaseMappers();
+  }
 }

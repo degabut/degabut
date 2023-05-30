@@ -3,9 +3,9 @@ import { Injectable, Logger } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
 import { QueuePlayer } from "@queue-player/entities/queue-player";
 import {
-  PlayerChannelChangedEvent,
   PlayerDestroyedEvent,
   PlayerReadyEvent,
+  PlayerVoiceChannelChangedEvent,
   TrackAudioEndedEvent,
   TrackAudioErrorEvent,
   TrackAudioFinishedEvent,
@@ -72,7 +72,7 @@ export class QueuePlayerService {
       player.voiceChannel = voiceChannel;
       this.playerRepository.save(player);
 
-      this.eventBus.publish(new PlayerChannelChangedEvent({ player }));
+      this.eventBus.publish(new PlayerVoiceChannelChangedEvent({ player }));
     });
 
     player.audioPlayer.on("disconnected", async () => {

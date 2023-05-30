@@ -1,15 +1,15 @@
 import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { PlayerChannelChangedEvent } from "@queue-player/events";
+import { PlayerVoiceChannelChangedEvent } from "@queue-player/events";
 import { AUTO_DISCONNECT_TIMEOUT } from "@queue-player/queue-player.contants";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { PlayerDestroyReason, QueuePlayerService } from "@queue-player/services";
 
-const events = [VoiceMemberLeftEvent, VoiceMemberJoinedEvent, PlayerChannelChangedEvent];
+const events = [VoiceMemberLeftEvent, VoiceMemberJoinedEvent, PlayerVoiceChannelChangedEvent];
 type Events = InstanceType<typeof events[number]>;
 
 @EventsHandler(...events)
-export class ChannelChangedListener implements IEventHandler<Events> {
+export class VoiceChannelChangedListener implements IEventHandler<Events> {
   constructor(
     private readonly playerService: QueuePlayerService,
     private readonly playerRepository: QueuePlayerRepository,

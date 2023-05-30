@@ -1,13 +1,15 @@
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { PlayerChannelChangedEvent } from "@queue-player/events";
+import { PlayerVoiceChannelChangedEvent } from "@queue-player/events";
 import { Member, VoiceChannel } from "@queue/entities";
 import { QueueRepository } from "@queue/repositories";
 
-@EventsHandler(PlayerChannelChangedEvent)
-export class PlayerChannelChangedListener implements IEventHandler<PlayerChannelChangedEvent> {
+@EventsHandler(PlayerVoiceChannelChangedEvent)
+export class PlayerVoiceChannelChangedListener
+  implements IEventHandler<PlayerVoiceChannelChangedEvent>
+{
   constructor(private readonly queueRepository: QueueRepository) {}
 
-  public async handle({ player }: PlayerChannelChangedEvent): Promise<void> {
+  public async handle({ player }: PlayerVoiceChannelChangedEvent): Promise<void> {
     const queue = this.queueRepository.getByGuildId(player.guild.id);
     if (!queue) return;
 

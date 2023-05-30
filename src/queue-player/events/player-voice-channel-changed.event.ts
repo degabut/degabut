@@ -1,9 +1,9 @@
 import { QueuePlayer } from "@queue-player/entities";
 
-export class PlayerChannelChangedEvent {
+export class PlayerVoiceChannelChangedEvent {
   public readonly player!: QueuePlayer;
 
-  constructor(params: PlayerChannelChangedEvent) {
+  constructor(params: PlayerVoiceChannelChangedEvent) {
     Object.assign(this, params);
   }
 }

@@ -1,4 +1,4 @@
-import { UserPlayHistoryModel } from "@history/repositories";
+import { UserListenHistoryModel, UserPlayHistoryModel } from "@history/repositories";
 import { Inject, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PlaylistModel, PlaylistVideoModel } from "@playlist/repositories";
@@ -35,6 +35,7 @@ import { DatabaseConfigModule } from "./config";
     }),
     ObjectionModule.forFeature([
       UserPlayHistoryModel,
+      UserListenHistoryModel,
       VideoModel,
       ChannelModel,
       PlaylistModel,

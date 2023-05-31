@@ -1,13 +1,17 @@
-import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { PlayerVoiceChannelChangedEvent } from "@queue-player/events";
 import { Member, VoiceChannel } from "@queue/entities";
+import { QueueVoiceChannelChangedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(PlayerVoiceChannelChangedEvent)
 export class PlayerVoiceChannelChangedListener
   implements IEventHandler<PlayerVoiceChannelChangedEvent>
 {
-  constructor(private readonly queueRepository: QueueRepository) {}
+  constructor(
+    private readonly eventBus: EventBus,
+    private readonly queueRepository: QueueRepository,
+  ) {}
 
   public async handle({ player }: PlayerVoiceChannelChangedEvent): Promise<void> {
     const queue = this.queueRepository.getByGuildId(player.guild.id);
@@ -33,5 +37,6 @@ export class PlayerVoiceChannelChangedListener
     });
 
     this.queueRepository.save(queue);
+    this.eventBus.publish(new QueueVoiceChannelChangedEvent({ queue }));
   }
 }

@@ -2,6 +2,7 @@ import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
 import { PlayerDestroyedListener } from "./player-destroyed.listener";
 import { PlayerReadyListener } from "./player-ready.listener";
+import { PlayerTextChannelChangedListener } from "./player-text-channel-changed.listener";
 import { PlayerVoiceChannelChangedListener } from "./player-voice-channel-changed.listener";
 import { TrackAudioEndedListener } from "./track-audio-ended.listener";
 import { TrackAudioStartedListener } from "./track-audio-started.listener";
@@ -17,6 +18,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   PlayerReadyListener,
   PlayerDestroyedListener,
   PlayerVoiceChannelChangedListener,
+  PlayerTextChannelChangedListener,
   VoiceMemberJoinedListener,
   VoiceMemberLeftListener,
   VoiceMemberUpdatedListener,

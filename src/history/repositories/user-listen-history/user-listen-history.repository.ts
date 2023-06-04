@@ -13,6 +13,6 @@ export class UserListenHistoryRepository {
 
   public async insert(userListenHistories: UserListenHistory[]): Promise<void> {
     const props = userListenHistories.map((h) => UserListenHistoryRepositoryMapper.toRepository(h));
-    await this.userListenHistoryModel.query().insert(props);
+    await this.userListenHistoryModel.query().insert(props).returning("*");
   }
 }

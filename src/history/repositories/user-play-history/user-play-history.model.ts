@@ -1,4 +1,5 @@
-import { Model, snakeCaseMappers } from "objection";
+import { VideoModel } from "@youtube/repositories";
+import { Model, RelationMappingsThunk, snakeCaseMappers } from "objection";
 
 export type UserPlayHistoryModelProps = {
   userId: string;
@@ -15,8 +16,20 @@ export class UserPlayHistoryModel extends Model implements UserPlayHistoryModelP
   guildId!: string | null;
   playedAt!: Date;
 
+  video?: VideoModel;
+
   static tableName = "user_play_history";
   static get columnNameMappers() {
     return snakeCaseMappers();
   }
+  static relationMappings: RelationMappingsThunk = () => ({
+    video: {
+      relation: Model.HasOneRelation,
+      modelClass: VideoModel,
+      join: {
+        from: "user_play_history.video_id",
+        to: "video.id",
+      },
+    },
+  });
 }

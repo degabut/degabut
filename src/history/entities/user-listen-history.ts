@@ -1,3 +1,5 @@
+import { VideoCompact } from "@youtube/entities";
+
 interface ConstructorProps {
   videoId: string;
   userId: string;
@@ -5,6 +7,7 @@ interface ConstructorProps {
   guildId: string;
   isRequester: boolean;
   listenedAt: Date;
+  video?: VideoCompact;
 }
 
 export class UserListenHistory {
@@ -14,6 +17,7 @@ export class UserListenHistory {
   public readonly guildId: string;
   public readonly isRequester: boolean;
   public readonly listenedAt: Date;
+  public readonly video?: VideoCompact;
 
   constructor(props: ConstructorProps) {
     this.videoId = props.videoId;
@@ -22,5 +26,6 @@ export class UserListenHistory {
     this.guildId = props.guildId;
     this.isRequester = props.isRequester;
     this.listenedAt = props.listenedAt;
+    this.video = props.video;
   }
 }

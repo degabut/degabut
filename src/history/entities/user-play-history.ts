@@ -1,9 +1,12 @@
+import { VideoCompact } from "@youtube/entities";
+
 interface ConstructorProps {
   videoId: string;
   userId: string;
   voiceChannelId: string | null;
   guildId: string | null;
   playedAt: Date;
+  video?: VideoCompact;
 }
 
 export class UserPlayHistory {
@@ -12,6 +15,7 @@ export class UserPlayHistory {
   public readonly playedAt: Date;
   public readonly voiceChannelId: string | null;
   public readonly guildId: string | null;
+  public readonly video?: VideoCompact;
 
   constructor(props: ConstructorProps) {
     this.videoId = props.videoId;
@@ -19,5 +23,6 @@ export class UserPlayHistory {
     this.voiceChannelId = props.voiceChannelId;
     this.guildId = props.guildId;
     this.playedAt = props.playedAt;
+    this.video = props.video;
   }
 }

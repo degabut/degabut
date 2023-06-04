@@ -5,7 +5,6 @@ import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
 import { VideoCompactDto } from "@youtube/dtos";
-import { VideoRepository } from "@youtube/repositories";
 
 import {
   GetLastPlayedParamSchema,
@@ -18,7 +17,6 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
   constructor(
     private readonly repository: UserPlayHistoryRepository,
     private readonly queueRepository: QueueRepository,
-    private readonly videoRepository: VideoRepository,
   ) {}
 
   @ValidateParams(GetLastPlayedParamSchema)
@@ -35,6 +33,7 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
     let histories: UserPlayHistory[] = [];
 
     const options = {
+      includeVideo: true,
       count: params.count,
     };
 
@@ -52,15 +51,6 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
       });
     }
 
-    if (!histories.length) return [];
-
-    const videos = await this.videoRepository.getByIds(histories.map((h) => h.videoId));
-    videos.sort(
-      (a, b) =>
-        histories.findIndex((h) => h.videoId === a.id) -
-        histories.findIndex((h) => h.videoId === b.id),
-    );
-
-    return videos.map(VideoCompactDto.create);
+    return histories.filter((h) => h.video).map((h) => VideoCompactDto.create(h.video!));
   }
 }

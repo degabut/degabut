@@ -1,3 +1,5 @@
+import { VideoRepositoryMapper } from "@youtube/repositories";
+
 import { UserListenHistory } from "../../entities";
 import { UserListenHistoryModel, UserListenHistoryModelProps } from "./user-listen-history.model";
 
@@ -10,6 +12,7 @@ export class UserListenHistoryRepositoryMapper {
     const entity = new UserListenHistory({
       ...props,
       listenedAt: new Date(props.listenedAt),
+      video: props.video ? VideoRepositoryMapper.toDomainEntity(props.video) : undefined,
     });
 
     return entity;

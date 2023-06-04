@@ -4,27 +4,19 @@ import { UserPlayHistory } from "../../entities";
 import { UserPlayHistoryModel } from "./user-play-history.model";
 import { UserPlayHistoryRepositoryMapper } from "./user-play-history.repository-mapper";
 
-type GetSelections =
-  | {
-      userId: string;
-    }
-  | {
-      guildId: string;
-    }
-  | {
-      voiceChannelId: string;
-    };
+type GetSelections = { userId: string } | { guildId: string } | { voiceChannelId: string };
 
-type GetLastPlayedOptions = {
+type CommonOptions = {
   count?: number;
   excludeUserIds?: string[];
+  includeVideo?: boolean;
 };
 
-type GetMostPlayedOptions = {
+type GetLastPlayedOptions = CommonOptions;
+
+type GetMostPlayedOptions = CommonOptions & {
   from?: Date;
   to?: Date;
-  count?: number;
-  excludeUserIds?: string[];
 };
 
 @Injectable()
@@ -87,8 +79,9 @@ export class UserPlayHistoryRepository {
       })
       .orderBy("played_at", "desc")
       .modify((builder) => {
-        const { count } = options;
+        const { count, includeVideo } = options;
         if (count) builder.limit(count);
+        if (includeVideo) builder.withGraphFetched("video").withGraphFetched("video.channel");
       });
 
     return results.map((r) => UserPlayHistoryRepositoryMapper.toDomainEntity(r));
@@ -130,10 +123,11 @@ export class UserPlayHistoryRepository {
       .groupBy("user_play_history.video_id")
       .orderBy("count", "desc")
       .modify((builder) => {
-        const { from, to, count } = options;
+        const { from, to, count, includeVideo } = options;
         if (from) builder.where("played_at", ">=", from);
         if (to) builder.where("played_at", "<=", to);
         if (count) builder.limit(count);
+        if (includeVideo) builder.withGraphFetched("video").withGraphFetched("video.channel");
       });
 
     return results.map((r) => UserPlayHistoryRepositoryMapper.toDomainEntity(r));

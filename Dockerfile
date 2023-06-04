@@ -1,7 +1,7 @@
 FROM node:16.14-alpine as builder
 WORKDIR /usr/src/builder
 COPY . .
-RUN npm i -g pnpm@7.9.0
+RUN npm i -g pnpm@8.6.0
 RUN pnpm i
 RUN pnpm build
 RUN rm -r node_modules

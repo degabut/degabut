@@ -30,18 +30,20 @@ export class TrackAudioFinishedListener implements IEventHandler<TrackAudioFinis
     }
 
     const listeners = track.queue.voiceChannel.members.map((member) => member.id);
-    const listenHistories = listeners.map(
-      (userId) =>
-        new UserListenHistory({
-          userId,
-          videoId: track.video.id,
-          guildId: track.queue.guild.id,
-          voiceChannelId: track.queue.voiceChannelId,
-          isRequester: userId === requesterUserId,
-          listenedAt: now,
-        }),
-    );
+    if (listeners.length) {
+      const listenHistories = listeners.map(
+        (userId) =>
+          new UserListenHistory({
+            userId,
+            videoId: track.video.id,
+            guildId: track.queue.guild.id,
+            voiceChannelId: track.queue.voiceChannelId,
+            isRequester: userId === requesterUserId,
+            listenedAt: now,
+          }),
+      );
 
-    await this.userListenHistoryRepository.insert(listenHistories);
+      await this.userListenHistoryRepository.insert(listenHistories);
+    }
   }
 }

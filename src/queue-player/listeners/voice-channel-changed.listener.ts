@@ -1,5 +1,6 @@
 import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent } from "@discord-bot/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { QueuePlayer } from "@queue-player/entities";
 import { PlayerVoiceChannelChangedEvent } from "@queue-player/events";
 import { AUTO_DISCONNECT_TIMEOUT } from "@queue-player/queue-player.contants";
 import { QueuePlayerRepository } from "@queue-player/repositories";
@@ -23,14 +24,20 @@ export class VoiceChannelChangedListener implements IEventHandler<Events> {
 
     if (!player) return;
 
-    if (player.voiceChannel.members.size > 1 && player.disconnectTimeout) {
+    const hasUser = !!this.getUserCount(player);
+
+    if (hasUser && player.disconnectTimeout) {
       clearTimeout(player.disconnectTimeout);
       player.disconnectTimeout = null;
-    } else if (player.voiceChannel.members.size <= 1 && !player.disconnectTimeout) {
+    } else if (!hasUser && !player.disconnectTimeout) {
       player.disconnectTimeout = setTimeout(() => {
-        if (player.voiceChannel.members.size > 1) return;
+        if (this.getUserCount(player)) return;
         this.playerService.destroyPlayer(player, PlayerDestroyReason.AUTO_DISCONNECTED);
       }, AUTO_DISCONNECT_TIMEOUT);
     }
+  }
+
+  private getUserCount(player: QueuePlayer): number {
+    return player.voiceChannel.members.filter((m) => !m.user.bot).size;
   }
 }

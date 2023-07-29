@@ -98,7 +98,7 @@ export class QueuePlayerService {
       this.eventBus.publish(new TrackAudioStartedEvent({ track: lavaTrack.track }));
     });
 
-    player.audioPlayer.on("trackEnd", (_, reason) => {
+    player.audioPlayer.on("trackEnd", async (_, reason) => {
       const lavaTrack = player.currentTrack;
       if (!lavaTrack) return;
       const { track } = lavaTrack;
@@ -112,6 +112,8 @@ export class QueuePlayerService {
         guildId: player.guild.id,
         reason,
       });
+
+      if (reason === "LOAD_FAILED") await AsyncUtil.sleep(2500);
 
       this.eventBus.publish(new TrackAudioEndedEvent({ track }));
       if (reason === "FINISHED") this.eventBus.publish(new TrackAudioFinishedEvent({ track }));

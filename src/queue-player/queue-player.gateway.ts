@@ -1,3 +1,4 @@
+import { AsyncUtil } from "@common/utils";
 import { InjectDiscordClient, Once } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -75,7 +76,7 @@ export class QueuePlayerGateway {
     this.playerRepository.clear();
 
     this.logger.log(`Reconnecting to lavalink in ${delay}ms`);
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    await AsyncUtil.sleep(delay);
     node.conn.reconnect();
 
     this.isNodeReconnecting = false;

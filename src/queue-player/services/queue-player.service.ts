@@ -1,3 +1,4 @@
+import { AsyncUtil } from "@common/utils";
 import { InjectDiscordClient } from "@discord-nestjs/core";
 import { Injectable, Logger } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
@@ -85,7 +86,7 @@ export class QueuePlayerService {
     });
 
     player.audioPlayer.on("disconnected", async () => {
-      await new Promise((r) => setTimeout(r, 2500));
+      await AsyncUtil.sleep(2500);
       if (player.audioPlayer.connected) return;
       this.destroyPlayer(player, PlayerDestroyReason.DISCONNECTED);
     });

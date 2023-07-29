@@ -1,4 +1,4 @@
-import { DiscordUtil, YoutubeUtil } from "@common/utils";
+import { AsyncUtil, DiscordUtil, YoutubeUtil } from "@common/utils";
 import { IPrefixCommand } from "@discord-bot/interfaces";
 import { SlashCommandPipe } from "@discord-nestjs/common";
 import { Command, Handler, InteractionEvent, Param, ParamType } from "@discord-nestjs/core";
@@ -88,7 +88,7 @@ export class PlayDiscordCommand implements IPrefixCommand {
     } catch (err) {
       if (!(err instanceof NotFoundException)) throw err;
       await this.join(options);
-      await new Promise((r) => setTimeout(r, 1000));
+      await AsyncUtil.sleep(1000);
       await this.addTrack({
         keyword: options.keyword,
         userId: options.userId,

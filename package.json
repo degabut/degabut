@@ -35,7 +35,7 @@
     "@nestjs/websockets": "^9.4.2",
     "@willsoto/nestjs-objection": "^8.1.0",
     "class-transformer": "^0.5.1",
-    "discord.js": "^14.11.0",
+    "discord.js": "^14.12.1",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.2.0",

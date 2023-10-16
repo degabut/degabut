@@ -1,3 +1,5 @@
+import { GuildMember } from "discord.js";
+
 export class Member {
   public id!: string;
   public displayName!: string;
@@ -8,5 +10,16 @@ export class Member {
 
   constructor(params: Member) {
     Object.assign(this, params);
+  }
+
+  static fromDiscordGuildMember(member: GuildMember): Member {
+    return new Member({
+      id: member.id,
+      username: member.user.username,
+      nickname: member.nickname,
+      displayName: member.displayName,
+      discriminator: member.user.discriminator,
+      avatar: member.displayAvatarURL(),
+    });
   }
 }

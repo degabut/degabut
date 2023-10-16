@@ -39,17 +39,7 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
         name: player.voiceChannel.name,
         members: player.voiceChannel.members
           .filter((m) => !m.user.bot)
-          .map(
-            (m) =>
-              new Member({
-                id: m.id,
-                username: m.user.username,
-                nickname: m.nickname,
-                displayName: m.displayName,
-                discriminator: m.user.discriminator,
-                avatar: m.user.avatarURL(),
-              }),
-          ),
+          .map((m) => Member.fromDiscordGuildMember(m)),
       }),
       textChannel: player.textChannel
         ? new TextChannel({

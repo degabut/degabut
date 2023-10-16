@@ -15,14 +15,7 @@ export class VoiceMemberUpdatedListener implements IEventHandler<VoiceMemberUpda
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue || member.user.bot) return;
 
-    const updatedMember = new Member({
-      id: member.id,
-      username: member.user.username,
-      nickname: member.nickname,
-      displayName: member.displayName,
-      discriminator: member.user.discriminator,
-      avatar: member.user.avatarURL(),
-    });
+    const updatedMember = Member.fromDiscordGuildMember(member);
 
     const index = queue.voiceChannel.members.findIndex((m) => m.id === member.id);
     if (index === -1) return;

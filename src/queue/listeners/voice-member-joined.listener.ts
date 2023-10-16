@@ -15,14 +15,7 @@ export class VoiceMemberJoinedListener implements IEventHandler<VoiceMemberJoine
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue || member.user.bot) return;
 
-    const newMember = new Member({
-      id: member.id,
-      username: member.user.username,
-      nickname: member.nickname,
-      displayName: member.displayName,
-      discriminator: member.user.discriminator,
-      avatar: member.user.avatarURL(),
-    });
+    const newMember = Member.fromDiscordGuildMember(member);
 
     queue.voiceChannel.members.push(newMember);
 

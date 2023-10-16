@@ -23,17 +23,7 @@ export class PlayerVoiceChannelChangedListener
     queue.voiceChannel = new VoiceChannel({
       id: player.voiceChannel.id,
       name: player.voiceChannel.name,
-      members: player.voiceChannel.members.map(
-        (m) =>
-          new Member({
-            id: m.id,
-            username: m.user.username,
-            nickname: m.nickname,
-            displayName: m.displayName,
-            discriminator: m.user.discriminator,
-            avatar: m.user.avatarURL(),
-          }),
-      ),
+      members: player.voiceChannel.members.map((m) => Member.fromDiscordGuildMember(m)),
     });
 
     this.queueRepository.save(queue);

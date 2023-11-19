@@ -5,14 +5,19 @@ import * as jwt from "jsonwebtoken";
 @Injectable()
 export class JwtAuthProvider {
   private readonly privateKey: string;
+  private readonly expirationTime: string;
 
   constructor(configService: ConfigService) {
     const config = configService.getOrThrow<any>("jwt");
     this.privateKey = config.privateKey;
+    this.expirationTime = config.expirationTime;
   }
 
   public sign(userId: string): string {
-    return jwt.sign({}, this.privateKey, { audience: userId, expiresIn: "14d" });
+    return jwt.sign({}, this.privateKey, {
+      audience: userId,
+      expiresIn: this.expirationTime,
+    });
   }
 
   public verify(token: string): string {

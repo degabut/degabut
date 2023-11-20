@@ -6,9 +6,11 @@ import { YoutubeModule } from "@youtube/youtube.module";
 
 import { Commands } from "./commands";
 import { Queries } from "./queries";
+import { UserLikeVideoRepository } from "./repositories";
 
 @Module({
   imports: [DatabaseModule, QueueModule, YoutubeModule, HistoryModule],
-  providers: [...Queries, ...Commands],
+  providers: [UserLikeVideoRepository, ...Queries, ...Commands],
+  exports: [UserLikeVideoRepository],
 })
 export class UserModule {}

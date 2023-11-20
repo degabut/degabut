@@ -1,11 +1,15 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
-import { Controller, Delete, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { GetPlaylistsQuery } from "@playlist/queries";
 import { GetQueueQuery } from "@queue/queries";
-import { RemovePlayHistoryCommand } from "@user/commands";
-import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
+import { LikeVideoCommand, RemovePlayHistoryCommand, UnlikeVideoCommand } from "@user/commands";
+import {
+  GetLastPlayedQuery,
+  GetMostPlayedQuery,
+  IsVideosLikedQuery,
+} from "@user/queries";
 
 type GetHistoryQuery =
   | {
@@ -20,6 +24,10 @@ type GetSelfHistoryQuery = GetHistoryQuery & { guild: string; voiceChannel: stri
 
 type VideoIdParams = {
   videoId: string;
+};
+
+type VideoIdsParams = {
+  videoIds: string[];
 };
 
 @Controller("me")
@@ -70,5 +78,23 @@ export class MeController {
   @UseGuards(AuthGuard)
   removePlayHistory(@Param() params: VideoIdParams, @User() executor: AuthUser) {
     return this.commandBus.execute(new RemovePlayHistoryCommand({ executor, ...params }));
+  }
+
+  @Post("/liked-videos")
+  @UseGuards(AuthGuard)
+  likeVideo(@Body() body: VideoIdParams, @User() executor: AuthUser) {
+    return this.commandBus.execute(new LikeVideoCommand({ executor, ...body }));
+  }
+
+  @Delete("/liked-videos/:videoId")
+  @UseGuards(AuthGuard)
+  unlikeVideo(@Param() params: VideoIdParams, @User() executor: AuthUser) {
+    return this.commandBus.execute(new UnlikeVideoCommand({ executor, ...params }));
+  }
+
+  @Post("/liked-videos/is-liked")
+  @UseGuards(AuthGuard)
+  isVideosLiked(@Body() body: VideoIdsParams, @User() executor: AuthUser) {
+    return this.queryBus.execute(new IsVideosLikedQuery({ executor, ...body }));
   }
 }

@@ -2,6 +2,7 @@ import { UserListenHistoryModel, UserPlayHistoryModel } from "@history/repositor
 import { Inject, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PlaylistModel, PlaylistVideoModel } from "@playlist/repositories";
+import { UserLikeVideoModel } from "@user/repositories";
 import { Connection, KNEX_CONNECTION, ObjectionModule } from "@willsoto/nestjs-objection";
 import { ChannelModel, VideoModel } from "@youtube/repositories";
 import * as path from "path";
@@ -36,6 +37,7 @@ import { DatabaseConfigModule } from "./config";
     ObjectionModule.forFeature([
       UserPlayHistoryModel,
       UserListenHistoryModel,
+      UserLikeVideoModel,
       VideoModel,
       ChannelModel,
       PlaylistModel,

@@ -1,5 +1,6 @@
 import { AuthUser, User } from "@api/decorators";
 import { AuthGuard } from "@api/guards";
+import { IPaginationQuery } from "@api/interfaces";
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { GetPlaylistsQuery } from "@playlist/queries";
@@ -7,6 +8,7 @@ import { GetQueueQuery } from "@queue/queries";
 import { LikeVideoCommand, RemovePlayHistoryCommand, UnlikeVideoCommand } from "@user/commands";
 import {
   GetLastPlayedQuery,
+  GetLikedVideosQuery,
   GetMostPlayedQuery,
   IsVideosLikedQuery,
 } from "@user/queries";
@@ -78,6 +80,18 @@ export class MeController {
   @UseGuards(AuthGuard)
   removePlayHistory(@Param() params: VideoIdParams, @User() executor: AuthUser) {
     return this.commandBus.execute(new RemovePlayHistoryCommand({ executor, ...params }));
+  }
+
+  @Get("/liked-videos")
+  @UseGuards(AuthGuard)
+  getLikedVideo(@User() executor: AuthUser, @Query() query: IPaginationQuery) {
+    return this.queryBus.execute(
+      new GetLikedVideosQuery({
+        executor,
+        limit: query.limit ? +query.limit : 50,
+        nextToken: query.nextToken,
+      }),
+    );
   }
 
   @Post("/liked-videos")

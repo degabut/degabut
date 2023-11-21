@@ -28,6 +28,11 @@ export class UserLikeVideoRepository {
     await this.userLikeVideoModel.query().delete().where({ user_id: userId, video_id: videoId });
   }
 
+  public async getCountByUserId(userId: string): Promise<number> {
+    const result = this.userLikeVideoModel.query().where("user_id", userId);
+    return await result.resultSize();
+  }
+
   public async getByUserId(
     userId: string,
     pagination: IPaginationParameter<IGetByUserIdPagination>,

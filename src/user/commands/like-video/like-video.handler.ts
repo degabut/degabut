@@ -3,6 +3,7 @@ import { BadRequestException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { UserLikeVideo } from "@user/entities";
 import { UserLikeVideoRepository } from "@user/repositories";
+import { MAX_LIKED_VIDEO } from "@user/user.constant";
 import { YoutubeCachedService } from "@youtube/services";
 
 import { LikeVideoCommand, LikeVideoParamSchema, LikeVideoResult } from "./like-video.command";
@@ -20,6 +21,9 @@ export class LikeVideoHandler implements IInferredCommandHandler<LikeVideoComman
 
     const video = await this.youtubeService.getVideo(videoId);
     if (!video) throw new BadRequestException("Video not found");
+
+    const count = await this.repository.getCountByUserId(executor.id);
+    if (count >= MAX_LIKED_VIDEO) throw new BadRequestException("Max liked video reached");
 
     const userLikeVideo = new UserLikeVideo({
       userId: executor.id,

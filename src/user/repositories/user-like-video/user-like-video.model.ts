@@ -15,6 +15,7 @@ export class UserLikeVideoModel extends Model implements UserLikeVideoModelProps
   video?: VideoModel;
 
   static tableName = "user_like_video";
+  static idColumn = ["user_id", "video_id"];
   static get columnNameMappers() {
     return snakeCaseMappers();
   }

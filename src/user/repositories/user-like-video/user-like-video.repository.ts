@@ -36,20 +36,29 @@ export class UserLikeVideoRepository {
   public async getByUserId(
     userId: string,
     pagination: IPaginationParameter<IGetByUserIdPagination>,
+    keyword?: string,
   ): Promise<UserLikeVideo[]> {
     const result = this.userLikeVideoModel
       .query()
       .where("user_id", userId)
-      .withGraphFetched("video")
-      .withGraphFetched("video.channel")
       .orderBy("liked_at", "desc")
+      .withGraphJoined("video")
+      .withGraphJoined("video.channel")
+      .limit(pagination.limit)
       .modify((qb) => {
-        if (pagination.next) {
-          const { likedAt, videoId } = pagination.next;
-          qb.whereRaw("(liked_at, video_id) < (?, ?)", [likedAt, videoId]);
+        if (keyword) {
+          const keywords = keyword.split(" ");
+          const tsQuery = keywords.map((k) => `${k}:*`).join("&");
+          qb.andWhereRaw(
+            '(to_tsvector(video.title) @@ to_tsquery(?) or to_tsvector("video:channel".name) @@ to_tsquery(?))',
+            [tsQuery, tsQuery],
+          );
         }
 
-        qb.limit(pagination.limit);
+        if (pagination.next) {
+          const { likedAt, videoId } = pagination.next;
+          qb.andWhereRaw("(liked_at, video_id) < (?, ?)", [likedAt, videoId]);
+        }
       });
 
     return (await result).map((r) => UserLikeVideoRepositoryMapper.toDomainEntity(r));

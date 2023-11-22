@@ -32,6 +32,8 @@ type VideoIdsParams = {
   videoIds: string[];
 };
 
+type GetLikedVideosParam = IPaginationQuery & { keyword?: string };
+
 @Controller("me")
 export class MeController {
   constructor(private readonly queryBus: QueryBus, private readonly commandBus: CommandBus) {}
@@ -84,12 +86,13 @@ export class MeController {
 
   @Get("/liked-videos")
   @UseGuards(AuthGuard)
-  getLikedVideo(@User() executor: AuthUser, @Query() query: IPaginationQuery) {
+  getLikedVideo(@User() executor: AuthUser, @Query() query: GetLikedVideosParam) {
     return this.queryBus.execute(
       new GetLikedVideosQuery({
         executor,
         limit: query.limit ? +query.limit : 50,
         nextToken: query.nextToken,
+        keyword: query.keyword,
       }),
     );
   }

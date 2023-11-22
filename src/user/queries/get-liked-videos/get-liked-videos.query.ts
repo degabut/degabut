@@ -11,6 +11,7 @@ export class GetLikedVideosQuery
   implements IWithExecutor
 {
   executor!: Executor;
+  keyword?: string;
 
   constructor(params: GetLikedVideosQuery) {
     super();
@@ -21,4 +22,5 @@ export class GetLikedVideosQuery
 export const GetLikedVideosParamSchema = Joi.object<GetLikedVideosQuery>({
   executor: ExecutorSchema,
   ...PaginationSchema(50, 50),
+  keyword: Joi.string().optional(),
 }).required();

@@ -1,7 +1,7 @@
 import { IPaginatedResult, PaginatedQuery } from "@common/cqrs";
 import { Executor, IWithExecutor } from "@common/interfaces";
 import { ExecutorSchema, PaginationSchema } from "@common/schemas";
-import { UserLikeVideoDto } from "@user/dto/user-like-video.dto";
+import { UserLikeVideoDto } from "@user/dtos";
 import * as Joi from "joi";
 
 export type GetLikedVideosResult = IPaginatedResult<UserLikeVideoDto>;

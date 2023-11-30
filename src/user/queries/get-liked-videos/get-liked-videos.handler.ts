@@ -1,7 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { PaginatedQueryParser } from "@common/utils";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { UserLikeVideoDto } from "@user/dto/user-like-video.dto";
+import { UserLikeVideoDto } from "@user/dtos";
 import { UserLikeVideo } from "@user/entities";
 import { IGetByUserIdPagination, UserLikeVideoRepository } from "@user/repositories";
 

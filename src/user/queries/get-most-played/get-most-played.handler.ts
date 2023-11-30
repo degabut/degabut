@@ -1,10 +1,9 @@
 import { ValidateParams } from "@common/decorators";
-import { UserPlayHistory } from "@history/entities";
+import { UserMostPlayedDto } from "@history/dtos";
 import { UserPlayHistoryRepository } from "@history/repositories";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
-import { VideoCompactDto } from "@youtube/dtos";
 
 import {
   GetMostPlayedParamSchema,
@@ -38,7 +37,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
       from,
     };
 
-    let histories: UserPlayHistory[] = [];
+    let histories: UserMostPlayedDto[] = [];
 
     if (params.userId) {
       histories = await this.repository.getMostPlayedByUserId(params.userId, options);
@@ -54,6 +53,6 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
       });
     }
 
-    return histories.filter((h) => h.video).map((h) => VideoCompactDto.create(h.video!));
+    return histories.filter((h) => h.video).map((h) => h.video);
   }
 }

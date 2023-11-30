@@ -1,3 +1,4 @@
+import { UserMostPlayedDto } from "@history/dtos";
 import { Inject, Injectable } from "@nestjs/common";
 
 import { UserPlayHistory } from "../../entities";
@@ -90,21 +91,21 @@ export class UserPlayHistoryRepository {
   public async getMostPlayedByUserId(
     userId: string,
     options: GetMostPlayedOptions = {},
-  ): Promise<UserPlayHistory[]> {
+  ): Promise<UserMostPlayedDto[]> {
     return this.getMostPlayed({ userId }, options);
   }
 
   public async getMostPlayedByVoiceChannelId(
     voiceChannelId: string,
     options: GetMostPlayedOptions = {},
-  ): Promise<UserPlayHistory[]> {
+  ): Promise<UserMostPlayedDto[]> {
     return this.getMostPlayed({ voiceChannelId }, options);
   }
 
   public async getMostPlayedByGuildId(
     guildId: string,
     options: GetMostPlayedOptions = {},
-  ): Promise<UserPlayHistory[]> {
+  ): Promise<UserMostPlayedDto[]> {
     return this.getMostPlayed({ guildId }, options);
   }
 
@@ -130,6 +131,6 @@ export class UserPlayHistoryRepository {
         if (includeVideo) builder.withGraphFetched("video").withGraphFetched("video.channel");
       });
 
-    return results.map((r) => UserPlayHistoryRepositoryMapper.toDomainEntity(r));
+    return results.map((r) => UserMostPlayedDto.create(r));
   }
 }

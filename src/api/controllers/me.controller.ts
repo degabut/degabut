@@ -10,6 +10,7 @@ import {
   GetLastPlayedQuery,
   GetLikedVideosQuery,
   GetMostPlayedQuery,
+  GetRecapQuery,
   IsVideosLikedQuery,
 } from "@user/queries";
 
@@ -33,6 +34,10 @@ type VideoIdsParams = {
 };
 
 type GetLikedVideosParam = IPaginationQuery & { keyword?: string };
+
+type YearParams = {
+  year?: string;
+};
 
 @Controller("me")
 export class MeController {
@@ -113,5 +118,12 @@ export class MeController {
   @UseGuards(AuthGuard)
   isVideosLiked(@Body() body: VideoIdsParams, @User() executor: AuthUser) {
     return this.queryBus.execute(new IsVideosLikedQuery({ executor, ...body }));
+  }
+
+  @Get("/recap/:year?")
+  @UseGuards(AuthGuard)
+  getRecap(@Param() params: YearParams, @User() executor: AuthUser) {
+    const year = params.year ? +params.year : new Date().getFullYear();
+    return this.queryBus.execute(new GetRecapQuery({ executor, year }));
   }
 }

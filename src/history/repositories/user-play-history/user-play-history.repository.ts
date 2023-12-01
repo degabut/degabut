@@ -20,6 +20,11 @@ type GetMostPlayedOptions = CommonOptions & {
   to?: Date;
 };
 
+type GetCountOptions = {
+  from?: Date;
+  to?: Date;
+};
+
 @Injectable()
 export class UserPlayHistoryRepository {
   constructor(
@@ -132,5 +137,40 @@ export class UserPlayHistoryRepository {
       });
 
     return results.map((r) => UserMostPlayedDto.create(r));
+  }
+
+  public async getUniqueCount(userId: string, options: GetCountOptions = {}): Promise<number> {
+    const result = await this.userPlayHistoryModel
+      .knexQuery()
+      .countDistinct("video_id as count")
+      .where({ user_id: userId })
+      .modify((builder) => {
+        const { from, to } = options;
+        if (from) builder.where("played_at", ">=", from);
+        if (to) builder.where("played_at", "<=", to);
+      })
+      .first();
+
+    return +result.count;
+  }
+
+  public async getDurationAndCount(userId: string, options: GetCountOptions = {}) {
+    const result = await this.userPlayHistoryModel
+      .knexQuery()
+      .sum("video.duration as duration")
+      .count("video.id as count")
+      .join("video", "video.id", "user_play_history.video_id")
+      .where({ user_id: userId })
+      .modify((builder) => {
+        const { from, to } = options;
+        if (from) builder.where("played_at", ">=", from);
+        if (to) builder.where("played_at", "<=", to);
+      })
+      .first();
+
+    return {
+      duration: +result.duration,
+      count: +result.count,
+    };
   }
 }

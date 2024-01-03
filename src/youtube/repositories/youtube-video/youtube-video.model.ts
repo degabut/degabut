@@ -1,6 +1,6 @@
 import { Model, RelationMappingsThunk, snakeCaseMappers } from "objection";
 
-import { YoutubeChannelModel } from "../channel/channel.model";
+import { YoutubeChannelModel } from "../youtube-channel";
 
 type ThumbnailProps = {
   url: string;
@@ -29,7 +29,7 @@ export class YoutubeVideoModel extends Model implements YoutubeVideoModelProps {
 
   channel?: YoutubeChannelModel;
 
-  static tableName = "video";
+  static tableName = "youtube_video";
   static jsonAttributes = ["thumbnails"];
   static get columnNameMappers() {
     return snakeCaseMappers();
@@ -39,8 +39,8 @@ export class YoutubeVideoModel extends Model implements YoutubeVideoModelProps {
       relation: Model.HasOneRelation,
       modelClass: YoutubeChannelModel,
       join: {
-        from: "video.channel_id",
-        to: "channel.id",
+        from: "youtube_video.channel_id",
+        to: "youtube_channel.id",
       },
     },
   });

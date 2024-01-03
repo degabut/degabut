@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { YoutubeChannel } from "@youtube/entities";
 
-import { YoutubeChannelModel } from "./channel.model";
-import { YoutubeChannelRepositoryMapper } from "./channel.repository-mapper";
+import { YoutubeChannelModel } from "./youtube-channel.model";
+import { YoutubeChannelRepositoryMapper } from "./youtube-channel.repository-mapper";
 
 @Injectable()
 export class YoutubeChannelRepository {

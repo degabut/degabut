@@ -190,11 +190,13 @@ export class UserPlayHistoryRepository {
       .select(
         this.userPlayHistoryModel
           .knex()
-          .raw("sum(coalesce(video.duration, spotify_track.duration_ms / 1000)) as duration"),
+          .raw(
+            "sum(coalesce(youtube_video.duration, spotify_track.duration_ms / 1000)) as duration",
+          ),
       )
       .count("media_source.id as count")
       .join("media_source", "media_source.id", "user_play_history.media_source_id")
-      .leftJoin("video", "video.id", "media_source.youtube_video_id")
+      .leftJoin("youtube_video", "youtube_video.id", "media_source.youtube_video_id")
       .leftJoin("spotify_track", "spotify_track.id", "media_source.spotify_track_id")
       .where({ user_id: userId })
       .modify((builder) => {

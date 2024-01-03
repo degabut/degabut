@@ -57,7 +57,7 @@ export class UserLikeMediaSourceRepository {
           const keywords = keyword.split(" ");
           const tsQuery = keywords.map((k) => `${k}:*`).join("&");
           qb.andWhereRaw(
-            '(to_tsvector(coalesce(video.title, spotify_track.name)) @@ to_tsquery(?) or to_tsvector("video:channel".name) @@ to_tsquery(?))',
+            '(to_tsvector(coalesce(youtube_video.title, spotify_track.name)) @@ to_tsquery(?) or to_tsvector("youtube_video:channel".name) @@ to_tsquery(?))',
             [tsQuery, tsQuery],
           );
         }

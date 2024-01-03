@@ -1,6 +1,6 @@
 import { YoutubeChannel, YoutubeThumbnail } from "@youtube/entities";
 
-import { YoutubeChannelModel, YoutubeChannelModelProps } from "./channel.model";
+import { YoutubeChannelModel, YoutubeChannelModelProps } from "./youtube-channel.model";
 
 export class YoutubeChannelRepositoryMapper {
   public static toRepository(entity: YoutubeChannel): YoutubeChannelModelProps {

@@ -1,2 +1,2 @@
-export * from "./channel";
-export * from "./video";
+export * from "./youtube-channel";
+export * from "./youtube-video";

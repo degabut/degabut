@@ -31,7 +31,7 @@ export class MediaSourceModel extends Model implements MediaSourceModelProps {
       modelClass: YoutubeVideoModel,
       join: {
         from: "media_source.youtube_video_id",
-        to: "video.id",
+        to: "youtube_video.id",
       },
     },
     spotifyTrack: {

@@ -1,6 +1,6 @@
 import { YoutubeThumbnail, YoutubeVideoCompact } from "@youtube/entities";
 
-import { YoutubeChannelRepositoryMapper } from "../channel/channel.repository-mapper";
+import { YoutubeChannelRepositoryMapper } from "../youtube-channel";
 import { YoutubeVideoModel, YoutubeVideoModelProps } from "./youtube-video.model";
 
 export class YoutubeVideoRepositoryMapper {

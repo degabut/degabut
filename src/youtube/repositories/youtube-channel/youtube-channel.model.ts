@@ -17,7 +17,7 @@ export class YoutubeChannelModel extends Model implements YoutubeChannelModelPro
   name!: string;
   thumbnails?: ThumbnailProps[];
 
-  static tableName = "channel";
+  static tableName = "youtube_channel";
   static jsonAttributes = ["thumbnails"];
   static get columnNameMappers() {
     return snakeCaseMappers();

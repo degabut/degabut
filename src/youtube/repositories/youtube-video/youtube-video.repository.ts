@@ -25,7 +25,7 @@ export class YoutubeVideoRepository {
   public async getByIds(ids: string[]): Promise<YoutubeVideoCompact[]> {
     const results = await this.videoModel
       .query()
-      .whereIn("video.id", ids)
+      .whereIn("youtube_video.id", ids)
       .withGraphJoined("channel");
     return results.map((r) => YoutubeVideoRepositoryMapper.toDomainEntity(r));
   }

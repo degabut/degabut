@@ -1,25 +1,25 @@
-import { Channel } from "./channel";
-import { Thumbnail } from "./thumbnail";
-import { VideoCompact } from "./video-compact";
+import { YoutubeChannel } from "./channel";
+import { YoutubeThumbnail } from "./thumbnail";
+import { YoutubeVideoCompact } from "./video-compact";
 
 interface Props {
   id: string;
   title: string;
   duration: number;
-  thumbnails: Thumbnail[];
-  channel: Channel | null;
+  thumbnails: YoutubeThumbnail[];
+  channel: YoutubeChannel | null;
   viewCount: number | null;
-  related: VideoCompact[];
+  related: YoutubeVideoCompact[];
 }
 
-export class Video implements Props {
+export class YoutubeVideo implements Props {
   public readonly id: string;
   public readonly title: string;
   public readonly duration: number;
-  public readonly thumbnails: Thumbnail[];
-  public readonly channel: Channel | null;
+  public readonly thumbnails: YoutubeThumbnail[];
+  public readonly channel: YoutubeChannel | null;
   public readonly viewCount: number | null;
-  public readonly related: VideoCompact[];
+  public readonly related: YoutubeVideoCompact[];
 
   constructor(props: Props) {
     this.id = props.id;

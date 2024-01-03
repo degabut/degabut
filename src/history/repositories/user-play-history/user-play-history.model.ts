@@ -1,9 +1,9 @@
-import { VideoModel } from "@youtube/repositories";
+import { MediaSourceModel } from "@media-source/repositories";
 import { Model, RelationMappingsThunk, snakeCaseMappers } from "objection";
 
 export type UserPlayHistoryModelProps = {
   userId: string;
-  videoId: string;
+  mediaSourceId: string;
   voiceChannelId: string | null;
   guildId: string | null;
   playedAt: Date;
@@ -11,24 +11,24 @@ export type UserPlayHistoryModelProps = {
 
 export class UserPlayHistoryModel extends Model implements UserPlayHistoryModelProps {
   userId!: string;
-  videoId!: string;
+  mediaSourceId!: string;
   voiceChannelId!: string | null;
   guildId!: string | null;
   playedAt!: Date;
 
-  video?: VideoModel;
+  mediaSource?: MediaSourceModel;
 
   static tableName = "user_play_history";
   static get columnNameMappers() {
     return snakeCaseMappers();
   }
   static relationMappings: RelationMappingsThunk = () => ({
-    video: {
+    mediaSource: {
       relation: Model.HasOneRelation,
-      modelClass: VideoModel,
+      modelClass: MediaSourceModel,
       join: {
-        from: "user_play_history.video_id",
-        to: "video.id",
+        from: "user_play_history.media_source_id",
+        to: "media_source.id",
       },
     },
   });

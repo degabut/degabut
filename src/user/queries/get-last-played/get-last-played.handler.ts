@@ -1,10 +1,10 @@
 import { ValidateParams } from "@common/decorators";
 import { UserPlayHistory } from "@history/entities";
 import { UserPlayHistoryRepository } from "@history/repositories";
+import { MediaSourceDto } from "@media-source/dtos";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
-import { VideoCompactDto } from "@youtube/dtos";
 
 import {
   GetLastPlayedParamSchema,
@@ -33,7 +33,7 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
     let histories: UserPlayHistory[] = [];
 
     const options = {
-      includeVideo: true,
+      includeContent: true,
       count: params.count,
     };
 
@@ -51,6 +51,9 @@ export class GetLastPlayedHandler implements IInferredQueryHandler<GetLastPlayed
       });
     }
 
-    return histories.filter((h) => h.video).map((h) => VideoCompactDto.create(h.video!));
+    return histories.reduce<MediaSourceDto[]>((curr, { mediaSource }) => {
+      if (mediaSource) curr.push(MediaSourceDto.create(mediaSource));
+      return curr;
+    }, []);
   }
 }

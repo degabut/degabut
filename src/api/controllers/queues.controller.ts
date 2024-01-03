@@ -25,10 +25,12 @@ type TrackParam = VoiceChannelIdParams & {
 };
 
 type AddTracksBody = {
-  videoId?: string;
+  mediaSourceId?: string;
   keyword?: string;
   playlistId?: string;
   youtubePlaylistId?: string;
+  spotifyPlaylistId?: string;
+  spotifyAlbumId?: string;
 };
 
 type ChangeTrackOrderBody = { to: number };
@@ -59,10 +61,10 @@ export class QueuesController {
     @Param() params: VoiceChannelIdParams,
     @User() executor: AuthUser,
   ) {
-    if (body && ("playlistId" in body || "youtubePlaylistId" in body)) {
+    if (body && ("mediaSourceId" in body || "youtubeKeyword" in body)) {
       return {
-        trackIds: await this.commandBus.execute(
-          new AddTracksCommand({
+        trackId: await this.commandBus.execute(
+          new AddTrackCommand({
             ...params,
             ...body,
             executor,
@@ -71,8 +73,8 @@ export class QueuesController {
       };
     } else {
       return {
-        trackId: await this.commandBus.execute(
-          new AddTrackCommand({
+        trackIds: await this.commandBus.execute(
+          new AddTracksCommand({
             ...params,
             ...body,
             executor,

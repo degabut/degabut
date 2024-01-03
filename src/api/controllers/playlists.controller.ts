@@ -3,13 +3,13 @@ import { AuthGuard } from "@api/guards";
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
-  AddPlaylistVideoCommand,
+  AddPlaylistMediaSourceCommand,
   CreatePlaylistCommand,
   DeletePlaylistCommand,
-  RemovePlaylistVideoCommand,
+  RemovePlaylistMediaSourceCommand,
   UpdatePlaylistCommand,
 } from "@playlist/commands";
-import { GetPlaylistQuery, GetPlaylistVideosQuery } from "@playlist/queries";
+import { GetPlaylistMediaSourcesQuery, GetPlaylistQuery } from "@playlist/queries";
 
 type PlaylistIdParams = {
   playlistId: string;
@@ -21,13 +21,13 @@ type CreatePlaylistBody = {
 
 type EditPlaylistBody = CreatePlaylistBody;
 
-type AddVideoBody = {
-  videoId: string;
+type AddMediaSourceBody = {
+  mediaSourceId: string;
 };
 
-type RemoveVideoParams = {
+type RemoveMediaSourceParams = {
   playlistId: string;
-  playlistVideoId: string;
+  mediaSourceId: string;
 };
 
 @Controller("playlists")
@@ -95,31 +95,31 @@ export class PlaylistsController {
     };
   }
 
-  @Get("/:playlistId/videos")
+  @Get("/:playlistId/media-sources")
   @UseGuards(AuthGuard)
-  getPlaylistVideos(@Param() params: PlaylistIdParams, @User() user: AuthUser) {
+  getPlaylistMediaSources(@Param() params: PlaylistIdParams, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return this.queryBus.execute(
-      new GetPlaylistVideosQuery({
+      new GetPlaylistMediaSourcesQuery({
         ...params,
         executor,
       }),
     );
   }
 
-  @Post("/:playlistId/videos")
+  @Post("/:playlistId/media-sources")
   @UseGuards(AuthGuard)
-  async addPlaylistVideo(
-    @Body() body: AddVideoBody,
+  async addPlaylistMediaSource(
+    @Body() body: AddMediaSourceBody,
     @Param() params: PlaylistIdParams,
     @User() user: AuthUser,
   ) {
     const executor = { id: user.id };
 
     return {
-      playlistVideoId: await this.commandBus.execute(
-        new AddPlaylistVideoCommand({
+      playlistMediaSourceId: await this.commandBus.execute(
+        new AddPlaylistMediaSourceCommand({
           ...params,
           ...body,
           executor,
@@ -128,13 +128,13 @@ export class PlaylistsController {
     };
   }
 
-  @Delete("/:playlistId/videos/:playlistVideoId")
+  @Delete("/:playlistId/media-sources/:mediaSourceId")
   @UseGuards(AuthGuard)
-  removePlaylistVideo(@Param() params: RemoveVideoParams, @User() user: AuthUser) {
+  removePlaylistMediaSource(@Param() params: RemoveMediaSourceParams, @User() user: AuthUser) {
     const executor = { id: user.id };
 
     return this.commandBus.execute(
-      new RemovePlaylistVideoCommand({
+      new RemovePlaylistMediaSourceCommand({
         ...params,
         executor,
       }),

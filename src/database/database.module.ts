@@ -1,10 +1,17 @@
 import { UserListenHistoryModel, UserPlayHistoryModel } from "@history/repositories";
+import { MediaSourceModel } from "@media-source/repositories";
 import { Inject, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { PlaylistModel, PlaylistVideoModel } from "@playlist/repositories";
-import { UserLikeVideoModel } from "@user/repositories";
+import { PlaylistMediaSourceModel, PlaylistModel } from "@playlist/repositories";
+import {
+  SpotifyAlbumModel,
+  SpotifyArtistModel,
+  SpotifyTrackArtistModel,
+  SpotifyTrackModel,
+} from "@spotify/repositories";
+import { UserLikeMediaSourceModel } from "@user/repositories";
 import { Connection, KNEX_CONNECTION, ObjectionModule } from "@willsoto/nestjs-objection";
-import { ChannelModel, VideoModel } from "@youtube/repositories";
+import { YoutubeChannelModel, YoutubeVideoModel } from "@youtube/repositories";
 import * as path from "path";
 
 import { DatabaseConfigModule } from "./config";
@@ -37,11 +44,16 @@ import { DatabaseConfigModule } from "./config";
     ObjectionModule.forFeature([
       UserPlayHistoryModel,
       UserListenHistoryModel,
-      UserLikeVideoModel,
-      VideoModel,
-      ChannelModel,
+      UserLikeMediaSourceModel,
+      MediaSourceModel,
+      YoutubeVideoModel,
+      YoutubeChannelModel,
+      SpotifyAlbumModel,
+      SpotifyArtistModel,
+      SpotifyTrackModel,
+      SpotifyTrackArtistModel,
       PlaylistModel,
-      PlaylistVideoModel,
+      PlaylistMediaSourceModel,
     ]),
   ],
   exports: [ObjectionModule],

@@ -18,7 +18,7 @@ export class TrackRemovedListener implements IEventHandler<TrackRemovedEvent> {
     if (!player) return;
 
     const embed = new EmbedBuilder({
-      description: `🚮 **<@!${member.id}> removed ${track.video.title} from queue**`,
+      description: `🚮 **<@!${member.id}> removed ${track.mediaSource.title} from queue**`,
     });
 
     if (isNowPlaying) player.audioPlayer.stop();

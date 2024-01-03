@@ -1,7 +1,24 @@
+type YoutubeIds = {
+  videoId?: string;
+  playlistId?: string;
+};
+
 export class YoutubeUtil {
-  static extractYoutubeVideoId(url: string): string {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : "";
+  static HOSTS = ["youtube.com", "youtu.be", "music.youtube.com"];
+
+  static extractIds(urlString: string): YoutubeIds {
+    try {
+      const url = new URL(urlString);
+      const host = url.host.replace(/^www\./, "");
+
+      if (!YoutubeUtil.HOSTS.includes(host)) return {};
+
+      const videoId = url.searchParams.get("v") || url.pathname.split("/").pop();
+      const playlistId = url.searchParams.get("list") || undefined;
+
+      return { videoId, playlistId };
+    } catch {
+      return {};
+    }
   }
 }

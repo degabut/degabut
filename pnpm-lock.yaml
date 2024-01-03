@@ -34,6 +34,9 @@ dependencies:
   '@nestjs/websockets':
     specifier: ^9.4.3
     version: 9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+  '@spotify/web-api-ts-sdk':
+    specifier: ^1.1.2
+    version: 1.1.2
   '@willsoto/nestjs-objection':
     specifier: ^8.1.2
     version: 8.1.2(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(knex@2.5.1)(objection@3.1.2)
@@ -1538,6 +1541,10 @@ packages:
     dependencies:
       '@sinonjs/commons': 1.8.6
     dev: true
+
+  /@spotify/web-api-ts-sdk@1.1.2:
+    resolution: {integrity: sha512-WxmaKUGZH2xtoVDZuy6PXbrAIiEux9pL1IDaDm6iRI25nT8be6huCNpNtYe0MBtq+rejbJqjg9JI2MVlfEMyUQ==}
+    dev: false
 
   /@trivago/prettier-plugin-sort-imports@3.4.0(prettier@2.8.8):
     resolution: {integrity: sha512-485Iailw8X5f7KetzRka20RF1kPBEINR5LJMNwlBZWY1gRAlVnv5dZzyNPnLxSP0Qcia8HETa9Cdd8LlX9o+pg==}

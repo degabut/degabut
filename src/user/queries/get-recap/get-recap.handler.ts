@@ -31,7 +31,7 @@ export class GetRecapHandler implements IInferredQueryHandler<GetRecapQuery> {
   private async getMostPlayed(userId: string, year: number) {
     const mostPlayed = await this.playRepository.getMostPlayedByUserId(userId, {
       ...this.getFromTo(year),
-      includeVideo: true,
+      includeContent: true,
       count: 5,
     });
 
@@ -47,7 +47,7 @@ export class GetRecapHandler implements IInferredQueryHandler<GetRecapQuery> {
       const [mostPlayed, play] = await Promise.all([
         this.playRepository.getMostPlayedByUserId(userId, {
           ...range,
-          includeVideo: true,
+          includeContent: true,
           count: 1,
         }),
         this.playRepository.getDurationAndCount(userId, range),

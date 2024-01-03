@@ -5,13 +5,17 @@ import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@n
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { GetPlaylistsQuery } from "@playlist/queries";
 import { GetQueueQuery } from "@queue/queries";
-import { LikeVideoCommand, RemovePlayHistoryCommand, UnlikeVideoCommand } from "@user/commands";
+import {
+  LikeMediaSourceCommand,
+  RemovePlayHistoryCommand,
+  UnlikeMediaSourceCommand,
+} from "@user/commands";
 import {
   GetLastPlayedQuery,
-  GetLikedVideosQuery,
+  GetLikedQuery,
   GetMostPlayedQuery,
   GetRecapQuery,
-  IsVideosLikedQuery,
+  IsLikedQuery,
 } from "@user/queries";
 
 type GetHistoryQuery =
@@ -25,15 +29,15 @@ type GetHistoryQuery =
 
 type GetSelfHistoryQuery = GetHistoryQuery & { guild: string; voiceChannel: string };
 
-type VideoIdParams = {
-  videoId: string;
+type MediaSourceIdParams = {
+  mediaSourceId: string;
 };
 
-type VideoIdsParams = {
-  videoIds: string[];
+type MediaSourceIdsParams = {
+  mediaSourceIds: string[];
 };
 
-type GetLikedVideosParam = IPaginationQuery & { keyword?: string };
+type GetLikedParam = IPaginationQuery & { keyword?: string };
 
 type YearParams = {
   year?: string;
@@ -83,17 +87,17 @@ export class MeController {
     return this.queryBus.execute(new GetQueueQuery({ executor }));
   }
 
-  @Delete("/play-history/:videoId")
+  @Delete("/play-history/:mediaSourceId")
   @UseGuards(AuthGuard)
-  removePlayHistory(@Param() params: VideoIdParams, @User() executor: AuthUser) {
+  removePlayHistory(@Param() params: MediaSourceIdParams, @User() executor: AuthUser) {
     return this.commandBus.execute(new RemovePlayHistoryCommand({ executor, ...params }));
   }
 
-  @Get("/liked-videos")
+  @Get("/liked")
   @UseGuards(AuthGuard)
-  getLikedVideo(@User() executor: AuthUser, @Query() query: GetLikedVideosParam) {
+  getLiked(@User() executor: AuthUser, @Query() query: GetLikedParam) {
     return this.queryBus.execute(
-      new GetLikedVideosQuery({
+      new GetLikedQuery({
         executor,
         limit: query.limit ? +query.limit : 50,
         nextToken: query.nextToken,
@@ -102,22 +106,22 @@ export class MeController {
     );
   }
 
-  @Post("/liked-videos")
+  @Post("/liked")
   @UseGuards(AuthGuard)
-  likeVideo(@Body() body: VideoIdParams, @User() executor: AuthUser) {
-    return this.commandBus.execute(new LikeVideoCommand({ executor, ...body }));
+  like(@Body() body: MediaSourceIdParams, @User() executor: AuthUser) {
+    return this.commandBus.execute(new LikeMediaSourceCommand({ executor, ...body }));
   }
 
-  @Delete("/liked-videos/:videoId")
+  @Delete("/liked/:mediaSourceId")
   @UseGuards(AuthGuard)
-  unlikeVideo(@Param() params: VideoIdParams, @User() executor: AuthUser) {
-    return this.commandBus.execute(new UnlikeVideoCommand({ executor, ...params }));
+  unlike(@Param() params: MediaSourceIdParams, @User() executor: AuthUser) {
+    return this.commandBus.execute(new UnlikeMediaSourceCommand({ executor, ...params }));
   }
 
-  @Post("/liked-videos/is-liked")
+  @Post("/liked/is-liked")
   @UseGuards(AuthGuard)
-  isVideosLiked(@Body() body: VideoIdsParams, @User() executor: AuthUser) {
-    return this.queryBus.execute(new IsVideosLikedQuery({ executor, ...body }));
+  isLiked(@Body() body: MediaSourceIdsParams, @User() executor: AuthUser) {
+    return this.queryBus.execute(new IsLikedQuery({ executor, ...body }));
   }
 
   @Get("/recap/:year?")

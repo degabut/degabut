@@ -86,12 +86,12 @@ export class QueueDiscordCommand implements IPrefixCommand {
       title: "Queue",
       description: `Showing page **${page}** / **${maxPage}**`,
       fields: slicedTracks.map((track, index) => {
-        let name = `${start + index + 1}. ${track.video.title}`;
+        let name = `${start + index + 1}. ${track.mediaSource.title}`;
         if (track.id === nowPlaying?.id) name = `__${name}__`;
 
         return {
           name,
-          value: `${track.url}\r\nRequested by <@!${track.requestedBy.id}>`,
+          value: `${track.mediaSource.url}\r\nRequested by <@!${track.requestedBy.id}>`,
         };
       }),
     });

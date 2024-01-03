@@ -1,22 +1,22 @@
-import { Channel } from "./channel";
-import { Thumbnail } from "./thumbnail";
+import { YoutubeChannel } from "./channel";
+import { YoutubeThumbnail } from "./thumbnail";
 
 interface Props {
   id: string;
   title: string;
   duration: number;
-  thumbnails: Thumbnail[];
-  channel: Channel | null;
+  thumbnails: YoutubeThumbnail[];
+  channel: YoutubeChannel | null;
   viewCount: number | null;
   updatedAt?: Date;
 }
 
-export class VideoCompact implements Props {
+export class YoutubeVideoCompact implements Props {
   public readonly id: string;
   public title: string;
   public readonly duration: number;
-  public readonly thumbnails: Thumbnail[];
-  public readonly channel: Channel | null;
+  public readonly thumbnails: YoutubeThumbnail[];
+  public readonly channel: YoutubeChannel | null;
   public readonly viewCount: number | null;
   public readonly updatedAt: Date;
 

@@ -21,7 +21,7 @@ export class TrackAudioFinishedListener implements IEventHandler<TrackAudioFinis
       await this.userPlayHistoryRepository.insert(
         new UserPlayHistory({
           userId: requesterUserId,
-          videoId: track.video.id,
+          mediaSourceId: track.mediaSource.id,
           guildId: track.queue.guild.id,
           voiceChannelId: track.queue.voiceChannelId,
           playedAt: now,
@@ -35,7 +35,7 @@ export class TrackAudioFinishedListener implements IEventHandler<TrackAudioFinis
         (userId) =>
           new UserListenHistory({
             userId,
-            videoId: track.video.id,
+            mediaSourceId: track.mediaSource.id,
             guildId: track.queue.guild.id,
             voiceChannelId: track.queue.voiceChannelId,
             isRequester: userId === requesterUserId,

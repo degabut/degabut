@@ -1,13 +1,15 @@
 import { ValidateParams } from "@common/decorators";
+import { MediaSource } from "@media-source/entities";
 import { BadRequestException, ForbiddenException, Inject, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { PlaylistRepository, PlaylistVideoRepository } from "@playlist/repositories";
+import { PlaylistMediaSourceRepository, PlaylistRepository } from "@playlist/repositories";
 import { Track } from "@queue/entities";
 import { TracksAddedEvent } from "@queue/events";
 import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
-import { VideoCompact } from "@youtube/entities";
+import { ISpotifyProvider } from "@spotify/providers";
+import { SPOTIFY_PROVIDER } from "@spotify/spotify.constants";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 
@@ -18,16 +20,25 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly playlistRepository: PlaylistRepository,
-    private readonly playlistVideoRepository: PlaylistVideoRepository,
+    private readonly playlistVideoRepository: PlaylistMediaSourceRepository,
     private readonly queueService: QueueService,
     @Inject(YOUTUBEI_PROVIDER)
     private readonly youtubeProvider: IYoutubeiProvider,
+    @Inject(SPOTIFY_PROVIDER)
+    private readonly spotifyProvider: ISpotifyProvider,
     private readonly eventBus: EventBus,
   ) {}
 
   @ValidateParams(AddTracksParamSchema)
   public async execute(params: AddTracksCommand): Promise<AddTracksResult> {
-    const { playlistId, youtubePlaylistId, executor, voiceChannelId } = params;
+    const {
+      playlistId,
+      youtubePlaylistId,
+      spotifyPlaylistId,
+      spotifyAlbumId,
+      executor,
+      voiceChannelId,
+    } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
@@ -35,7 +46,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    let videos: VideoCompact[] = [];
+    let sources: MediaSource[] = [];
 
     if (playlistId) {
       const playlist = await this.playlistRepository.getById(playlistId);
@@ -43,16 +54,28 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
       if (playlist?.ownerId !== executor.id) throw new ForbiddenException("Missing permissions");
 
       const playlistVideos = await this.playlistVideoRepository.getByPlaylistId(playlist.id);
-      videos = playlistVideos.map((pv) => pv.video!);
+      sources = playlistVideos.map((pv) => pv.mediaSource!);
     } else if (youtubePlaylistId) {
-      videos = await this.youtubeProvider.getPlaylistVideos(youtubePlaylistId);
+      const videos = await this.youtubeProvider.getPlaylistVideos(youtubePlaylistId);
+      sources = videos.map((v) => MediaSource.fromYoutube(v));
+    } else if (spotifyPlaylistId) {
+      const playlist = await this.spotifyProvider.getPlaylist(spotifyPlaylistId);
+      if (playlist) sources = playlist.tracks.map((t) => MediaSource.fromSpotify(t));
+    } else if (spotifyAlbumId) {
+      const album = await this.spotifyProvider.getAlbum(spotifyAlbumId);
+      if (album) sources = album.tracks.map((t) => MediaSource.fromSpotify(t));
     }
 
-    if (!videos.length) throw new BadRequestException("Playlist is empty");
+    if (!sources.length) throw new BadRequestException("Playlist is empty or not found");
 
-    const tracks = videos
-      .slice(0, MAX_QUEUE_TRACKS - queue.tracks.length)
-      .map((video) => new Track({ queue, video, requestedBy: member }));
+    const tracks = sources.slice(0, MAX_QUEUE_TRACKS - queue.tracks.length).map(
+      (source) =>
+        new Track({
+          queue,
+          mediaSource: source,
+          requestedBy: member,
+        }),
+    );
 
     if (!tracks.length) throw new BadRequestException("Queue is full");
 

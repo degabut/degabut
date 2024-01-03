@@ -1,4 +1,5 @@
 import { UserMostPlayedDto } from "@history/dtos";
+import { MediaSourceRepositoryMapper } from "@media-source/repositories";
 import { Inject, Injectable } from "@nestjs/common";
 
 import { UserPlayHistory } from "../../entities";
@@ -10,7 +11,7 @@ type GetSelections = { userId: string } | { guildId: string } | { voiceChannelId
 type CommonOptions = {
   count?: number;
   excludeUserIds?: string[];
-  includeVideo?: boolean;
+  includeContent?: boolean;
 };
 
 type GetLastPlayedOptions = CommonOptions;
@@ -37,8 +38,11 @@ export class UserPlayHistoryRepository {
     await this.userPlayHistoryModel.query().insert(props).returning("*");
   }
 
-  public async removeUserVideoHistory(userId: string, videoId: string): Promise<void> {
-    await this.userPlayHistoryModel.query().delete().where({ user_id: userId, video_id: videoId });
+  public async removeUserPlayHistory(userId: string, mediaSourceId: string): Promise<void> {
+    await this.userPlayHistoryModel
+      .query()
+      .delete()
+      .where({ user_id: userId, media_source_id: mediaSourceId });
   }
 
   public async getLastPlayedByUserId(
@@ -71,8 +75,8 @@ export class UserPlayHistoryRepository {
       .from((builder) => {
         builder
           .from(UserPlayHistoryModel.tableName)
-          .distinctOn("video_id")
-          .orderBy("video_id", "asc")
+          .distinctOn("media_source_id")
+          .orderBy("media_source_id", "asc")
           .orderBy("played_at", "desc")
           .where((qb) => {
             if ("userId" in selection) qb.where({ user_id: selection.userId });
@@ -85,9 +89,17 @@ export class UserPlayHistoryRepository {
       })
       .orderBy("played_at", "desc")
       .modify((builder) => {
-        const { count, includeVideo } = options;
+        const { count, includeContent } = options;
         if (count) builder.limit(count);
-        if (includeVideo) builder.withGraphFetched("video").withGraphFetched("video.channel");
+        if (includeContent) {
+          builder
+            .withGraphJoined("mediaSource")
+            .withGraphJoined("mediaSource.youtubeVideo")
+            .withGraphJoined("mediaSource.youtubeVideo.channel")
+            .withGraphJoined("mediaSource.spotifyTrack")
+            .withGraphJoined("mediaSource.spotifyTrack.album")
+            .withGraphFetched("mediaSource.spotifyTrack.artists");
+        }
       });
 
     return results.map((r) => UserPlayHistoryRepositoryMapper.toDomainEntity(r));
@@ -115,10 +127,10 @@ export class UserPlayHistoryRepository {
   }
 
   private async getMostPlayed(selection: GetSelections, options: GetMostPlayedOptions) {
-    const results = await this.userPlayHistoryModel
+    const query = this.userPlayHistoryModel
       .query()
-      .select("video_id")
-      .count("video_id as count")
+      .select("media_source_id")
+      .count("media_source_id as count")
       .where((qb) => {
         if ("userId" in selection) qb.where({ user_id: selection.userId });
         else if ("guildId" in selection) qb.where({ guild_id: selection.guildId });
@@ -126,23 +138,41 @@ export class UserPlayHistoryRepository {
 
         if (options.excludeUserIds) qb.whereNotIn("user_id", options.excludeUserIds);
       })
-      .groupBy("user_play_history.video_id")
+      .groupBy("user_play_history.media_source_id")
       .orderBy("count", "desc")
       .modify((builder) => {
-        const { from, to, count, includeVideo } = options;
+        const { from, to, count, includeContent } = options;
         if (from) builder.where("played_at", ">=", from);
         if (to) builder.where("played_at", "<=", to);
         if (count) builder.limit(count);
-        if (includeVideo) builder.withGraphFetched("video").withGraphFetched("video.channel");
+        if (includeContent) {
+          builder
+            .withGraphJoined("mediaSource")
+            .withGraphJoined("mediaSource.youtubeVideo")
+            .withGraphJoined("mediaSource.youtubeVideo.channel")
+            .withGraphJoined("mediaSource.spotifyTrack")
+            .withGraphJoined("mediaSource.spotifyTrack.album")
+            .withGraphFetched("mediaSource.spotifyTrack.artists");
+        }
       });
 
-    return results.map((r) => UserMostPlayedDto.create(r));
+    const results = (await query) as unknown as (UserPlayHistoryModel & { count: number })[];
+
+    return results.map((r) =>
+      UserMostPlayedDto.create({
+        count: +r.count as number,
+        mediaSourceId: r.mediaSourceId,
+        mediaSource: r.mediaSource
+          ? MediaSourceRepositoryMapper.toDomainEntity(r.mediaSource)
+          : undefined,
+      }),
+    );
   }
 
   public async getUniqueCount(userId: string, options: GetCountOptions = {}): Promise<number> {
     const result = await this.userPlayHistoryModel
       .knexQuery()
-      .countDistinct("video_id as count")
+      .countDistinct("media_source_id as count")
       .where({ user_id: userId })
       .modify((builder) => {
         const { from, to } = options;
@@ -157,9 +187,15 @@ export class UserPlayHistoryRepository {
   public async getDurationAndCount(userId: string, options: GetCountOptions = {}) {
     const result = await this.userPlayHistoryModel
       .knexQuery()
-      .sum("video.duration as duration")
-      .count("video.id as count")
-      .join("video", "video.id", "user_play_history.video_id")
+      .select(
+        this.userPlayHistoryModel
+          .knex()
+          .raw("sum(coalesce(video.duration, spotify_track.duration_ms / 1000)) as duration"),
+      )
+      .count("media_source.id as count")
+      .join("media_source", "media_source.id", "user_play_history.media_source_id")
+      .leftJoin("video", "video.id", "media_source.youtube_video_id")
+      .leftJoin("spotify_track", "spotify_track.id", "media_source.spotify_track_id")
       .where({ user_id: userId })
       .modify((builder) => {
         const { from, to } = options;

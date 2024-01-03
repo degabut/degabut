@@ -1,8 +1,17 @@
 import { HttpService } from "@nestjs/axios";
-import { Video, VideoCompact } from "@youtube/entities";
+import { YoutubeChannel, YoutubeVideo, YoutubeVideoCompact } from "@youtube/entities";
 import { MAX_PLAYLIST_VIDEOS_PAGE } from "@youtube/youtube.constants";
+import { LiveVideo, Video, VideoCompact as YoutubeiVideoCompact } from "youtubei";
 
 import { IYoutubeiProvider } from "./youtubei.interface";
+
+type YoutubeiVideo = Video & {
+  related: YoutubeiVideoCompact[];
+};
+
+type YoutubeiLiveVideo = LiveVideo & {
+  related: YoutubeiVideoCompact[];
+};
 
 export class DegabutYoutubeiProvider implements IYoutubeiProvider {
   constructor(
@@ -11,18 +20,23 @@ export class DegabutYoutubeiProvider implements IYoutubeiProvider {
     private readonly authToken: string,
   ) {}
 
-  public async searchVideo(keyword: string): Promise<VideoCompact[]> {
+  public async searchVideo(keyword: string): Promise<YoutubeVideoCompact[]> {
     const response = await this.get("/videos", { keyword });
-    return response.data || [];
+    return response.data.map(this.videoCompactToEntity) || [];
   }
 
-  public async getVideo(id: string): Promise<Video | undefined> {
+  public async searchOneVideo(keyword: string): Promise<YoutubeVideoCompact | undefined> {
+    const response = await this.get("/videos", { keyword });
+    return this.videoCompactToEntity(response.data[0]) || undefined;
+  }
+
+  public async getVideo(id: string): Promise<YoutubeVideo | undefined> {
     const response = await this.get(`/videos/${id}`);
     if (response.status === 404) return;
-    return response.data || undefined;
+    return this.videoToEntity(response.data) || undefined;
   }
 
-  public async getPlaylistVideos(id: string): Promise<VideoCompact[]> {
+  public async getPlaylistVideos(id: string): Promise<YoutubeVideoCompact[]> {
     const response = await this.get(`/playlists/${id}`);
     if (response.status === 404) return [];
 
@@ -41,7 +55,7 @@ export class DegabutYoutubeiProvider implements IYoutubeiProvider {
       items.push(...response.data.items);
     }
 
-    return items;
+    return items.map(this.videoCompactToEntity);
   }
 
   private async get(path: string, params?: Record<string, string>) {
@@ -50,5 +64,43 @@ export class DegabutYoutubeiProvider implements IYoutubeiProvider {
       headers: { Authorization: "Bearer " + this.authToken },
     });
     return response;
+  }
+
+  private videoToEntity(video: YoutubeiVideo | YoutubeiLiveVideo) {
+    const channel = video.channel
+      ? new YoutubeChannel({
+          id: video.channel.id,
+          name: video.channel.name,
+          thumbnails: video.channel.thumbnails || [],
+        })
+      : null;
+
+    const entity = new YoutubeVideo({
+      id: video.id,
+      title: video.title,
+      duration: "duration" in video ? video.duration || 0 : 0,
+      thumbnails: video.thumbnails,
+      viewCount: video.viewCount || null,
+      channel,
+      related: video.related.map(this.videoCompactToEntity),
+    });
+    return entity;
+  }
+
+  private videoCompactToEntity(video: YoutubeiVideoCompact): YoutubeVideoCompact {
+    return new YoutubeVideoCompact({
+      id: video.id,
+      title: video.title,
+      duration: "duration" in video ? video.duration || 0 : 0,
+      thumbnails: video.thumbnails,
+      viewCount: video.viewCount || null,
+      channel: video.channel
+        ? new YoutubeChannel({
+            id: video.channel.id,
+            name: video.channel.name,
+            thumbnails: video.channel.thumbnails || [],
+          })
+        : null,
+    });
   }
 }

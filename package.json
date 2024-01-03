@@ -33,6 +33,7 @@
     "@nestjs/platform-ws": "^9.4.3",
     "@nestjs/terminus": "^9.2.2",
     "@nestjs/websockets": "^9.4.3",
+    "@spotify/web-api-ts-sdk": "^1.1.2",
     "@willsoto/nestjs-objection": "^8.1.2",
     "class-transformer": "^0.5.1",
     "discord.js": "^14.13.0",

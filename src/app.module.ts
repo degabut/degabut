@@ -6,10 +6,12 @@ import { EventsModule } from "@events/events.module";
 import { HealthModule } from "@health/health.module";
 import { HistoryModule } from "@history/history.module";
 import { LoggerModule } from "@logger/logger.module";
+import { MediaSourceModule } from "@media-source/media-source.module";
 import { Logger, Module } from "@nestjs/common";
 import { PlaylistModule } from "@playlist/playlist.module";
 import { QueuePlayerModule } from "@queue-player/queue-player.module";
 import { QueueModule } from "@queue/queue.module";
+import { SpotifyModule } from "@spotify/spotify.module";
 import { UserModule } from "@user/user.module";
 
 @Module({
@@ -23,6 +25,8 @@ import { UserModule } from "@user/user.module";
     HealthModule,
     LoggerModule,
     PlaylistModule,
+    MediaSourceModule,
+    SpotifyModule,
     QueueModule,
     QueuePlayerModule,
     UserModule,

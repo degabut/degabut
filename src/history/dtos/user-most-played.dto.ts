@@ -1,18 +1,18 @@
-import { VideoCompactDto } from "@youtube/dtos";
+import { MediaSourceDto } from "@media-source/dtos";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
 @Exclude()
 export class UserMostPlayedDto {
   @Expose()
-  videoId!: string;
+  mediaSourceId!: string;
 
   @Expose()
   @Type(() => Number)
   count!: number;
 
   @Expose()
-  @Type(() => VideoCompactDto)
-  video!: VideoCompactDto;
+  @Type(() => MediaSourceDto)
+  mediaSource!: MediaSourceDto;
 
   public static create(data: unknown): UserMostPlayedDto {
     return plainToInstance(UserMostPlayedDto, data);

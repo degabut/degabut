@@ -9,7 +9,7 @@ export class RemovePlayHistoryCommand
   extends Command<RemovePlayHistoryResult>
   implements IWithExecutor
 {
-  public readonly videoId!: string;
+  public readonly mediaSourceId!: string;
   public readonly executor!: Executor;
 
   constructor(params: RemovePlayHistoryCommand) {
@@ -19,6 +19,6 @@ export class RemovePlayHistoryCommand
 }
 
 export const RemovePlayHistoryParamSchema = Joi.object<RemovePlayHistoryCommand>({
-  videoId: Joi.string().required(),
+  mediaSourceId: Joi.string().required(),
   executor: ExecutorSchema,
 }).required();

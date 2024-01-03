@@ -107,7 +107,7 @@ export class QueuePlayerService {
       this.logger.log({
         event: "trackEnd",
         trackId: track.id,
-        videoId: track.video.id,
+        mediaSourceId: track.mediaSource.id,
         voiceChannelId: player.voiceChannel.id,
         guildId: player.guild.id,
         reason,

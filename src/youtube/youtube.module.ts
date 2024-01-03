@@ -4,10 +4,9 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
 import { YoutubeConfigModule } from "./config";
-import { Listeners } from "./listeners";
 import { DegabutYoutubeiProvider, YoutubeEmbedProvider, YoutubeiProvider } from "./providers";
 import { IYoutubeiProvider } from "./providers/youtubei/youtubei.interface";
-import { ChannelRepository, VideoRepository } from "./repositories";
+import { YoutubeChannelRepository, YoutubeVideoRepository } from "./repositories";
 import { YoutubeCachedService } from "./services";
 import { YOUTUBEI_PROVIDER } from "./youtube.constants";
 
@@ -31,11 +30,15 @@ import { YOUTUBEI_PROVIDER } from "./youtube.constants";
       },
     },
     YoutubeEmbedProvider,
-    VideoRepository,
-    ChannelRepository,
+    YoutubeVideoRepository,
+    YoutubeChannelRepository,
     YoutubeCachedService,
-    ...Listeners,
   ],
-  exports: [YOUTUBEI_PROVIDER, YoutubeCachedService, VideoRepository, ChannelRepository],
+  exports: [
+    YOUTUBEI_PROVIDER,
+    YoutubeCachedService,
+    YoutubeVideoRepository,
+    YoutubeChannelRepository,
+  ],
 })
 export class YoutubeModule {}

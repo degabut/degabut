@@ -1,10 +1,10 @@
 import { Query } from "@common/cqrs";
 import { Executor, IWithExecutor } from "@common/interfaces";
 import { ExecutorSchema } from "@common/schemas";
-import { VideoCompactDto } from "@youtube/dtos";
+import { MediaSourceDto } from "@media-source/dtos";
 import * as Joi from "joi";
 
-export type GetMostPlayedResult = VideoCompactDto[];
+export type GetMostPlayedResult = MediaSourceDto[];
 
 export class GetMostPlayedQuery extends Query<GetMostPlayedResult> implements IWithExecutor {
   count!: number;

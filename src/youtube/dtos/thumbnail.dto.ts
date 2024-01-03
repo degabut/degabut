@@ -1,9 +1,9 @@
 import { Exclude, Expose, plainToInstance } from "class-transformer";
 
-import { Thumbnail } from "../entities";
+import { YoutubeThumbnail } from "../entities";
 
 @Exclude()
-export class ThumbnailDto {
+export class YoutubeThumbnailDto {
   @Expose()
   url!: string;
 
@@ -13,7 +13,7 @@ export class ThumbnailDto {
   @Expose()
   height!: number;
 
-  public static create(entity: Thumbnail): ThumbnailDto {
-    return plainToInstance(ThumbnailDto, entity);
+  public static create(entity: YoutubeThumbnail): YoutubeThumbnailDto {
+    return plainToInstance(YoutubeThumbnailDto, entity);
   }
 }

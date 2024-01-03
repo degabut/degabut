@@ -5,7 +5,7 @@ import { DiscoveryService } from "@nestjs/core";
 import { InstanceWrapper } from "@nestjs/core/injector/instance-wrapper";
 import { Client, DiscordAPIError } from "discord.js";
 
-import { PrefixCommandOptions, PREFIX_COMMAND } from "../decorators";
+import { PREFIX_COMMAND, PrefixCommandOptions } from "../decorators";
 import { IPrefixCommand } from "../interfaces";
 
 export type DecoratedPrefixCommand<T> = {

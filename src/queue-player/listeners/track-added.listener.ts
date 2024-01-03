@@ -28,7 +28,7 @@ export class TrackAddedListener implements IEventHandler<TrackAddedEvent> {
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
           components: [
             new ButtonBuilder({
-              customId: `play-track/${track.id}/${track.video.id}}`,
+              customId: `play-track/${track.id}/${track.mediaSource.id}`,
               label: "Play",
               style: ButtonStyle.Success,
             }),

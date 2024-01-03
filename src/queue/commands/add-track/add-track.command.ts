@@ -6,8 +6,8 @@ import * as Joi from "joi";
 export type AddTrackResult = string;
 
 export class AddTrackCommand extends Command<AddTrackResult> implements IWithExecutor {
-  public readonly keyword?: string;
-  public readonly videoId?: string;
+  public readonly youtubeKeyword?: string;
+  public readonly mediaSourceId?: string;
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
 
@@ -18,10 +18,10 @@ export class AddTrackCommand extends Command<AddTrackResult> implements IWithExe
 }
 
 export const AddTrackParamSchema = Joi.object<AddTrackCommand>({
-  keyword: Joi.string(),
-  videoId: Joi.string(),
+  youtubeKeyword: Joi.string(),
+  mediaSourceId: Joi.string(),
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
 })
   .required()
-  .xor("keyword", "videoId");
+  .xor("youtubeKeyword", "mediaSourceId");

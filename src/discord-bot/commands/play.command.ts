@@ -1,11 +1,12 @@
 import { AsyncUtil, DiscordUtil, YoutubeUtil } from "@common/utils";
+import { SpotifyUtil } from "@common/utils/spotify.util";
 import { IPrefixCommand } from "@discord-bot/interfaces";
 import { SlashCommandPipe } from "@discord-nestjs/common";
 import { Command, Handler, InteractionEvent, Param, ParamType } from "@discord-nestjs/core";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JoinCommand } from "@queue-player/commands";
-import { AddTrackCommand } from "@queue/commands";
+import { AddTrackCommand, AddTracksCommand } from "@queue/commands";
 import {
   BaseGuildTextChannel,
   BaseGuildVoiceChannel,
@@ -23,8 +24,7 @@ class PlayDto {
 type AddTrackOptions = {
   voiceChannel: BaseGuildVoiceChannel;
   userId: string;
-  videoId?: string;
-  keyword?: string;
+  keyword: string;
 };
 
 type JoinOptions = {
@@ -98,15 +98,35 @@ export class PlayDiscordCommand implements IPrefixCommand {
   }
 
   private async addTrack(options: AddTrackOptions) {
-    const videoId = YoutubeUtil.extractYoutubeVideoId(options.keyword || "");
+    if (!options.keyword) throw new NotFoundException("Keyword not found");
 
-    const adapter = new AddTrackCommand({
-      voiceChannelId: options.voiceChannel.id,
-      videoId: videoId || undefined,
-      keyword: videoId ? undefined : options.keyword,
-      executor: { id: options.userId },
-    });
-    await this.commandBus.execute(adapter);
+    const youtubeIds = YoutubeUtil.extractIds(options.keyword);
+    const spotifyIds = SpotifyUtil.extractIds(options.keyword);
+
+    if (youtubeIds.playlistId || spotifyIds.playlistId || spotifyIds.albumId) {
+      const adapter = new AddTracksCommand({
+        voiceChannelId: options.voiceChannel.id,
+        youtubePlaylistId: youtubeIds.playlistId,
+        spotifyPlaylistId: spotifyIds.playlistId,
+        spotifyAlbumId: spotifyIds.albumId,
+        executor: { id: options.userId },
+      });
+      await this.commandBus.execute(adapter);
+    } else {
+      const mediaSourceId = youtubeIds.videoId
+        ? `youtube/${youtubeIds.videoId}`
+        : spotifyIds.trackId
+        ? `spotify/${spotifyIds.trackId}`
+        : undefined;
+
+      const adapter = new AddTrackCommand({
+        voiceChannelId: options.voiceChannel.id,
+        mediaSourceId,
+        youtubeKeyword: mediaSourceId ? undefined : options.keyword,
+        executor: { id: options.userId },
+      });
+      await this.commandBus.execute(adapter);
+    }
   }
 
   private async join(options: JoinOptions) {

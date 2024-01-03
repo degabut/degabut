@@ -1,5 +1,6 @@
 import { ButtonInteraction } from "@discord-bot/decorators";
 import { ButtonInteractionResult, IButtonInteraction } from "@discord-bot/interfaces";
+import { MediaSourceType } from "@media-source/entities";
 import { NotFoundException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { AddTrackCommand, PlayTrackCommand } from "@queue/commands";
@@ -7,14 +8,14 @@ import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
   name: "play-track",
-  key: "play-track/:id/:videoId",
+  key: "play-track/:trackId/:source/:id",
 })
 export class PlayTrackButtonInteraction implements IButtonInteraction {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(
     interaction: Interaction,
-    args: { id: string; videoId?: string },
+    args: { trackId: string; source?: MediaSourceType; id?: string },
   ): Promise<ButtonInteractionResult> {
     if (!interaction.isButton()) return;
 
@@ -29,7 +30,7 @@ export class PlayTrackButtonInteraction implements IButtonInteraction {
 
     try {
       const command = new PlayTrackCommand({
-        trackId: args.id,
+        trackId: args.trackId,
         voiceChannelId: interaction.member.voice.channelId,
         executor: { id: interaction.member.id },
       });
@@ -37,10 +38,10 @@ export class PlayTrackButtonInteraction implements IButtonInteraction {
       if (result) await interaction.deferUpdate();
     } catch (err) {
       if (!(err instanceof NotFoundException)) throw err;
-      if (!args.videoId) return;
+      if (!args.source || !args.id) return;
 
       const command = new AddTrackCommand({
-        videoId: args.videoId,
+        mediaSourceId: `${args.source}/${args.id}`,
         voiceChannelId: interaction.member.voice.channelId,
         executor: { id: interaction.member.id },
       });

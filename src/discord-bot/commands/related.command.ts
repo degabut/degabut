@@ -1,5 +1,6 @@
 import { DiscordUtil } from "@common/utils";
 import { IPrefixCommand } from "@discord-bot/interfaces";
+import { MediaSource } from "@media-source/entities";
 import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";
@@ -34,20 +35,19 @@ export class RelatedDiscordCommand implements IPrefixCommand {
     });
     const queue = await this.queryBus.execute(query);
 
-    if (!queue?.nowPlaying) return;
+    const { playedYoutubeVideoId, title } = queue?.nowPlaying?.mediaSource;
+    if (!playedYoutubeVideoId) return;
 
-    const video = await this.youtubeiProvider.getVideo(queue.nowPlaying.video.id);
+    const video = await this.youtubeiProvider.getVideo(playedYoutubeVideoId);
     if (!video) return;
 
-    const buttons = video.related.map((v, i) => DiscordUtil.videoToMessageButton(v, i));
+    const sources = video.related.map(MediaSource.fromYoutube);
+    const buttons = sources.map(DiscordUtil.sourceToMessageButton);
+    const fields = sources.slice(0, 10).map(DiscordUtil.sourceToEmbedField);
 
     await message.reply({
-      content: `⭐ **Songs related with ${queue.nowPlaying.video.title}**`,
-      embeds: [
-        new EmbedBuilder({
-          fields: video.related.slice(0, 10).map(DiscordUtil.videoToEmbedField),
-        }),
-      ],
+      content: `⭐ **Songs related with ${title}**`,
+      embeds: [new EmbedBuilder({ fields })],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
           components: buttons.slice(0, 5),

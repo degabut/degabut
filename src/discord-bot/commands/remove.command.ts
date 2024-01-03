@@ -82,11 +82,6 @@ export class RemoveDiscordCommand implements IPrefixCommand {
       executor: { id: userId },
     });
 
-    try {
-      const removed = await this.commandBus.execute(command);
-      return removed;
-    } catch (err) {
-      console.log(err);
-    }
+    return await this.commandBus.execute(command);
   }
 }

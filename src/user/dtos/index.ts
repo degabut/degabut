@@ -1,1 +1,1 @@
-export * from "./user-like-video.dto";
+export * from "./user-like-media-source.dto";

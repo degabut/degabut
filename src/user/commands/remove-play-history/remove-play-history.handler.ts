@@ -14,7 +14,7 @@ export class RemovePlayHistoryHandler implements IInferredCommandHandler<RemoveP
 
   @ValidateParams(RemovePlayHistoryParamSchema)
   public async execute(params: RemovePlayHistoryCommand): Promise<RemovePlayHistoryResult> {
-    const { videoId, executor } = params;
-    await this.repository.removeUserVideoHistory(executor.id, videoId);
+    const { mediaSourceId, executor } = params;
+    await this.repository.removeUserPlayHistory(executor.id, mediaSourceId);
   }
 }

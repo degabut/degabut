@@ -1,21 +1,21 @@
 import { Constructor, ICommandHandler } from "@nestjs/cqrs";
 
-import { AddPlaylistVideoHandler } from "./add-playlist-video";
+import { AddPlaylistMediaSourceHandler } from "./add-playlist-media-source";
 import { CreatePlaylistHandler } from "./create-playlist";
 import { DeletePlaylistHandler } from "./delete-playlist";
-import { RemovePlaylistVideoHandler } from "./remove-playlist-video";
+import { RemovePlaylistMediaSourceHandler } from "./remove-playlist-media-source";
 import { UpdatePlaylistHandler } from "./update-playlist";
 
-export * from "./add-playlist-video";
+export * from "./add-playlist-media-source";
 export * from "./create-playlist";
 export * from "./delete-playlist";
-export * from "./remove-playlist-video";
+export * from "./remove-playlist-media-source";
 export * from "./update-playlist";
 
 export const Commands: Constructor<ICommandHandler>[] = [
-  AddPlaylistVideoHandler,
+  AddPlaylistMediaSourceHandler,
   CreatePlaylistHandler,
-  RemovePlaylistVideoHandler,
+  RemovePlaylistMediaSourceHandler,
   DeletePlaylistHandler,
   UpdatePlaylistHandler,
 ];

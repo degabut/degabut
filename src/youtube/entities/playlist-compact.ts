@@ -1,20 +1,20 @@
-import { Channel } from "./channel";
-import { Thumbnail } from "./thumbnail";
+import { YoutubeChannel } from "./channel";
+import { YoutubeThumbnail } from "./thumbnail";
 
 interface Props {
   id: string;
   title: string;
   videoCount: number;
-  channel: Channel | null;
-  thumbnails: Thumbnail[];
+  channel: YoutubeChannel | null;
+  thumbnails: YoutubeThumbnail[];
 }
 
-export class PlaylistCompact implements Props {
+export class YoutubePlaylistCompact implements Props {
   public readonly id: string;
   public readonly title: string;
   public readonly videoCount: number;
-  public readonly channel: Channel | null;
-  public readonly thumbnails: Thumbnail[];
+  public readonly channel: YoutubeChannel | null;
+  public readonly thumbnails: YoutubeThumbnail[];
 
   constructor(props: Props) {
     this.id = props.id;

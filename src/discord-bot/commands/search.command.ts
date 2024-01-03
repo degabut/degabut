@@ -2,6 +2,7 @@ import { DiscordUtil } from "@common/utils";
 import { CommandResult, IPrefixCommand } from "@discord-bot/interfaces";
 import { SlashCommandPipe } from "@discord-nestjs/common";
 import { Command, Handler, InteractionEvent, Param, ParamType } from "@discord-nestjs/core";
+import { MediaSource } from "@media-source/entities";
 import { Inject, Injectable } from "@nestjs/common";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
@@ -51,16 +52,13 @@ export class SearchDiscordCommand implements IPrefixCommand {
 
   private async handler(keyword: string) {
     const videos = await this.youtubeiProvider.searchVideo(keyword);
-    const splicedVideos = videos.slice(0, 10);
+    const sources = videos.slice(0, 10).map((v) => MediaSource.fromYoutube(v));
 
-    const buttons = splicedVideos.map((v, i) => DiscordUtil.videoToMessageButton(v, i));
+    const buttons = sources.map(DiscordUtil.sourceToMessageButton);
+    const fields = sources.map(DiscordUtil.sourceToEmbedField);
 
     return {
-      embeds: [
-        new EmbedBuilder({
-          fields: splicedVideos.map(DiscordUtil.videoToEmbedField),
-        }),
-      ],
+      embeds: [new EmbedBuilder({ fields })],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
           components: buttons.slice(0, 5),

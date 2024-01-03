@@ -1,10 +1,10 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
-import { Channel } from "../entities";
-import { ThumbnailDto } from "./thumbnail.dto";
+import { YoutubeChannel } from "../entities";
+import { YoutubeThumbnailDto } from "./thumbnail.dto";
 
 @Exclude()
-export class ChannelDto {
+export class YoutubeChannelDto {
   @Expose()
   public id!: string;
 
@@ -12,10 +12,10 @@ export class ChannelDto {
   public name!: string;
 
   @Expose()
-  @Type(() => ThumbnailDto)
-  thumbnails!: ThumbnailDto[];
+  @Type(() => YoutubeThumbnailDto)
+  thumbnails!: YoutubeThumbnailDto[];
 
-  public static create(entity: Channel): ChannelDto {
-    return plainToInstance(ChannelDto, entity);
+  public static create(entity: YoutubeChannel): YoutubeChannelDto {
+    return plainToInstance(YoutubeChannelDto, entity);
   }
 }

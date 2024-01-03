@@ -1,2 +1,2 @@
 export * from "./playlist";
-export * from "./playlist-video";
+export * from "./playlist-media-source";

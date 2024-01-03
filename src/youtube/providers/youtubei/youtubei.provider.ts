@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { Channel, Video, VideoCompact } from "@youtube/entities";
+import { YoutubeChannel, YoutubeVideo, YoutubeVideoCompact } from "@youtube/entities";
 import { MAX_PLAYLIST_VIDEOS_PAGE } from "@youtube/youtube.constants";
 import {
-  Client as YoutubeiClient,
   LiveVideo,
   MixPlaylist,
+  Client as YoutubeiClient,
   Video as YoutubeiVideo,
   VideoCompact as YoutubeiVideoCompact,
 } from "youtubei";
@@ -15,19 +15,24 @@ import { IYoutubeiProvider } from "./youtubei.interface";
 export class YoutubeiProvider implements IYoutubeiProvider {
   private readonly youtubeClient = new YoutubeiClient();
 
-  public async searchVideo(keyword: string): Promise<VideoCompact[]> {
+  public async searchVideo(keyword: string): Promise<YoutubeVideoCompact[]> {
     const videos = await this.youtubeClient.search(keyword, { type: "video" });
     return videos.items.map(this.videoCompactToEntity);
   }
 
-  public async getVideo(id: string): Promise<Video | undefined> {
+  public async searchOneVideo(keyword: string): Promise<YoutubeVideoCompact | undefined> {
+    const video = (await this.youtubeClient.search(keyword, { type: "video" })).items.at(0);
+    return video ? this.videoCompactToEntity(video) : undefined;
+  }
+
+  public async getVideo(id: string): Promise<YoutubeVideo | undefined> {
     const video = await this.youtubeClient.getVideo(id);
     if (!video) return;
 
     return this.videoToEntity(video);
   }
 
-  public async getPlaylistVideos(youtubePlaylistId: string): Promise<VideoCompact[]> {
+  public async getPlaylistVideos(youtubePlaylistId: string): Promise<YoutubeVideoCompact[]> {
     const playlist = await this.youtubeClient.getPlaylist(youtubePlaylistId);
     if (!playlist) return [];
     if (playlist instanceof MixPlaylist) return playlist.videos.map(this.videoCompactToEntity);
@@ -38,14 +43,14 @@ export class YoutubeiProvider implements IYoutubeiProvider {
 
   private videoToEntity(video: YoutubeiVideo | LiveVideo) {
     const channel = video.channel
-      ? new Channel({
+      ? new YoutubeChannel({
           id: video.channel.id,
           name: video.channel.name,
           thumbnails: video.channel.thumbnails || [],
         })
       : null;
 
-    const entity = new Video({
+    const entity = new YoutubeVideo({
       id: video.id,
       title: video.title,
       duration: "duration" in video ? video.duration || 0 : 0,
@@ -59,15 +64,15 @@ export class YoutubeiProvider implements IYoutubeiProvider {
     return entity;
   }
 
-  private videoCompactToEntity(video: YoutubeiVideoCompact): VideoCompact {
-    return new VideoCompact({
+  private videoCompactToEntity(video: YoutubeiVideoCompact): YoutubeVideoCompact {
+    return new YoutubeVideoCompact({
       id: video.id,
       title: video.title,
       duration: "duration" in video ? video.duration || 0 : 0,
       thumbnails: video.thumbnails,
       viewCount: video.viewCount || null,
       channel: video.channel
-        ? new Channel({
+        ? new YoutubeChannel({
             id: video.channel.id,
             name: video.channel.name,
             thumbnails: video.channel.thumbnails || [],

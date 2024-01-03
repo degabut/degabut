@@ -6,14 +6,14 @@ import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
   name: "add-track",
-  key: "add-track/:id",
+  key: "add-track/:source/:id",
 })
 export class AddTrackButtonInteraction implements IButtonInteraction {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(
     interaction: Interaction,
-    args: { id: string },
+    args: { id: string; source: string },
   ): Promise<ButtonInteractionResult> {
     if (!interaction.isButton()) return;
 
@@ -27,7 +27,7 @@ export class AddTrackButtonInteraction implements IButtonInteraction {
     }
 
     const command = new AddTrackCommand({
-      videoId: args.id,
+      mediaSourceId: `${args.source}/${args.id}`,
       voiceChannelId: interaction.member.voice.channelId,
       executor: { id: interaction.member.id },
     });

@@ -1,10 +1,10 @@
-import { Channel, Thumbnail } from "@youtube/entities";
+import { YoutubeChannel, YoutubeThumbnail } from "@youtube/entities";
 
-import { ChannelModel, ChannelModelProps } from "./channel.model";
+import { YoutubeChannelModel, YoutubeChannelModelProps } from "./channel.model";
 
-export class ChannelRepositoryMapper {
-  public static toRepository(entity: Channel): ChannelModelProps {
-    const props: ChannelModelProps = {
+export class YoutubeChannelRepositoryMapper {
+  public static toRepository(entity: YoutubeChannel): YoutubeChannelModelProps {
+    const props: YoutubeChannelModelProps = {
       id: entity.id,
       name: entity.name,
       thumbnails: entity.thumbnails,
@@ -13,11 +13,11 @@ export class ChannelRepositoryMapper {
     return props;
   }
 
-  public static toDomainEntity(model: ChannelModel): Channel {
-    const entity = new Channel({
+  public static toDomainEntity(model: YoutubeChannelModel): YoutubeChannel {
+    const entity = new YoutubeChannel({
       id: model.id,
       name: model.name,
-      thumbnails: model.thumbnails?.map((t) => new Thumbnail(t)) || [],
+      thumbnails: model.thumbnails?.map((t) => new YoutubeThumbnail(t)) || [],
     });
 
     return entity;

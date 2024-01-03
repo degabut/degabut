@@ -1,6 +1,7 @@
+import { MediaSourceDto } from "@media-source/dtos";
+import { MediaSource } from "@media-source/entities";
 import { TrackDto } from "@queue/dtos";
 import { Track } from "@queue/entities";
-import { Video, VideoCompact } from "@youtube/entities";
 import {
   ButtonBuilder,
   ButtonStyle,
@@ -44,28 +45,28 @@ export class DiscordUtil {
     };
   }
 
-  static videoToMessageButton(
-    video: Omit<Video | VideoCompact, "updatedAt">,
+  static sourceToMessageButton(
+    mediaSource: MediaSource | MediaSourceDto,
     index: number,
   ): ButtonBuilder {
     return new ButtonBuilder({
-      customId: `add-track/${video.id}`,
-      label: video.title.length < 20 ? video.title : video.title.substring(0, 20) + "...",
+      customId: `add-track/${mediaSource.type}/${mediaSource.sourceId}`,
+      label:
+        mediaSource.title.length < 20
+          ? mediaSource.title
+          : mediaSource.title.substring(0, 20) + "...",
       style: ButtonStyle.Success,
       emoji: numbers[index],
     });
   }
 
-  static videoToEmbedField(
-    video: Omit<Video | VideoCompact, "updatedAt">,
-    index: number,
-  ): EmbedField {
+  static sourceToEmbedField(mediaSource: MediaSource | MediaSourceDto, index: number): EmbedField {
     return {
-      name: `${numbers[index]} ${video.title}`,
+      name: `${numbers[index]} ${mediaSource.title}`,
       value: [
-        `**${video.channel?.name}**`,
-        `https://youtu.be/${video.id}`,
-        `Duration: ${video.duration ? TimeUtil.secondToTime(video.duration) : "-"}`,
+        `**${mediaSource.creator}**`,
+        mediaSource.url,
+        `Duration: ${mediaSource.duration ? TimeUtil.secondToTime(mediaSource.duration) : "-"}`,
       ].join("\n"),
       inline: false,
     };
@@ -75,7 +76,7 @@ export class DiscordUtil {
     const fields = [
       {
         name: "Duration",
-        value: TimeUtil.secondToTime(track.video.duration),
+        value: TimeUtil.secondToTime(track.mediaSource.duration),
         inline: true,
       },
     ];
@@ -88,20 +89,28 @@ export class DiscordUtil {
       });
     }
 
-    if (track.video.channel) {
+    const { title, url, maxThumbnailUrl, youtubeVideo, spotifyTrack } = track.mediaSource;
+
+    if (youtubeVideo?.channel) {
       fields.unshift({
         name: "Channel",
-        value: `[${track.video.channel.name}](https://www.youtube.com/channel/${track.video.channel.id})`,
+        value: `[${youtubeVideo.channel.name}](https://www.youtube.com/channel/${youtubeVideo.channel.id})`,
         inline: true,
       });
     }
 
-    const thumbnail = track.video.thumbnails.at(-1);
+    if (spotifyTrack?.artists) {
+      fields.unshift({
+        name: "Artists",
+        value: spotifyTrack.artists.map((a) => a.name).join(", "),
+        inline: true,
+      });
+    }
 
     return new EmbedBuilder({
-      title: track.video.title,
-      url: track.url,
-      thumbnail: thumbnail ? { url: thumbnail.url } : undefined,
+      title,
+      url,
+      thumbnail: maxThumbnailUrl ? { url: maxThumbnailUrl } : undefined,
       fields,
     });
   }

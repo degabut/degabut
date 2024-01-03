@@ -1,4 +1,4 @@
-import { VideoCompactDto } from "@youtube/dtos";
+import { MediaSourceDto } from "@media-source/dtos";
 import { Exclude, Expose, plainToInstance, Transform, Type } from "class-transformer";
 
 import { Track } from "../entities";
@@ -10,11 +10,8 @@ export class TrackDto {
   public id!: string;
 
   @Expose()
-  public url!: string;
-
-  @Expose()
-  @Type(() => VideoCompactDto)
-  public video!: VideoCompactDto;
+  @Type(() => MediaSourceDto)
+  public mediaSource!: MediaSourceDto;
 
   @Expose()
   @Type(() => MemberDto)

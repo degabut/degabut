@@ -8,6 +8,8 @@ export type AddTracksResult = string[];
 export class AddTracksCommand extends Command<AddTracksResult> implements IWithExecutor {
   public readonly playlistId?: string;
   public readonly youtubePlaylistId?: string;
+  public readonly spotifyPlaylistId?: string;
+  public readonly spotifyAlbumId?: string;
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
 
@@ -20,8 +22,10 @@ export class AddTracksCommand extends Command<AddTracksResult> implements IWithE
 export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   playlistId: Joi.string(),
   youtubePlaylistId: Joi.string(),
+  spotifyPlaylistId: Joi.string(),
+  spotifyAlbumId: Joi.string(),
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
 })
   .required()
-  .xor("playlistId", "youtubePlaylistId");
+  .xor("playlistId", "youtubePlaylistId", "spotifyPlaylistId", "spotifyAlbumId");

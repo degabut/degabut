@@ -13,7 +13,7 @@ export class PlaylistDto {
   ownerId!: number;
 
   @Expose()
-  videoCount!: number;
+  mediaSourceCount!: number;
 
   @Expose()
   @Transform(({ value }) => value?.toISOString() || null)

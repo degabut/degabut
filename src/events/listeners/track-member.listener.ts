@@ -8,7 +8,7 @@ import { TrackAddedEvent, TrackRemovedEvent } from "@queue/events";
 import { GuildMember } from "discord.js";
 
 const events = [TrackAddedEvent, TrackRemovedEvent, TrackSkippedEvent];
-type Events = InstanceType<typeof events[number]>;
+type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)
 export class TrackMemberListener implements IEventHandler<Events> {

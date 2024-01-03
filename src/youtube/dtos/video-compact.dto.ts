@@ -1,11 +1,11 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
-import { VideoCompact } from "../entities";
-import { ChannelDto } from "./channel.dto";
-import { ThumbnailDto } from "./thumbnail.dto";
+import { YoutubeVideoCompact } from "../entities";
+import { YoutubeChannelDto } from "./channel.dto";
+import { YoutubeThumbnailDto } from "./thumbnail.dto";
 
 @Exclude()
-export class VideoCompactDto {
+export class YoutubeVideoCompactDto {
   @Expose()
   id!: string;
 
@@ -16,17 +16,17 @@ export class VideoCompactDto {
   duration!: number;
 
   @Expose()
-  @Type(() => ThumbnailDto)
-  thumbnails!: ThumbnailDto[];
+  @Type(() => YoutubeThumbnailDto)
+  thumbnails!: YoutubeThumbnailDto[];
 
   @Expose()
   viewCount!: number;
 
   @Expose()
-  @Type(() => ChannelDto)
-  channel!: ChannelDto;
+  @Type(() => YoutubeChannelDto)
+  channel!: YoutubeChannelDto;
 
-  public static create(entity: VideoCompact): VideoCompactDto {
-    return plainToInstance(VideoCompactDto, entity);
+  public static create(entity: YoutubeVideoCompact): YoutubeVideoCompactDto {
+    return plainToInstance(YoutubeVideoCompactDto, entity);
   }
 }

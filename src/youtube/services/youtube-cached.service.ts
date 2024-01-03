@@ -1,9 +1,9 @@
 import { TimeUtil } from "@common/utils";
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Channel, Video, VideoCompact } from "@youtube/entities";
+import { YoutubeChannel, YoutubeVideo, YoutubeVideoCompact } from "@youtube/entities";
 import { YoutubeEmbedProvider } from "@youtube/providers";
 import { IYoutubeiProvider } from "@youtube/providers/youtubei/youtubei.interface";
-import { ChannelRepository, VideoRepository } from "@youtube/repositories";
+import { YoutubeChannelRepository, YoutubeVideoRepository } from "@youtube/repositories";
 import { MAX_VIDEO_AGE, YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 
 @Injectable()
@@ -11,15 +11,15 @@ export class YoutubeCachedService {
   private readonly logger = new Logger(YoutubeCachedService.name);
 
   constructor(
-    private readonly videoRepository: VideoRepository,
-    private readonly channelRepository: ChannelRepository,
+    private readonly videoRepository: YoutubeVideoRepository,
+    private readonly channelRepository: YoutubeChannelRepository,
     @Inject(YOUTUBEI_PROVIDER)
     private readonly youtubeProvider: IYoutubeiProvider,
     private readonly youtubeEmbedProvider: YoutubeEmbedProvider,
   ) {}
 
-  async getVideo(videoId: string): Promise<VideoCompact | undefined> {
-    let video: VideoCompact | undefined = await this.videoRepository.getById(videoId);
+  async getVideo(videoId: string): Promise<YoutubeVideoCompact | undefined> {
+    let video: YoutubeVideoCompact | undefined = await this.videoRepository.getById(videoId);
     if (!video || TimeUtil.getSecondDifference(video.updatedAt, new Date()) > MAX_VIDEO_AGE) {
       const newVideo = await this.youtubeProvider.getVideo(videoId);
       if (!newVideo) return undefined;
@@ -31,16 +31,21 @@ export class YoutubeCachedService {
     return video;
   }
 
-  async searchOneVideo(keyword: string): Promise<VideoCompact | undefined> {
+  async searchOneVideo(
+    keyword: string,
+    matchDuration?: number,
+  ): Promise<YoutubeVideoCompact | undefined> {
     const videos = await this.youtubeProvider.searchVideo(keyword);
-    const firstVideo = videos.at(0);
+    const video = !matchDuration
+      ? videos.at(0)
+      : videos.find((v) => Math.abs(v.duration - matchDuration) < 10);
 
-    if (firstVideo) await this.cacheVideo(firstVideo);
+    if (video) await this.cacheVideo(video);
 
-    return firstVideo;
+    return video;
   }
 
-  async cacheVideo(video: VideoCompact) {
+  async cacheVideo(video: YoutubeVideoCompact) {
     try {
       // YouTube with its infinite wisdom decided to auto translate video titles
       // this fetches the original title from the embed API to store in the database
@@ -56,13 +61,13 @@ export class YoutubeCachedService {
     ]);
   }
 
-  private videoToVideoCompact(video: Video): VideoCompact {
-    return new VideoCompact({
+  private videoToVideoCompact(video: YoutubeVideo): YoutubeVideoCompact {
+    return new YoutubeVideoCompact({
       id: video.id,
       title: video.title,
       duration: video.duration || 0,
       channel: video.channel
-        ? new Channel({
+        ? new YoutubeChannel({
             id: video.channel.id,
             name: video.channel.name,
             thumbnails: video.channel.thumbnails || [],

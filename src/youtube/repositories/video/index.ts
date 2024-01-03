@@ -1,3 +1,3 @@
-export * from "./video.model";
-export * from "./video.repository";
-export * from "./video.repository-mapper";
+export * from "./youtube-video.model";
+export * from "./youtube-video.repository";
+export * from "./youtube-video.repository-mapper";

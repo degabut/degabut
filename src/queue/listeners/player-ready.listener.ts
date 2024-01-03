@@ -6,7 +6,6 @@ import { Guild, Member, Queue, TextChannel, Track, VoiceChannel } from "@queue/e
 import { QueueCreatedEvent } from "@queue/events";
 import { MAX_QUEUE_HISTORY_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
-import { VideoRepository } from "@youtube/repositories";
 
 @EventsHandler(PlayerReadyEvent)
 export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
@@ -15,7 +14,6 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly playHistoryRepository: UserPlayHistoryRepository,
-    private readonly videoRepository: VideoRepository,
     private readonly eventBus: EventBus,
   ) {}
 
@@ -49,12 +47,15 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
         : null,
     });
 
-    const vcPlayHistory = await this.playHistoryRepository.getLastPlayedByVoiceChannelId(
+    const history = await this.playHistoryRepository.getLastPlayedByVoiceChannelId(
       player.voiceChannel.id,
-      { count: MAX_QUEUE_HISTORY_TRACKS },
+      { count: MAX_QUEUE_HISTORY_TRACKS, includeContent: true },
     );
-    const historyVideos = await this.videoRepository.getByIds(vcPlayHistory.map((h) => h.videoId));
-    queue.history = historyVideos.map((video) => new Track({ queue, video }));
+
+    queue.history = history.reduce<Track[]>((curr, { mediaSource }) => {
+      if (mediaSource) curr.push(new Track({ queue, mediaSource }));
+      return curr;
+    }, []);
 
     this.queueRepository.save(queue);
 

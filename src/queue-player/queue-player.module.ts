@@ -1,4 +1,5 @@
 import { DiscordBotModule } from "@discord-bot/discord-bot.module";
+import { MediaSourceModule } from "@media-source/media-source.module";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -20,6 +21,7 @@ import { QueuePlayerService } from "./services";
     ConfigModule,
     QueuePlayerConfigModule,
     QueueModule,
+    MediaSourceModule,
     YoutubeModule,
   ],
   providers: [

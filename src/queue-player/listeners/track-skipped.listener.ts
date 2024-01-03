@@ -16,7 +16,7 @@ export class TrackSkippedListener implements IEventHandler<TrackSkippedEvent> {
     if (!player) return;
 
     const embed = new EmbedBuilder({
-      description: `⏭ **<@!${member.id}> skipped ${track.video.title}**`,
+      description: `⏭ **<@!${member.id}> skipped ${track.mediaSource.title}**`,
     });
 
     await this.playerService.notify(player, {

@@ -44,10 +44,10 @@ export class RecommendationDiscordCommand implements IPrefixCommand {
     const slicedLastPlayed = lastPlayed
       .filter((v) => !mostPlayed.find((l) => l.id === v.id))
       .slice(0, 10 - slicedMostPlayed.length);
-    const videos = [...slicedMostPlayed, ...slicedLastPlayed];
-    if (!videos.length) return "No recommendation found";
+    const mediaSources = [...slicedMostPlayed, ...slicedLastPlayed];
+    if (!mediaSources.length) return "No recommendation found";
 
-    const buttons = videos.map((v, i) => DiscordUtil.videoToMessageButton(v, i));
+    const buttons = mediaSources.map((v, i) => DiscordUtil.sourceToMessageButton(v, i));
     const components = [
       new ActionRowBuilder<MessageActionRowComponentBuilder>({ components: buttons.slice(0, 5) }),
     ];
@@ -58,11 +58,7 @@ export class RecommendationDiscordCommand implements IPrefixCommand {
         }),
       );
     return {
-      embeds: [
-        new EmbedBuilder({
-          fields: videos.map(DiscordUtil.videoToEmbedField),
-        }),
-      ],
+      embeds: [new EmbedBuilder({ fields: mediaSources.map(DiscordUtil.sourceToEmbedField) })],
       components,
     };
   }

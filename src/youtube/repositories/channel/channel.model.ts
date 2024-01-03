@@ -6,13 +6,13 @@ type ThumbnailProps = {
   height: number;
 };
 
-export type ChannelModelProps = {
+export type YoutubeChannelModelProps = {
   id: string;
   name: string;
   thumbnails?: ThumbnailProps[];
 };
 
-export class ChannelModel extends Model implements ChannelModelProps {
+export class YoutubeChannelModel extends Model implements YoutubeChannelModelProps {
   id!: string;
   name!: string;
   thumbnails?: ThumbnailProps[];

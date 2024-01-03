@@ -32,7 +32,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
     const from = new Date();
     from.setDate(from.getDate() - params.days);
     const options = {
-      includeVideo: true,
+      includeContent: true,
       count: params.count,
       from,
     };
@@ -53,6 +53,6 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
       });
     }
 
-    return histories.filter((h) => h.video).map((h) => h.video);
+    return histories.filter((h) => h.mediaSource).map((h) => h.mediaSource);
   }
 }

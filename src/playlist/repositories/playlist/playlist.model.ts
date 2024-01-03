@@ -4,7 +4,7 @@ export type PlaylistModelProps = {
   id: string;
   name: string;
   ownerId: string;
-  videoCount: number;
+  mediaSourceCount: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -13,7 +13,7 @@ export class PlaylistModel extends Model implements PlaylistModelProps {
   id!: string;
   name!: string;
   ownerId!: string;
-  videoCount!: number;
+  mediaSourceCount!: number;
   createdAt!: Date;
   updatedAt!: Date;
 

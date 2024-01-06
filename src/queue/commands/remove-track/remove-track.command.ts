@@ -26,4 +26,4 @@ export const RemoveTrackParamSchema = Joi.object<RemoveTrackCommand>({
   isNowPlaying: Joi.boolean(),
 })
   .required()
-  .nand("trackId", "index", "isNowPlaying");
+  .xor("trackId", "index", "isNowPlaying");

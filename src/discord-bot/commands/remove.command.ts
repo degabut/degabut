@@ -79,6 +79,7 @@ export class RemoveDiscordCommand implements IPrefixCommand {
     const command = new RemoveTrackCommand({
       voiceChannelId,
       index: position && !Number.isNaN(position) ? position - 1 : undefined,
+      isNowPlaying: !position ? true : undefined,
       executor: { id: userId },
     });
 

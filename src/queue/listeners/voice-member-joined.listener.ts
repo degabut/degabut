@@ -17,7 +17,10 @@ export class VoiceMemberJoinedListener implements IEventHandler<VoiceMemberJoine
 
     const newMember = Member.fromDiscordGuildMember(member, true);
 
-    queue.voiceChannel.members.push(newMember);
+    const existingMember = queue.voiceChannel.members.find((m) => m.id === newMember.id);
+
+    if (existingMember) existingMember.isInVoiceChannel = true;
+    else queue.voiceChannel.members.push(newMember);
 
     this.eventBus.publish(new MemberJoinedEvent({ member: newMember, queue }));
   }

@@ -1,7 +1,7 @@
 import { VoiceMemberJoinedEvent } from "@discord-bot/events";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { Member } from "@queue/entities";
-import { MemberAddedEvent } from "@queue/events";
+import { MemberJoinedEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(VoiceMemberJoinedEvent)
@@ -15,10 +15,10 @@ export class VoiceMemberJoinedListener implements IEventHandler<VoiceMemberJoine
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue || member.user.bot) return;
 
-    const newMember = Member.fromDiscordGuildMember(member);
+    const newMember = Member.fromDiscordGuildMember(member, true);
 
     queue.voiceChannel.members.push(newMember);
 
-    this.eventBus.publish(new MemberAddedEvent({ member: newMember, queue }));
+    this.eventBus.publish(new MemberJoinedEvent({ member: newMember, queue }));
   }
 }

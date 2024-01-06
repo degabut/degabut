@@ -37,7 +37,7 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
         name: player.voiceChannel.name,
         members: player.voiceChannel.members
           .filter((m) => !m.user.bot)
-          .map((m) => Member.fromDiscordGuildMember(m)),
+          .map((m) => Member.fromDiscordGuildMember(m, true)),
       }),
       textChannel: player.textChannel
         ? new TextChannel({

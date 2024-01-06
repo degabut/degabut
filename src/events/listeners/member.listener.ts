@@ -1,10 +1,10 @@
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { MemberDto } from "@queue/dtos";
-import { MemberAddedEvent, MemberRemovedEvent, MemberUpdatedEvent } from "@queue/events";
+import { MemberJoinedEvent, MemberLeftEvent, MemberUpdatedEvent } from "@queue/events";
 
-const events = [MemberAddedEvent, MemberRemovedEvent, MemberUpdatedEvent];
-type Events = InstanceType<typeof events[number]>;
+const events = [MemberJoinedEvent, MemberLeftEvent, MemberUpdatedEvent];
+type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)
 export class MemberListener implements IEventHandler<Events> {

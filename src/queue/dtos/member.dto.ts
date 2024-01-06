@@ -21,6 +21,9 @@ export class MemberDto {
   @Expose()
   public avatar!: string;
 
+  @Expose()
+  public isInVoiceChannel!: boolean;
+
   public static create(entity: Member): MemberDto {
     return plainToInstance(MemberDto, entity);
   }

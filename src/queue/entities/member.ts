@@ -7,12 +7,13 @@ export class Member {
   public username!: string;
   public discriminator!: string;
   public avatar!: string | null;
+  public isInVoiceChannel!: boolean;
 
   constructor(params: Member) {
     Object.assign(this, params);
   }
 
-  static fromDiscordGuildMember(member: GuildMember): Member {
+  static fromDiscordGuildMember(member: GuildMember, isInVoiceChannel: boolean): Member {
     return new Member({
       id: member.id,
       username: member.user.username,
@@ -20,6 +21,7 @@ export class Member {
       displayName: member.displayName,
       discriminator: member.user.discriminator,
       avatar: member.displayAvatarURL(),
+      isInVoiceChannel,
     });
   }
 }

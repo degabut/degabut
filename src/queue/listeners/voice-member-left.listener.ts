@@ -1,6 +1,6 @@
 import { VoiceMemberLeftEvent } from "@discord-bot/events";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { MemberRemovedEvent } from "@queue/events";
+import { MemberLeftEvent } from "@queue/events";
 import { QueueRepository } from "@queue/repositories";
 
 @EventsHandler(VoiceMemberLeftEvent)
@@ -14,12 +14,11 @@ export class VoiceMemberLeftListener implements IEventHandler<VoiceMemberLeftEve
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue || member.user.bot) return;
 
-    const removedMemberIndex = queue.voiceChannel.members.findIndex((m) => m.id === member.id);
-    if (removedMemberIndex === -1) return;
+    const leftMember = queue.voiceChannel.members.find((m) => m.id === member.id);
+    if (!leftMember) return;
 
-    const removedMember = queue.voiceChannel.members[removedMemberIndex];
-    queue.voiceChannel.members.splice(removedMemberIndex, 1);
+    leftMember.isInVoiceChannel = false;
 
-    this.eventBus.publish(new MemberRemovedEvent({ member: removedMember, queue }));
+    this.eventBus.publish(new MemberLeftEvent({ member: leftMember, queue }));
   }
 }

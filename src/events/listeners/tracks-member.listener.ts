@@ -1,10 +1,10 @@
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { MemberDto, TrackDto } from "@queue/dtos";
-import { QueueClearedEvent, TracksAddedEvent } from "@queue/events";
+import { QueueClearedEvent, TracksAddedEvent, TracksRemovedEvent } from "@queue/events";
 
-const events = [TracksAddedEvent, QueueClearedEvent];
-type Events = InstanceType<typeof events[number]>;
+const events = [TracksAddedEvent, TracksRemovedEvent, QueueClearedEvent];
+type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)
 export class TracksMemberListener implements IEventHandler<Events> {
@@ -16,7 +16,7 @@ export class TracksMemberListener implements IEventHandler<Events> {
       .replace(/^-(.*)-event$/, "$1");
 
     const { member } = event;
-    const tracks = event instanceof TracksAddedEvent ? event.tracks : event.queue.tracks;
+    const tracks = "tracks" in event ? event.tracks : event.queue.tracks;
     const queue = "queue" in event ? event.queue : tracks[0].queue;
     const memberIds = queue.voiceChannel.members.map((m) => m.id);
 

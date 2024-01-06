@@ -11,6 +11,7 @@ import {
   JamCommand,
   PlayTrackCommand,
   RemoveTrackCommand,
+  RemoveTracksCommand,
   ToggleShuffleCommand,
 } from "@queue/commands";
 import { LoopMode } from "@queue/entities";
@@ -38,6 +39,12 @@ type ChangeTrackOrderBody = { to: number };
 type ChangeLoopModeBody = { loopMode: LoopMode };
 
 type JamBody = { count: number };
+
+type RemoveTracksBody = {
+  includeNowPlaying?: boolean;
+  trackIds?: string[];
+  memberId?: string;
+};
 
 @Controller("queues")
 export class QueuesController {
@@ -153,16 +160,26 @@ export class QueuesController {
   @UseGuards(AuthGuard)
   async removeTracks(
     @Param() params: VoiceChannelIdParams,
-    @Body() body: { includeNowPlaying?: boolean },
+    @Body() body: RemoveTracksBody,
     @User() executor: AuthUser,
   ) {
-    await this.commandBus.execute(
-      new ClearQueueCommand({
-        ...params,
-        removeNowPlaying: !!body.includeNowPlaying,
-        executor,
-      }),
-    );
+    if (body.trackIds || body.memberId) {
+      return await this.commandBus.execute(
+        new RemoveTracksCommand({
+          ...params,
+          ...body,
+          executor,
+        }),
+      );
+    } else {
+      await this.commandBus.execute(
+        new ClearQueueCommand({
+          ...params,
+          removeNowPlaying: !!body.includeNowPlaying,
+          executor,
+        }),
+      );
+    }
   }
 
   @Post("/:voiceChannelId/jam")

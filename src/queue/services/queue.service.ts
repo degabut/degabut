@@ -28,6 +28,39 @@ export class QueueService {
     return removed;
   }
 
+  public removeTracks(
+    queue: Queue,
+    { trackIds, memberId }: { memberId?: string; trackIds?: string[] },
+  ): Track[] {
+    let queueTrackIds = queue.tracks.map((t) => t.id);
+    const removedTracks: Track[] = [];
+
+    if (trackIds) {
+      removedTracks.push(...queue.tracks.filter((t) => trackIds.includes(t.id)));
+      queue.tracks = queue.tracks.filter((t) => !trackIds.includes(t.id));
+    }
+
+    if (memberId) {
+      removedTracks.push(...queue.tracks.filter((t) => t.requestedBy?.id === memberId));
+      queue.tracks = queue.tracks.filter((t) => t.requestedBy?.id !== memberId);
+    }
+
+    const nowPlayingId = queue.nowPlaying?.id;
+    const hasNowPlaying = removedTracks.some((t) => t.id === nowPlayingId);
+
+    if (!removedTracks.length || queue.shuffle || !hasNowPlaying) {
+      return removedTracks;
+    }
+
+    queueTrackIds = queueTrackIds.filter(
+      (id) => removedTracks.some((t) => t.id === id) || id === nowPlayingId,
+    );
+    const nowPlayingIndex = queueTrackIds.findIndex((id) => id === nowPlayingId);
+    queue.nextTrack = queue.tracks[nowPlayingIndex] || null;
+
+    return removedTracks;
+  }
+
   public processQueue(queue: Queue): void {
     const nowPlayingIndex = queue.tracks.findIndex((t) => t.id === queue.nowPlaying?.id);
     queue.nowPlaying = null;

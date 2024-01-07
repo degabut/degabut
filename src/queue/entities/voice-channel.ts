@@ -1,11 +1,17 @@
 import { Member } from "./member";
 
-export class VoiceChannel {
+type VoiceChannelParams = {
+  id: string;
+  name: string;
+  members: Member[];
+};
+
+export class VoiceChannel implements VoiceChannelParams {
   public id!: string;
   public name!: string;
   public members!: Member[];
 
-  constructor(params: VoiceChannel) {
+  constructor(params: VoiceChannelParams) {
     Object.assign(this, params);
   }
 

@@ -5,7 +5,7 @@ import { TrackDto } from "@queue/dtos";
 import { QueueProcessedEvent } from "@queue/events";
 
 const events = [TrackAudioStartedEvent, QueueProcessedEvent];
-type Events = InstanceType<typeof events[number]>;
+type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)
 export class TrackListener implements IEventHandler<Events> {
@@ -18,7 +18,7 @@ export class TrackListener implements IEventHandler<Events> {
 
     const track = event instanceof QueueProcessedEvent ? event.queue.nowPlaying : event.track;
     const queue = event instanceof QueueProcessedEvent ? event.queue : event.track.queue;
-    const memberIds = queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(memberIds, eventName, track ? TrackDto.create(track) : null);
   }

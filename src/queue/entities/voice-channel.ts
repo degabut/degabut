@@ -8,4 +8,8 @@ export class VoiceChannel {
   constructor(params: VoiceChannel) {
     Object.assign(this, params);
   }
+
+  get activeMembers(): Member[] {
+    return this.members.filter((m) => m.isInVoiceChannel);
+  }
 }

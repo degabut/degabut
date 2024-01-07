@@ -16,7 +16,7 @@ export class MemberListener implements IEventHandler<Events> {
       .replace(/^-(.*)-event$/, "$1");
 
     const { queue, member } = event;
-    const memberIds = queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(memberIds, eventName, MemberDto.create(member));
   }

@@ -9,7 +9,7 @@ export class QueueListener implements IEventHandler<QueueCreatedEvent> {
 
   public async handle(event: QueueCreatedEvent): Promise<void> {
     const { queue } = event;
-    const memberIds = queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(memberIds, "queue-created", QueueDto.create(queue));
   }

@@ -18,7 +18,7 @@ export class TracksMemberListener implements IEventHandler<Events> {
     const { member } = event;
     const tracks = "tracks" in event ? event.tracks : event.queue.tracks;
     const queue = "queue" in event ? event.queue : tracks[0].queue;
-    const memberIds = queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(memberIds, eventName, {
       tracks: tracks.map(TrackDto.create),

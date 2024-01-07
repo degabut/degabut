@@ -21,7 +21,7 @@ export class TrackMemberListener implements IEventHandler<Events> {
 
     const { track, member } = event;
     const queue = track.queue;
-    const memberIds = queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     let memberDto: MemberDto | GuildMemberDto | null = null;
     if (member instanceof Member) memberDto = MemberDto.create(member);

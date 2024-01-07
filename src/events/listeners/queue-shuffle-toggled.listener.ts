@@ -8,7 +8,7 @@ export class QueueShuffleToggledListener implements IEventHandler<QueueShuffleTo
 
   public async handle(event: QueueShuffleToggledEvent): Promise<void> {
     const { queue } = event;
-    const memberIds = queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(memberIds, "queue-shuffle-toggled", { shuffle: queue.shuffle });
   }

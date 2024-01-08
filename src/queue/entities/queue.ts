@@ -45,7 +45,9 @@ export class Queue {
     this.textChannel = props.textChannel || null;
   }
 
-  public getMember(userId: string): Member | undefined {
-    return this.voiceChannel.members.find((m) => m.id === userId);
+  public getMember(userId: string, isActive = true): Member | undefined {
+    return this.voiceChannel.members.find(
+      (m) => m.id === userId && m.isInVoiceChannel === isActive,
+    );
   }
 }

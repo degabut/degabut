@@ -14,6 +14,7 @@ export class MediaSourceModel extends Model implements MediaSourceModelProps {
   youtubeVideoId!: string | null;
   spotifyTrackId!: string | null;
   playedYoutubeVideoId!: string | null;
+  updatedAt!: Date;
 
   youtubeVideo?: YoutubeVideoModel;
   spotifyTrack?: SpotifyTrackModel;

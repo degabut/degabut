@@ -7,6 +7,7 @@ interface ConstructorProps {
   playedYoutubeVideoId?: string | null;
   youtubeVideoId?: string;
   spotifyTrackId?: string;
+  updatedAt?: Date;
   youtubeVideo?: YoutubeVideoCompact;
   spotifyTrack?: SpotifyTrack;
 }
@@ -21,6 +22,7 @@ export class MediaSource {
   public playedYoutubeVideoId: string | null = null;
   public readonly youtubeVideoId?: string;
   public readonly spotifyTrackId?: string;
+  public updatedAt: Date;
   public youtubeVideo?: YoutubeVideoCompact;
   public spotifyTrack?: SpotifyTrack;
 
@@ -28,6 +30,8 @@ export class MediaSource {
     this.id = props.id || v4();
     this.youtubeVideoId = props.youtubeVideoId;
     this.spotifyTrackId = props.spotifyTrackId;
+    this.playedYoutubeVideoId = props.playedYoutubeVideoId || null;
+    this.updatedAt = props.updatedAt || new Date();
     this.youtubeVideo = props.youtubeVideo;
     this.spotifyTrack = props.spotifyTrack;
   }

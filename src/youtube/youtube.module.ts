@@ -4,11 +4,18 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
 import { YoutubeConfigModule } from "./config";
-import { DegabutYoutubeiProvider, YoutubeEmbedProvider, YoutubeiProvider } from "./providers";
+import {
+  DegabutYoutubeiMusicProvider,
+  DegabutYoutubeiProvider,
+  IYoutubeiMusicProvider,
+  YoutubeEmbedProvider,
+  YoutubeiMusicProvider,
+  YoutubeiProvider,
+} from "./providers";
 import { IYoutubeiProvider } from "./providers/youtubei/youtubei.interface";
 import { YoutubeChannelRepository, YoutubeVideoRepository } from "./repositories";
 import { YoutubeCachedService } from "./services";
-import { YOUTUBEI_PROVIDER } from "./youtube.constants";
+import { YOUTUBEI_MUSIC_PROVIDER, YOUTUBEI_PROVIDER } from "./youtube.constants";
 
 @Module({
   imports: [
@@ -27,6 +34,17 @@ import { YOUTUBEI_PROVIDER } from "./youtube.constants";
 
         if (baseUrl && authToken) return new DegabutYoutubeiProvider(http, baseUrl, authToken);
         else return new YoutubeiProvider();
+      },
+    },
+    {
+      provide: YOUTUBEI_MUSIC_PROVIDER,
+      inject: [ConfigService, HttpService],
+      useFactory: (config: ConfigService, http: HttpService): IYoutubeiMusicProvider => {
+        const baseUrl = config.get("youtube.degabutYoutubeBaseUrl");
+        const authToken = config.get("youtube.degabutYoutubeAuthToken");
+
+        if (baseUrl && authToken) return new DegabutYoutubeiMusicProvider(http, baseUrl, authToken);
+        else return new YoutubeiMusicProvider();
       },
     },
     YoutubeEmbedProvider,

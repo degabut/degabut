@@ -27,6 +27,7 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     if (!queue) throw new NotFoundException("Queue not found");
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
+    if (queue.tracks.length >= MAX_QUEUE_TRACKS) throw new BadRequestException("Queue is full");
 
     const mediaSource = await this.mediaSourceService.getSource({ mediaSourceId, youtubeKeyword });
     if (!mediaSource) throw new BadRequestException("Media source not found");
@@ -38,7 +39,6 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     });
 
     const isPlayedImmediately = !queue.nowPlaying;
-    if (queue.tracks.length >= MAX_QUEUE_TRACKS) throw new BadRequestException("Queue is full");
 
     queue.tracks.push(track);
     this.eventBus.publish(new TrackAddedEvent({ track, isPlayedImmediately, member }));

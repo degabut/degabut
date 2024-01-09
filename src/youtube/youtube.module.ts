@@ -54,6 +54,7 @@ import { YOUTUBEI_MUSIC_PROVIDER, YOUTUBEI_PROVIDER } from "./youtube.constants"
   ],
   exports: [
     YOUTUBEI_PROVIDER,
+    YOUTUBEI_MUSIC_PROVIDER,
     YoutubeCachedService,
     YoutubeVideoRepository,
     YoutubeChannelRepository,

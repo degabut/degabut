@@ -1,12 +1,15 @@
-import { DiscordUtil } from "@common/utils";
+import { DiscordUtil, TimeUtil } from "@common/utils";
+import { MAX_PLAYED_YOUTUBE_VIDEO_ID_AGE } from "@media-source/media-source.constants";
 import { MediaSourceService } from "@media-source/services";
-import { Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { TrackLoadFailedEvent } from "@queue-player/events";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueuePlayerService } from "@queue-player/services";
 import { QueueProcessedEvent } from "@queue/events";
-import { YoutubeCachedService } from "@youtube/services";
+import { SpotifyTrack } from "@spotify/entities";
+import { IYoutubeiMusicProvider } from "@youtube/providers";
+import { YOUTUBEI_MUSIC_PROVIDER } from "@youtube/youtube.constants";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -23,7 +26,8 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
 
   constructor(
     private readonly eventBus: EventBus,
-    private readonly youtubeService: YoutubeCachedService,
+    @Inject(YOUTUBEI_MUSIC_PROVIDER)
+    private readonly youtubeMusicProvider: IYoutubeiMusicProvider,
     private readonly playerRepository: QueuePlayerRepository,
     private readonly playerService: QueuePlayerService,
     private readonly mediaSourceService: MediaSourceService,
@@ -37,26 +41,45 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     else {
       let res: LoadTrackResponse | null = null;
 
-      const { youtubeVideo, spotifyTrack, playedYoutubeVideoId } = queue.nowPlaying.mediaSource;
+      const currentMediaSource = queue.nowPlaying.mediaSource;
+      const { youtubeVideo, spotifyTrack } = currentMediaSource;
 
-      const videoId = youtubeVideo?.id || playedYoutubeVideoId;
-      if (videoId) {
-        res = await player.audioPlayer.node.rest.loadTracks(videoId);
-        queue.nowPlaying.mediaSource.playedYoutubeVideoId = videoId;
+      if (youtubeVideo) {
+        res = await player.audioPlayer.node.rest.loadTracks(youtubeVideo.id);
+        currentMediaSource.playedYoutubeVideoId = youtubeVideo.id;
       } else if (spotifyTrack) {
-        const { name, artists, duration } = spotifyTrack;
+        if (!currentMediaSource.playedYoutubeVideoId) {
+          const mediaSource = await this.mediaSourceService.getSource({
+            mediaSourceId: currentMediaSource.id,
+          });
+          if (mediaSource?.playedYoutubeVideoId) {
+            currentMediaSource.playedYoutubeVideoId = mediaSource.playedYoutubeVideoId;
+            currentMediaSource.updatedAt = mediaSource.updatedAt;
+          }
+        }
 
-        let keyword = name;
-        if (artists) keyword += ` ${artists.map((a) => a.name).join(" ")}`;
+        if (
+          !currentMediaSource.playedYoutubeVideoId ||
+          TimeUtil.getSecondDifference(currentMediaSource.updatedAt, new Date()) >
+            MAX_PLAYED_YOUTUBE_VIDEO_ID_AGE
+        ) {
+          const videoId = await this.findYouTubeVideoId(spotifyTrack);
 
-        const video = await this.youtubeService.searchOneVideo(keyword, duration);
-        if (video) {
-          queue.nowPlaying.mediaSource.playedYoutubeVideoId = video.id;
-          res = await player.audioPlayer.node.rest.loadTracks(video.id);
+          if (videoId) {
+            currentMediaSource.playedYoutubeVideoId = videoId;
+            currentMediaSource.updatedAt = new Date();
+            res = await player.audioPlayer.node.rest.loadTracks(videoId);
+          }
+        }
+
+        if (currentMediaSource.playedYoutubeVideoId) {
+          res = await player.audioPlayer.node.rest.loadTracks(
+            currentMediaSource.playedYoutubeVideoId,
+          );
         }
       }
 
-      await this.mediaSourceService.storeSource(queue.nowPlaying.mediaSource);
+      await this.mediaSourceService.storeSource(currentMediaSource);
 
       if (res?.loadType !== "TRACK_LOADED") {
         if (res) this.logger.log({ error: "Track load failed", ...res });
@@ -103,5 +126,15 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
         ),
       ]);
     }
+  }
+
+  private async findYouTubeVideoId(spotifyTrack: SpotifyTrack) {
+    const { name, artists } = spotifyTrack;
+
+    let keyword = name;
+    if (artists) keyword += ` ${artists.map((a) => a.name).join(" ")}`;
+    const songs = await this.youtubeMusicProvider.searchSong(keyword);
+
+    return songs.at(0)?.id;
   }
 }

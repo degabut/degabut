@@ -1,5 +1,6 @@
-import { MediaSource, MediaSourceType } from "@media-source/entities";
+import { MediaSource } from "@media-source/entities";
 import { MediaSourceRepository } from "@media-source/repositories";
+import { MediaSourceUtil } from "@media-source/utils";
 import { Injectable } from "@nestjs/common";
 import { SpotifyCachedService } from "@spotify/services";
 import { YoutubeCachedService } from "@youtube/services";
@@ -19,7 +20,7 @@ export class MediaSourceService {
 
   async getSource(options: SourceOptions): Promise<MediaSource | undefined> {
     const { mediaSourceId, youtubeKeyword } = options;
-    const { youtubeVideoId, spotifyTrackId } = this.extractSourceId(mediaSourceId);
+    const { youtubeVideoId, spotifyTrackId } = MediaSourceUtil.extractSourceId(mediaSourceId);
 
     let mediaSource: MediaSource | undefined;
 
@@ -57,15 +58,5 @@ export class MediaSourceService {
     if (mediaSource.youtubeVideo) await this.youtubeService.cacheVideo(mediaSource.youtubeVideo);
     if (mediaSource.spotifyTrack) await this.spotifyService.cacheTrack(mediaSource.spotifyTrack);
     await this.mediaSourceRepository.upsert(mediaSource);
-  }
-
-  private extractSourceId(id?: string) {
-    if (!id) return { youtubeVideoId: undefined, spotifyTrackId: undefined };
-
-    const [source, contentId] = id.split("/") as [MediaSourceType, string];
-    return {
-      youtubeVideoId: source === MediaSourceType.YOUTUBE ? contentId : undefined,
-      spotifyTrackId: source === MediaSourceType.SPOTIFY ? contentId : undefined,
-    };
   }
 }

@@ -1,12 +1,7 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import {
-  APIGuild,
-  APIGuildMember,
-  APIUser,
-  RESTPostOAuth2AccessTokenResult,
-} from "discord-api-types/v9";
+import { APIUser, RESTPostOAuth2AccessTokenResult } from "discord-api-types/v9";
 
 @Injectable()
 export class DiscordOAuthProvider {
@@ -46,23 +41,6 @@ export class DiscordOAuthProvider {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    return response.data;
-  }
-
-  async getCurrentUserGuilds(accessToken: string): Promise<APIGuild[]> {
-    const response = await this.httpService.axiosRef.get<APIGuild[]>("/users/@me/guilds", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return response.data;
-  }
-
-  async getGuildMember(guildId: string, userId: string): Promise<APIGuildMember | undefined> {
-    const response = await this.httpService.axiosRef.get<APIGuildMember>(
-      `/guilds/${guildId}/members/${userId}`,
-      {
-        headers: { Authorization: `Bot ${this.botToken}` },
-      },
-    );
     return response.data;
   }
 }

@@ -42,7 +42,12 @@ export class AppModule {
       this.logger.error({ error: "unhandledRejection", reason, promise });
     });
     process.on("uncaughtException", (reason, origin) => {
-      this.logger.error({ error: "uncaughtException", reason, origin });
+      const r: Record<string, any> = {};
+      for (const propertyName of Object.getOwnPropertyNames(reason)) {
+        r[propertyName] = reason[propertyName as keyof typeof reason];
+      }
+
+      this.logger.error({ error: "uncaughtException", ...r, origin });
     });
   }
 }

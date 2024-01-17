@@ -4,7 +4,7 @@ import { ExecutorSchema } from "@common/schemas";
 import * as Joi from "joi";
 
 export class ClearQueueCommand extends Command {
-  public readonly removeNowPlaying?: boolean;
+  public readonly includeNowPlaying?: boolean;
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
 
@@ -17,5 +17,5 @@ export class ClearQueueCommand extends Command {
 export const ClearQueueParamSchema = Joi.object<ClearQueueCommand>({
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
-  removeNowPlaying: Joi.boolean(),
+  includeNowPlaying: Joi.boolean(),
 }).required();

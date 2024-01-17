@@ -175,7 +175,7 @@ export class QueuesController {
       await this.commandBus.execute(
         new ClearQueueCommand({
           ...params,
-          removeNowPlaying: !!body.includeNowPlaying,
+          includeNowPlaying: !!body.includeNowPlaying,
           executor,
         }),
       );

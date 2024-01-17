@@ -1,5 +1,6 @@
 import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
+import { QueueClearedListener } from "./queue-cleared.listener";
 import { QueueProcessedListener } from "./queue-processed.listener";
 import { TrackAddedListener } from "./track-added.listener";
 import { TrackMarkedPlayNextListener } from "./track-marked-play-next.listener";
@@ -17,5 +18,6 @@ export const Listeners: Constructor<IEventHandler>[] = [
   TracksRemovedListener,
   TrackSkippedListener,
   TrackMarkedPlayNextListener,
+  QueueClearedListener,
   QueueProcessedListener,
 ];

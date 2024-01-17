@@ -18,7 +18,7 @@ export class ClearAllDiscordCommand implements IPrefixCommand {
 
     const command = new ClearQueueCommand({
       voiceChannelId: message.member.voice.channelId,
-      removeNowPlaying: true,
+      includeNowPlaying: true,
       executor: { id: message.author.id },
     });
 

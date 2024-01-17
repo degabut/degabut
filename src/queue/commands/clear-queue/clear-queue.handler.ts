@@ -17,7 +17,7 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
 
   @ValidateParams(ClearQueueParamSchema)
   public async execute(params: ClearQueueCommand): Promise<void> {
-    const { voiceChannelId, removeNowPlaying, executor } = params;
+    const { voiceChannelId, includeNowPlaying, executor } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
@@ -25,8 +25,10 @@ export class ClearQueueHandler implements IInferredCommandHandler<ClearQueueComm
     if (!member) throw new ForbiddenException("Missing permissions");
 
     queue.tracks = queue.tracks.filter((t) => t.id === queue.nowPlaying?.id);
-    if (removeNowPlaying) this.queueService.removeTrack(queue, true);
+    if (includeNowPlaying) this.queueService.removeTrack(queue, true);
 
-    this.eventBus.publish(new QueueClearedEvent({ queue, member }));
+    this.eventBus.publish(
+      new QueueClearedEvent({ queue, member, includeNowPlaying: !!includeNowPlaying }),
+    );
   }
 }

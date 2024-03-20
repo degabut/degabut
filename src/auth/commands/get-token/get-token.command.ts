@@ -5,7 +5,7 @@ export type GetTokenResult = { token: string };
 
 export class GetTokenCommand extends Command<GetTokenResult> {
   code!: string;
-  redirectUri!: string;
+  redirectUri?: string;
 
   constructor(params: GetTokenCommand) {
     super();
@@ -15,5 +15,5 @@ export class GetTokenCommand extends Command<GetTokenResult> {
 
 export const GetTokenParamSchema = Joi.object<GetTokenCommand>({
   code: Joi.string().required(),
-  redirectUri: Joi.string().uri().required(),
+  redirectUri: Joi.string().uri().optional(),
 }).required();

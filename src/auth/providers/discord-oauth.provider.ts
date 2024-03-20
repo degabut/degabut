@@ -21,16 +21,19 @@ export class DiscordOAuthProvider {
     this.botToken = config.botToken;
   }
 
-  async getAccessToken(code: string, redirectUri: string): Promise<string> {
+  async getAccessToken(code: string, redirectUri?: string): Promise<string> {
+    const params = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+    });
+
+    if (redirectUri) params.set("redirect_uri", redirectUri);
+
     const response = await this.httpService.axiosRef.post<RESTPostOAuth2AccessTokenResult>(
       "/oauth2/token",
-      new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
-        redirect_uri: redirectUri,
-      }),
+      params,
     );
 
     return response.data.access_token;

@@ -1,7 +1,7 @@
 import { Command } from "@common/cqrs";
 import * as Joi from "joi";
 
-export type GetTokenResult = { token: string };
+export type GetTokenResult = { token: string; discordAccessToken: string };
 
 export class GetTokenCommand extends Command<GetTokenResult> {
   code!: string;

@@ -11,13 +11,15 @@ export async function up(knex: Knex): Promise<void> {
   });
 
   const videos = await knex("video").select("id");
-  await knex("media_source").insert(
-    videos.map((v) => ({
-      id: `youtube/${v.id}`,
-      youtube_video_id: v.id,
-      played_youtube_video_id: v.id,
-    })),
-  );
+  if (videos.length) {
+    await knex("media_source").insert(
+      videos.map((v) => ({
+        id: `youtube/${v.id}`,
+        youtube_video_id: v.id,
+        played_youtube_video_id: v.id,
+      })),
+    );
+  }
 
   for (const table of tables) {
     await knex.schema.alterTable(table, (table) => table.dropForeign("video_id"));

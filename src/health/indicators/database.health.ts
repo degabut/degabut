@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from "@nestjs/terminus";
+import { HealthIndicator, HealthIndicatorResult } from "@nestjs/terminus";
 import { Connection, KNEX_CONNECTION } from "@willsoto/nestjs-objection";
 
 @Injectable()
@@ -12,8 +12,8 @@ export class DatabaseHealthIndicator extends HealthIndicator {
     try {
       await this.connection.raw("SELECT 1");
       return this.getStatus("database", true);
-    } catch (error) {
-      throw new HealthCheckError("Database health check failed", error);
+    } catch {
+      return this.getStatus("database", false);
     }
   }
 }

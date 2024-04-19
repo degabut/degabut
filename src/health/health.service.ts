@@ -1,13 +1,14 @@
+import { Injectable } from "@nestjs/common";
+import { HealthCheckService } from "@nestjs/terminus";
+
 import {
   DatabaseHealthIndicator,
   DiscordHealthIndicator,
   LavalinkHealthIndicator,
-} from "@health/indicators";
-import { Controller, Get } from "@nestjs/common";
-import { HealthCheck, HealthCheckService } from "@nestjs/terminus";
+} from "./indicators";
 
-@Controller("health")
-export class HealthController {
+@Injectable()
+export class HealthService {
   constructor(
     private readonly health: HealthCheckService,
     private readonly dbHealthIndicator: DatabaseHealthIndicator,
@@ -15,8 +16,6 @@ export class HealthController {
     private readonly lavalinkHealthIndicator: LavalinkHealthIndicator,
   ) {}
 
-  @Get()
-  @HealthCheck()
   getHealth() {
     return this.health.check([
       () => this.dbHealthIndicator.isHealthy(),

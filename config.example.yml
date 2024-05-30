@@ -1,0 +1,36 @@
+apps:
+  bots:
+    degabut:
+      token: "..."
+      prefix: "!"
+      # http: # optional, if you want to enable the http server
+      #   port: 8080
+      # ws: # optional, if you want to enable the ws server
+      #   port: 8081
+    # another-bot: # optional, you can run multiple bots on one process, make sure that http and ws port is not overlapping with other bots
+    #   token: "..."
+    #   prefix: "="
+  # youtubeApi: # if you want to start http server for youtube api, used by official web client
+  #   port: 8082
+lavalink: # optional, if you want to use lavalink instead of built in player
+  host: "0.0.0.0"
+  port: 2333
+  password: "youshallnotpass"
+# spotify: # optional, if you want to enable spotify support
+#   clientId: "..."
+#   clientSecret: "..."
+postgres:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "password"
+  database: "degabut"
+# auth: # optional
+#   jwt: # must be enabled if running bot http server / youtube api server
+#     secret: "..."
+#   discordOAuth: # must be enabled if running bot http server
+#     clientId: "..."
+#     clientSecret: "..."
+logging:
+  level: "log"
+  # printConfig: true # optional, for debugging purpose, print out config when application is started

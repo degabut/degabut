@@ -1,4 +1,4 @@
-export interface IPaginationParameter<T> {
-  next?: T;
-  limit: number;
+export interface IPaginationParameter {
+  page?: number;
+  limit?: number;
 }

@@ -10,6 +10,7 @@ import { QueueRepository } from "@queue/repositories";
 import { QueueService } from "@queue/services";
 import { ISpotifyProvider } from "@spotify/providers";
 import { SPOTIFY_PROVIDER } from "@spotify/spotify.constants";
+import { UserLikeMediaSourceRepository } from "@user/repositories";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 
@@ -21,6 +22,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     private readonly queueRepository: QueueRepository,
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistMediaSourceRepository,
+    private readonly userLikeRepository: UserLikeMediaSourceRepository,
     private readonly queueService: QueueService,
     @Inject(YOUTUBEI_PROVIDER)
     private readonly youtubeProvider: IYoutubeiProvider,
@@ -36,6 +38,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
       youtubePlaylistId,
       spotifyPlaylistId,
       spotifyAlbumId,
+      lastLikedCount,
       executor,
       voiceChannelId,
     } = params;
@@ -48,14 +51,16 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
 
     let sources: MediaSource[] = [];
 
+    let limit = MAX_QUEUE_TRACKS - queue.tracks.length; // early checking
+    if (limit <= 0) throw new BadRequestException("Queue is full");
+
     if (playlistId) {
       const playlist = await this.playlistRepository.getById(playlistId);
       if (!playlist) throw new NotFoundException("Playlist not found");
       if (playlist?.ownerId !== executor.id) throw new ForbiddenException("Missing permissions");
 
       const playlistVideos = await this.playlistVideoRepository.getByPlaylistId(playlist.id, {
-        limit: MAX_QUEUE_TRACKS,
-        page: 1,
+        limit,
       });
       sources = playlistVideos.map((pv) => pv.mediaSource!);
     } else if (youtubePlaylistId) {
@@ -67,11 +72,19 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     } else if (spotifyAlbumId) {
       const album = await this.spotifyProvider.getAlbum(spotifyAlbumId);
       if (album) sources = album.tracks.map((t) => MediaSource.fromSpotify(t));
+    } else if (lastLikedCount) {
+      const likedVideos = await this.userLikeRepository.getByUserId(executor.id, {
+        limit,
+      });
+      sources = likedVideos.map((v) => v.mediaSource!);
     }
 
-    if (!sources.length) throw new BadRequestException("Playlist is empty or not found");
+    if (!sources.length) throw new BadRequestException("No tracks found");
 
-    const tracks = sources.slice(0, MAX_QUEUE_TRACKS - queue.tracks.length).map(
+    limit = MAX_QUEUE_TRACKS - queue.tracks.length; // recalculate, in case there's any changes when fetching the data
+    if (limit <= 0) throw new BadRequestException("Queue is full");
+
+    const tracks = sources.slice(0, limit).map(
       (source) =>
         new Track({
           queue,
@@ -79,8 +92,6 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
           requestedBy: member,
         }),
     );
-
-    if (!tracks.length) throw new BadRequestException("Queue is full");
 
     queue.tracks.push(...tracks);
     this.eventBus.publish(new TracksAddedEvent({ queue, tracks, member }));

@@ -71,26 +71,19 @@ export class QueueService {
   }
 
   private getShuffledTrackIndex(queue: Queue): number {
-    let unplayedTracks = queue.tracks.filter((t) => !queue.shuffleHistoryIds.includes(t.id));
-    if (!unplayedTracks.length) {
-      unplayedTracks = queue.tracks;
-      queue.previousShuffleHistoryIds = [...queue.shuffleHistoryIds];
-      const lastShuffle = queue.shuffleHistoryIds.pop();
-      queue.shuffleHistoryIds = [];
-      if (lastShuffle) unplayedTracks = unplayedTracks.filter((t) => t.id !== lastShuffle);
-    }
+    const unplayedTracks = queue.unplayedTrack;
 
     if (!unplayedTracks.length) return 0;
 
     let randomTrack: Track | undefined;
 
-    if (!queue.previousShuffleHistoryIds.length) {
+    if (!queue.previousHistoryIds.length) {
       randomTrack = unplayedTracks.at(RandomUtil.randomInt(0, unplayedTracks.length - 1));
     } else {
       const randomTracks = unplayedTracks.sort((a, b) => {
         return (
-          queue.previousShuffleHistoryIds.findIndex((id) => id === a.id) -
-          queue.previousShuffleHistoryIds.findIndex((id) => id === b.id)
+          queue.previousHistoryIds.findIndex((id) => id === a.id) -
+          queue.previousHistoryIds.findIndex((id) => id === b.id)
         );
       });
       randomTrack = ArrayUtil.pickRankedRandom(randomTracks);

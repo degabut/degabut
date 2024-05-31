@@ -28,11 +28,6 @@ export class ToggleShuffleHandler implements IInferredCommandHandler<ToggleShuff
 
     queue.shuffle = !queue.shuffle;
 
-    if (!queue.shuffle) {
-      queue.shuffleHistoryIds = [];
-      queue.previousShuffleHistoryIds = [];
-    }
-
     this.eventBus.publish(new QueueShuffleToggledEvent({ queue, member }));
 
     return queue.shuffle;

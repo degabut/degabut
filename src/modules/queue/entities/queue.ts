@@ -24,8 +24,8 @@ export class Queue {
   public nextTrack: Track | null;
   public loopMode: LoopMode;
   public shuffle: boolean;
-  public shuffleHistoryIds: Array<string>;
-  public previousShuffleHistoryIds: Array<string>;
+  public historyIds: Array<string>;
+  public previousHistoryIds: Array<string>;
   public guild: Guild;
   public voiceChannel: VoiceChannel;
   public textChannel: TextChannel | null;
@@ -38,8 +38,8 @@ export class Queue {
     this.history = [];
     this.loopMode = LoopMode.Disabled;
     this.shuffle = false;
-    this.shuffleHistoryIds = [];
-    this.previousShuffleHistoryIds = [];
+    this.historyIds = [];
+    this.previousHistoryIds = [];
     this.guild = props.guild;
     this.voiceChannel = props.voiceChannel;
     this.textChannel = props.textChannel || null;
@@ -49,5 +49,9 @@ export class Queue {
     return this.voiceChannel.members.find(
       (m) => m.id === userId && m.isInVoiceChannel === isActive,
     );
+  }
+
+  get unplayedTrack() {
+    return this.tracks.filter((t) => !this.historyIds.includes(t.id));
   }
 }

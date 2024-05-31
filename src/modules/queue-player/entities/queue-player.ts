@@ -19,6 +19,7 @@ interface ConstructorProps {
 export class QueuePlayer {
   public readonly guild: BaseGuild;
   public readonly audioPlayer: IAudioPlayer;
+  public isDestroyed = false;
   public textChannel: BaseGuildTextChannel | null;
   public voiceChannel: BaseGuildVoiceChannel;
   public currentTrack: Track | null;
@@ -37,5 +38,10 @@ export class QueuePlayer {
 
   public getMember(userId: string): GuildMember | undefined {
     return this.voiceChannel.members.find((m) => m.id === userId);
+  }
+
+  public destroy() {
+    this.isDestroyed = true;
+    this.audioPlayer.disconnect();
   }
 }

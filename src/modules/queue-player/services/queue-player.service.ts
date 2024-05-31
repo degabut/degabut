@@ -59,7 +59,7 @@ export class QueuePlayerService {
       reason,
     });
 
-    player.audioPlayer.disconnect();
+    player.destroy();
     this.playerRepository.deleteByVoiceChannelId(player.voiceChannel.id);
     this.eventBus.publish(new PlayerDestroyedEvent({ player }));
   }
@@ -87,7 +87,7 @@ export class QueuePlayerService {
 
     player.audioPlayer.on("disconnected", async () => {
       await AsyncUtil.sleep(2500);
-      if (player.audioPlayer.isConnected) return;
+      if (player.audioPlayer.isConnected || player.isDestroyed) return;
       this.destroyPlayer(player, PlayerDestroyReason.DISCONNECTED);
     });
 

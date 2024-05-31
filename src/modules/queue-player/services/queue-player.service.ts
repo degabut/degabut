@@ -98,7 +98,17 @@ export class QueuePlayerService {
     player.audioPlayer.on("trackStart", () => {
       const track = player.currentTrack;
       if (!track) return;
+
+      this.logger.info({
+        event: "trackStart",
+        trackId: track.id,
+        mediaSourceId: track.mediaSource.id,
+        voiceChannelId: player.voiceChannel.id,
+        guildId: player.guild.id,
+      });
+
       if (player.audioPlayer.isPaused) player.audioPlayer.pause();
+
       this.eventBus.publish(new TrackAudioStartedEvent({ track }));
     });
 

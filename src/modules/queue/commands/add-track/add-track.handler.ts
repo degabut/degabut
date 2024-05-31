@@ -43,8 +43,6 @@ export class AddTrackHandler implements IInferredCommandHandler<AddTrackCommand>
     queue.tracks.push(track);
     this.eventBus.publish(new TrackAddedEvent({ track, isPlayedImmediately, member }));
 
-    if (!queue.nowPlaying) this.queueService.processQueue(queue);
-
     return track.id;
   }
 }

@@ -96,11 +96,6 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     queue.tracks.push(...tracks);
     this.eventBus.publish(new TracksAddedEvent({ queue, tracks, member }));
 
-    if (!queue.nowPlaying) {
-      queue.nextTrack = tracks[0];
-      this.queueService.processQueue(queue);
-    }
-
     return tracks.map((t) => t.id);
   }
 }

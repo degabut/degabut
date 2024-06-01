@@ -3,7 +3,6 @@ import { AuthGuard } from "@auth/guards";
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
-  AddTrackCommand,
   AddTracksCommand,
   ChangeLoopModeCommand,
   ChangeTrackOrderCommand,
@@ -32,6 +31,7 @@ type AddTracksBody = {
   youtubePlaylistId?: string;
   spotifyPlaylistId?: string;
   spotifyAlbumId?: string;
+  lastLikedCount?: number;
 };
 
 type ChangeTrackOrderBody = { to: number };
@@ -71,27 +71,15 @@ export class QueuesController {
     @Param() params: VoiceChannelIdParams,
     @User() executor: AuthUser,
   ) {
-    if (body && ("mediaSourceId" in body || "youtubeKeyword" in body)) {
-      return {
-        trackId: await this.commandBus.execute(
-          new AddTrackCommand({
-            ...params,
-            ...body,
-            executor,
-          }),
-        ),
-      };
-    } else {
-      return {
-        trackIds: await this.commandBus.execute(
-          new AddTracksCommand({
-            ...params,
-            ...body,
-            executor,
-          }),
-        ),
-      };
-    }
+    return {
+      trackIds: await this.commandBus.execute(
+        new AddTracksCommand({
+          ...params,
+          ...body,
+          executor,
+        }),
+      ),
+    };
   }
 
   @Post("/:voiceChannelId/tracks/:trackId/order")

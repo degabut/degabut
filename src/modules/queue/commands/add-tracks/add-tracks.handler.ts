@@ -1,5 +1,6 @@
 import { ValidateParams } from "@common/decorators";
 import { MediaSource } from "@media-source/entities";
+import { MediaSourceService } from "@media-source/services";
 import { BadRequestException, ForbiddenException, Inject, NotFoundException } from "@nestjs/common";
 import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistMediaSourceRepository, PlaylistRepository } from "@playlist/repositories";
@@ -7,7 +8,6 @@ import { Track } from "@queue/entities";
 import { TracksAddedEvent } from "@queue/events";
 import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
-import { QueueService } from "@queue/services";
 import { ISpotifyProvider } from "@spotify/providers";
 import { SPOTIFY_PROVIDER } from "@spotify/spotify.constants";
 import { UserLikeMediaSourceRepository } from "@user/repositories";
@@ -19,11 +19,11 @@ import { AddTracksCommand, AddTracksParamSchema, AddTracksResult } from "./add-t
 @CommandHandler(AddTracksCommand)
 export class AddTracksHandler implements IInferredCommandHandler<AddTracksCommand> {
   constructor(
+    private readonly mediaSourceService: MediaSourceService,
     private readonly queueRepository: QueueRepository,
     private readonly playlistRepository: PlaylistRepository,
     private readonly playlistVideoRepository: PlaylistMediaSourceRepository,
     private readonly userLikeRepository: UserLikeMediaSourceRepository,
-    private readonly queueService: QueueService,
     @Inject(YOUTUBEI_PROVIDER)
     private readonly youtubeProvider: IYoutubeiProvider,
     @Inject(SPOTIFY_PROVIDER)
@@ -34,6 +34,8 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
   @ValidateParams(AddTracksParamSchema)
   public async execute(params: AddTracksCommand): Promise<AddTracksResult> {
     const {
+      mediaSourceId,
+      youtubeKeyword,
       playlistId,
       youtubePlaylistId,
       spotifyPlaylistId,
@@ -49,12 +51,18 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    let sources: MediaSource[] = [];
-
     let limit = MAX_QUEUE_TRACKS - queue.tracks.length; // early checking
     if (limit <= 0) throw new BadRequestException("Queue is full");
 
-    if (playlistId) {
+    let sources: MediaSource[] = [];
+
+    if (mediaSourceId || youtubeKeyword) {
+      const mediaSource = await this.mediaSourceService.getSource({
+        mediaSourceId,
+        youtubeKeyword,
+      });
+      if (mediaSource) sources.push(mediaSource);
+    } else if (playlistId) {
       const playlist = await this.playlistRepository.getById(playlistId);
       if (!playlist) throw new NotFoundException("Playlist not found");
       if (playlist?.ownerId !== executor.id) throw new ForbiddenException("Missing permissions");

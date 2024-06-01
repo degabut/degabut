@@ -7,11 +7,13 @@ import * as Joi from "joi";
 export type AddTracksResult = string[];
 
 export class AddTracksCommand extends Command<AddTracksResult> implements IWithExecutor {
+  public readonly youtubeKeyword?: string;
+  public readonly mediaSourceId?: string;
   public readonly playlistId?: string;
   public readonly youtubePlaylistId?: string;
   public readonly spotifyPlaylistId?: string;
   public readonly spotifyAlbumId?: string;
-  public readonly lastLikedCount?: string;
+  public readonly lastLikedCount?: number;
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
 
@@ -22,6 +24,8 @@ export class AddTracksCommand extends Command<AddTracksResult> implements IWithE
 }
 
 export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
+  youtubeKeyword: Joi.string(),
+  mediaSourceId: Joi.string(),
   playlistId: Joi.string(),
   youtubePlaylistId: Joi.string(),
   spotifyPlaylistId: Joi.string(),
@@ -31,4 +35,12 @@ export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   executor: ExecutorSchema,
 })
   .required()
-  .xor("playlistId", "youtubePlaylistId", "spotifyPlaylistId", "spotifyAlbumId", "lastLikedCount");
+  .xor(
+    "youtubeKeyword",
+    "mediaSourceId",
+    "playlistId",
+    "youtubePlaylistId",
+    "spotifyPlaylistId",
+    "spotifyAlbumId",
+    "lastLikedCount",
+  );

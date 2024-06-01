@@ -4,7 +4,7 @@ import { CommandExceptionFilter } from "@discord-bot/filters";
 import { Injectable, NotFoundException, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JoinCommand } from "@queue-player/commands";
-import { AddTrackCommand, AddTracksCommand } from "@queue/commands";
+import { AddTracksCommand } from "@queue/commands";
 import {
   BaseGuildTextChannel,
   BaseGuildVoiceChannel,
@@ -122,7 +122,7 @@ export class PlayDiscordCommand  {
           ? `spotify/${spotifyIds.trackId}`
           : undefined;
 
-      const adapter = new AddTrackCommand({
+      const adapter = new AddTracksCommand({
         voiceChannelId: options.voiceChannel.id,
         mediaSourceId,
         youtubeKeyword: mediaSourceId ? undefined : options.keyword,

@@ -1,7 +1,7 @@
 import { ButtonInteraction } from "@discord-bot/decorators";
 import { ButtonInteractionResult, IButtonInteraction } from "@discord-bot/interfaces";
 import { CommandBus } from "@nestjs/cqrs";
-import { AddTrackCommand } from "@queue/commands";
+import { AddTracksCommand } from "@queue/commands";
 import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
@@ -26,7 +26,7 @@ export class AddTrackButtonInteraction implements IButtonInteraction {
       return;
     }
 
-    const command = new AddTrackCommand({
+    const command = new AddTracksCommand({
       mediaSourceId: `${args.source}/${args.id}`,
       voiceChannelId: interaction.member.voice.channelId,
       executor: { id: interaction.member.id },

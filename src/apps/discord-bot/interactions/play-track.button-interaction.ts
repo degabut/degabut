@@ -3,7 +3,7 @@ import { ButtonInteractionResult, IButtonInteraction } from "@discord-bot/interf
 import { MediaSourceType } from "@media-source/entities";
 import { NotFoundException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { AddTrackCommand, PlayTrackCommand } from "@queue/commands";
+import { AddTracksCommand, PlayTrackCommand } from "@queue/commands";
 import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
@@ -40,14 +40,14 @@ export class PlayTrackButtonInteraction implements IButtonInteraction {
       if (!(err instanceof NotFoundException)) throw err;
       if (!args.source || !args.id) return;
 
-      const command = new AddTrackCommand({
+      const command = new AddTracksCommand({
         mediaSourceId: `${args.source}/${args.id}`,
         voiceChannelId: interaction.member.voice.channelId,
         executor: { id: interaction.member.id },
       });
 
       const result = await this.commandBus.execute(command);
-      if (result) await interaction.deferUpdate();
+      if (result.length) await interaction.deferUpdate();
     }
   }
 }

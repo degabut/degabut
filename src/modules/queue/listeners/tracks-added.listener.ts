@@ -6,10 +6,7 @@ import { QueueService } from "@queue/services";
 export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
   constructor(private readonly queueService: QueueService) {}
 
-  public async handle({ queue, tracks }: TracksAddedEvent): Promise<void> {
-    if (queue.nowPlaying) return;
-
-    queue.nextTrack = tracks.at(0) || null;
-    this.queueService.processQueue(queue);
+  public async handle({ queue }: TracksAddedEvent): Promise<void> {
+    if (!queue.nowPlaying) this.queueService.processQueue(queue);
   }
 }

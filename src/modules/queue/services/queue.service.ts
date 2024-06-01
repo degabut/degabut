@@ -50,18 +50,14 @@ export class QueueService {
       nextIndex = Math.max(index, 0);
       queue.nextTrack = null;
     } else {
-      switch (queue.loopMode) {
-        case LoopMode.Track:
-          nextIndex = Math.max(nowPlayingIndex, 0);
-          break;
-        case LoopMode.Queue:
-          nextIndex = queue.shuffle ? this.getShuffledTrackIndex(queue) : nowPlayingIndex + 1;
-          break;
-        default:
-          nextIndex = queue.shuffle
-            ? RandomUtil.randomInt(0, queue.tracks.length - 1)
-            : nowPlayingIndex;
-          break;
+      if (queue.loopMode === LoopMode.Track) {
+        nextIndex = Math.max(nowPlayingIndex, 0);
+      } else if (queue.shuffle) {
+        nextIndex = this.getShuffledTrackIndex(queue);
+      } else if (queue.loopMode === LoopMode.Queue) {
+        nextIndex = nowPlayingIndex + 1;
+      } else {
+        nextIndex = nowPlayingIndex;
       }
     }
 

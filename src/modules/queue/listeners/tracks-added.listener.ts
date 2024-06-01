@@ -3,7 +3,7 @@ import { TracksAddedEvent } from "@queue/events";
 import { QueueService } from "@queue/services";
 
 @EventsHandler(TracksAddedEvent)
-export class TrackAddedListener implements IEventHandler<TracksAddedEvent> {
+export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
   constructor(private readonly queueService: QueueService) {}
 
   public async handle({ queue, tracks }: TracksAddedEvent): Promise<void> {

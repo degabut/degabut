@@ -1,7 +1,6 @@
 import { Command } from "@common/cqrs";
 import { Executor, IWithExecutor } from "@common/interfaces";
 import { ExecutorSchema } from "@common/schemas";
-import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import * as Joi from "joi";
 
 export type AddTracksResult = string[];
@@ -30,7 +29,7 @@ export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   youtubePlaylistId: Joi.string(),
   spotifyPlaylistId: Joi.string(),
   spotifyAlbumId: Joi.string(),
-  lastLikedCount: Joi.number().min(1).max(MAX_QUEUE_TRACKS),
+  lastLikedCount: Joi.number().min(1),
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
 })

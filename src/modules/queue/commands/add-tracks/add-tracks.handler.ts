@@ -82,7 +82,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
       if (album) sources = album.tracks.map((t) => MediaSource.fromSpotify(t));
     } else if (lastLikedCount) {
       const likedVideos = await this.userLikeRepository.getByUserId(executor.id, {
-        limit,
+        limit: Math.min(limit, lastLikedCount),
       });
       sources = likedVideos.map((v) => v.mediaSource!);
     }

@@ -12,6 +12,7 @@ import {
   AudioPlayerManagerEvents,
   IAudioPlayer,
   IAudioPlayerManager,
+  TrackEndReason,
 } from "./audio-player-manager.interface";
 
 @Injectable()
@@ -107,7 +108,16 @@ class AudioPlayer
     this.player.on("channelMove", (from, to) => this.emit("moved", from, to));
     this.player.on("disconnected", () => this.emit("disconnected"));
     this.player.on("trackStart", () => this.emit("trackStart"));
-    this.player.on("trackEnd", (_, reason) => this.emit("trackEnd", reason === "FINISHED"));
+    this.player.on("trackEnd", (_, reason) =>
+      this.emit(
+        "trackEnd",
+        reason === "FINISHED"
+          ? TrackEndReason.FINISHED
+          : reason === "STOPPED"
+            ? TrackEndReason.STOPPED
+            : TrackEndReason.ERROR,
+      ),
+    );
     this.player.on("trackException", (e) => this.emit("trackException", new Error(e || "unknown")));
     this.player.node.on("raw", this.onTick.bind(this));
   }

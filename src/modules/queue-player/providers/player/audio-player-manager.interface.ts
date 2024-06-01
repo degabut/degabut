@@ -12,13 +12,19 @@ export interface IAudioPlayerManager extends TypedEmitter<AudioPlayerManagerEven
   createAudioPlayer(guildId: string): IAudioPlayer;
 }
 
+export enum TrackEndReason {
+  FINISHED = "FINISHED",
+  ERROR = "ERROR",
+  STOPPED = "STOPPED",
+}
+
 export type AudioPlayerEvents = {
   tick: (position: number | null) => void;
   ready: () => void;
   moved: (from: string, to: string) => void;
   disconnected: () => void;
   trackStart: () => void;
-  trackEnd: (finished: boolean) => void;
+  trackEnd: (reason: TrackEndReason) => void;
   trackException: (e: Error) => void;
   error: (e: Error) => void;
 };

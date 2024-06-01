@@ -18,6 +18,7 @@ import {
   AudioPlayerManagerEvents,
   IAudioPlayer,
   IAudioPlayerManager,
+  TrackEndReason,
 } from "./audio-player-manager.interface";
 
 export class PlayDlPlayerProvider
@@ -120,11 +121,11 @@ class AudioPlayer
     const { stream, type } = await playDl.stream(videoId, { seek: seek / 1000 });
 
     stream.once("close", () => {
-      this.onStreamEnd(!this.isStopped);
+      this.onStreamEnd(this.isStopped ? TrackEndReason.STOPPED : TrackEndReason.FINISHED);
     });
 
     stream.once("error", (err) => {
-      this.onStreamEnd(false);
+      this.onStreamEnd(TrackEndReason.ERROR);
       this.emit("trackException", err);
     });
 
@@ -173,9 +174,9 @@ class AudioPlayer
     this.emit("error", err);
   }
 
-  private onStreamEnd(isFinished: boolean) {
+  private onStreamEnd(reason: TrackEndReason) {
     this.resource = null;
-    this.emit("trackEnd", isFinished);
+    this.emit("trackEnd", reason);
     this.stopTick();
   }
 }

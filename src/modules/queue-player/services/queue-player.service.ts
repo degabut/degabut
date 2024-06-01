@@ -15,6 +15,7 @@ import {
   TrackAudioFinishedEvent,
   TrackAudioStartedEvent,
 } from "@queue-player/events";
+import { TrackEndReason } from "@queue-player/providers";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import {
   Client,
@@ -112,7 +113,7 @@ export class QueuePlayerService {
       this.eventBus.publish(new TrackAudioStartedEvent({ track }));
     });
 
-    player.audioPlayer.on("trackEnd", async (isFinished) => {
+    player.audioPlayer.on("trackEnd", async (reason) => {
       const track = player.currentTrack;
       if (!track) return;
       player.currentTrack = null;
@@ -123,13 +124,15 @@ export class QueuePlayerService {
         mediaSourceId: track.mediaSource.id,
         voiceChannelId: player.voiceChannel.id,
         guildId: player.guild.id,
-        isFinished,
+        reason,
       });
 
-      if (!isFinished) await AsyncUtil.sleep(2500);
+      if (reason === TrackEndReason.ERROR) await AsyncUtil.sleep(1000);
 
       this.eventBus.publish(new TrackAudioEndedEvent({ track }));
-      if (isFinished) this.eventBus.publish(new TrackAudioFinishedEvent({ track }));
+      if (reason === TrackEndReason.FINISHED) {
+        this.eventBus.publish(new TrackAudioFinishedEvent({ track }));
+      }
     });
 
     player.audioPlayer.on("trackException", (e) => {

@@ -22,7 +22,7 @@ export class TracksMemberListener implements IEventHandler<Events> {
 
     this.gateway.send(memberIds, eventName, {
       tracks: tracks.map(TrackDto.create),
-      member: MemberDto.create(member),
+      member: member ? MemberDto.create(member) : null,
     });
   }
 }

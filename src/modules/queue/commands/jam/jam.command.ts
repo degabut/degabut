@@ -4,7 +4,7 @@ import { ExecutorSchema } from "@common/schemas";
 import * as Joi from "joi";
 
 export class JamCommand extends Command {
-  public readonly count?: number;
+  public readonly count!: number;
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
 

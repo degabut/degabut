@@ -2,10 +2,9 @@ import { ValidateParams } from "@common/decorators";
 import { MediaSource } from "@media-source/entities";
 import { MediaSourceService } from "@media-source/services";
 import { BadRequestException, ForbiddenException, Inject, NotFoundException } from "@nestjs/common";
-import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistMediaSourceRepository, PlaylistRepository } from "@playlist/repositories";
 import { Track } from "@queue/entities";
-import { TracksAddedEvent } from "@queue/events";
 import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { ISpotifyProvider } from "@spotify/providers";
@@ -28,7 +27,6 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     private readonly youtubeProvider: IYoutubeiProvider,
     @Inject(SPOTIFY_PROVIDER)
     private readonly spotifyProvider: ISpotifyProvider,
-    private readonly eventBus: EventBus,
   ) {}
 
   @ValidateParams(AddTracksParamSchema)
@@ -101,8 +99,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
         }),
     );
 
-    queue.tracks.push(...tracks);
-    this.eventBus.publish(new TracksAddedEvent({ queue, tracks, member }));
+    queue.addTracks(tracks);
 
     return tracks.map((t) => t.id);
   }

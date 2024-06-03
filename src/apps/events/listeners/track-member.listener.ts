@@ -4,10 +4,9 @@ import { GuildMemberDto } from "@queue-player/dtos";
 import { TrackSkippedEvent } from "@queue-player/events";
 import { MemberDto, TrackDto } from "@queue/dtos";
 import { Member } from "@queue/entities";
-import { TrackRemovedEvent } from "@queue/events";
 import { GuildMember } from "discord.js";
 
-const events = [TrackRemovedEvent, TrackSkippedEvent];
+const events = [TrackSkippedEvent];
 type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)

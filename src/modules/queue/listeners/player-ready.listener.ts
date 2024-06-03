@@ -1,9 +1,8 @@
 import { UserPlayHistoryRepository } from "@history/repositories";
 import { Logger } from "@logger/logger.service";
-import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { EventPublisher, EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { PlayerReadyEvent } from "@queue-player/events";
 import { Guild, Member, Queue, TextChannel, Track, VoiceChannel } from "@queue/entities";
-import { QueueCreatedEvent } from "@queue/events";
 import { MAX_QUEUE_HISTORY_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 
@@ -12,7 +11,7 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
   constructor(
     private readonly queueRepository: QueueRepository,
     private readonly playHistoryRepository: UserPlayHistoryRepository,
-    private readonly eventBus: EventBus,
+    private readonly eventPublisher: EventPublisher,
     private readonly logger: Logger,
   ) {
     this.logger.setContext(PlayerReadyListener.name);
@@ -27,39 +26,37 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
       });
     }
 
-    const queue = new Queue({
-      guild: new Guild({
-        id: player.guild.id,
-        name: player.guild.name,
-        icon: player.guild.iconURL(),
-      }),
-      voiceChannel: new VoiceChannel({
-        id: player.voiceChannel.id,
-        name: player.voiceChannel.name,
-        members: player.voiceChannel.members
-          .filter((m) => !m.user.bot)
-          .map((m) => Member.fromDiscordGuildMember(m, true)),
-      }),
-      textChannel: player.textChannel
-        ? new TextChannel({
-            id: player.textChannel.id,
-            name: player.textChannel.name,
-          })
-        : null,
-    });
-
     const history = await this.playHistoryRepository.getLastPlayedByVoiceChannelId(
       player.voiceChannel.id,
       { limit: MAX_QUEUE_HISTORY_TRACKS, page: 1, includeContent: true },
     );
 
-    queue.history = history.reduce<Track[]>((curr, { mediaSource }) => {
-      if (mediaSource) curr.push(new Track({ queue, mediaSource }));
-      return curr;
-    }, []);
+    const queue = this.eventPublisher.mergeObjectContext(
+      new Queue({
+        guild: new Guild({
+          id: player.guild.id,
+          name: player.guild.name,
+          icon: player.guild.iconURL(),
+        }),
+        voiceChannel: new VoiceChannel({
+          id: player.voiceChannel.id,
+          name: player.voiceChannel.name,
+          members: player.voiceChannel.members
+            .filter((m) => !m.user.bot)
+            .map((m) => Member.fromDiscordGuildMember(m, true)),
+        }),
+        textChannel: player.textChannel
+          ? new TextChannel({
+              id: player.textChannel.id,
+              name: player.textChannel.name,
+            })
+          : null,
+      }),
+    );
 
+    queue.history = history.map((h) => new Track({ mediaSource: h.mediaSource!, queue: queue }));
     this.queueRepository.save(queue);
 
-    this.eventBus.publish(new QueueCreatedEvent({ queue }));
+    queue.create();
   }
 }

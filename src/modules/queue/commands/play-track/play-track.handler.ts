@@ -1,17 +1,13 @@
 import { ValidateParams } from "@common/decorators";
 import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { TrackMarkedPlayNextEvent } from "@queue/events";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
 
 import { PlayTrackCommand, PlayTrackParamSchema } from "./play-track.command";
 
 @CommandHandler(PlayTrackCommand)
 export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackCommand> {
-  constructor(
-    private readonly queueRepository: QueueRepository,
-    private readonly eventBus: EventBus,
-  ) {}
+  constructor(private readonly queueRepository: QueueRepository) {}
 
   @ValidateParams(PlayTrackParamSchema)
   public async execute(params: PlayTrackCommand): Promise<string> {
@@ -22,13 +18,10 @@ export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackComman
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    const track = index ? queue.tracks[index] : queue.tracks.find((t) => t.id === trackId);
-    if (!track) throw new NotFoundException("Track not found");
-    if (track.id === queue.nowPlaying?.id)
-      throw new BadRequestException("Track is currently playing");
+    const idOrIndex = trackId || index;
+    if (!idOrIndex) throw new BadRequestException("Missing track identifier");
 
-    queue.nextTrack = track;
-    this.eventBus.publish(new TrackMarkedPlayNextEvent({ track, member }));
+    const track = queue.playTrack(idOrIndex, member);
 
     return track.id;
   }

@@ -1,7 +1,6 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { QueueShuffleToggledEvent } from "@queue/events";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
 
 import {
@@ -12,10 +11,7 @@ import {
 
 @CommandHandler(ToggleShuffleCommand)
 export class ToggleShuffleHandler implements IInferredCommandHandler<ToggleShuffleCommand> {
-  constructor(
-    private readonly queueRepository: QueueRepository,
-    private readonly eventBus: EventBus,
-  ) {}
+  constructor(private readonly queueRepository: QueueRepository) {}
 
   @ValidateParams(ToggleShuffleParamSchema)
   public async execute(params: ToggleShuffleCommand): Promise<ToggleShuffleResult> {
@@ -26,10 +22,6 @@ export class ToggleShuffleHandler implements IInferredCommandHandler<ToggleShuff
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    queue.shuffle = !queue.shuffle;
-
-    this.eventBus.publish(new QueueShuffleToggledEvent({ queue, member }));
-
-    return queue.shuffle;
+    return queue.toggleShuffle(member);
   }
 }

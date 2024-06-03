@@ -11,21 +11,26 @@ export class TracksRemovedListener implements IEventHandler<TracksRemovedEvent> 
     private readonly playerService: QueuePlayerService,
   ) {}
 
-  public async handle({ tracks, member, hasNowPlaying }: TracksRemovedEvent): Promise<void> {
+  public async handle({ tracks, member }: TracksRemovedEvent): Promise<void> {
     const queue = tracks.at(0)?.queue;
     if (!queue) return;
 
     const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 
-    const embed = new EmbedBuilder({
-      description: `🚮 **<@!${member.id}> removed ${tracks.length} tracks from the queue**`,
-    });
+    if (tracks.some((t) => player.currentTrack?.id === t.id)) player.audioPlayer.stop();
 
-    if (hasNowPlaying) player.audioPlayer.stop();
+    if (member) {
+      const trackInfo =
+        tracks.length > 1 ? `${tracks.length} tracks` : `${tracks[0].mediaSource.title}`;
 
-    await this.playerService.notify(player, {
-      embeds: [embed],
-    });
+      const embed = new EmbedBuilder({
+        description: `🚮 **<@!${member.id}>** removed **${trackInfo}** from the queue`,
+      });
+
+      await this.playerService.notify(player, {
+        embeds: [embed],
+      });
+    }
   }
 }

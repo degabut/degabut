@@ -1,9 +1,7 @@
 import { ValidateParams } from "@common/decorators";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { CommandHandler, EventBus, IInferredCommandHandler } from "@nestjs/cqrs";
-import { TrackRemovedEvent } from "@queue/events";
+import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
-import { QueueService } from "@queue/services";
 
 import {
   RemoveTrackCommand,
@@ -13,11 +11,7 @@ import {
 
 @CommandHandler(RemoveTrackCommand)
 export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCommand> {
-  constructor(
-    private readonly eventBus: EventBus,
-    private readonly queueRepository: QueueRepository,
-    private readonly queueService: QueueService,
-  ) {}
+  constructor(private readonly queueRepository: QueueRepository) {}
 
   @ValidateParams(RemoveTrackParamSchema)
   public async execute(params: RemoveTrackCommand): Promise<RemoveTrackResult> {
@@ -28,21 +22,7 @@ export class RemoveTrackHandler implements IInferredCommandHandler<RemoveTrackCo
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    const nowPlaying = queue.nowPlaying;
-    const removed = this.queueService.removeTrack(
-      queue,
-      isNowPlaying || trackId || (index ?? queue.tracks.length - 1),
-    );
-
-    if (removed) {
-      this.eventBus.publish(
-        new TrackRemovedEvent({
-          track: removed,
-          isNowPlaying: nowPlaying?.id === removed.id,
-          member,
-        }),
-      );
-    }
+    const removed = queue.removeTrack({ index, trackId, isNowPlaying }, member);
 
     return removed?.id || null;
   }

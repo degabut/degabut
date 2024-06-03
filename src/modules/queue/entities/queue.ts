@@ -330,12 +330,19 @@ export class Queue extends AggregateRoot {
   //#region processor
   public processQueue(): void {
     const nowPlayingIndex = this.tracks.findIndex((t) => t.id === this.nowPlaying?.id);
-    this.nowPlaying = null;
 
     if (this.loopMode === LoopMode.Disabled && nowPlayingIndex >= 0) {
       const tracks = this.tracks.splice(nowPlayingIndex, 1);
-
       this.apply(new TracksRemovedEvent({ tracks }));
+    } else if (this.nowPlaying) {
+      this.historyIds.push(this.nowPlaying.id);
+
+      if (!this.unplayedTrack.length) {
+        this.previousHistoryIds = [...this.historyIds];
+        this.historyIds = [this.nowPlaying.id];
+      }
+
+      this.nowPlaying.playedAt = null;
     }
 
     let nextIndex = 0;

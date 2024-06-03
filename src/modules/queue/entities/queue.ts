@@ -1,4 +1,5 @@
 import { ArrayUtil, RandomUtil } from "@common/utils";
+import { MediaSource } from "@media-source/entities";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { AggregateRoot } from "@nestjs/cqrs";
 import {
@@ -19,6 +20,7 @@ import {
   TracksAddedEvent,
   TracksRemovedEvent,
 } from "@queue/events";
+import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 
 import { Guild } from "./guild";
 import { Jam, JamCollection } from "./jam";
@@ -94,14 +96,25 @@ export class Queue extends AggregateRoot {
     return this.tracks.filter((t) => !this.historyIds.includes(t.id));
   }
 
-  public addTracks(tracks: Track[]): void {
-    const member = tracks[0].requestedBy;
-    if (!member) throw new Error("Missing member");
+  public addTracks(sources: MediaSource[], member: Member): Track[] {
+    const limit = MAX_QUEUE_TRACKS - this.tracks.length;
+    if (limit <= 0) throw new BadRequestException("Queue is full");
+
+    const tracks = sources.slice(0, limit).map(
+      (source) =>
+        new Track({
+          queue: this,
+          mediaSource: source,
+          requestedBy: member,
+        }),
+    );
 
     this.tracks.push(...tracks);
     this.apply(new TracksAddedEvent({ queue: this, tracks, member }));
 
     if (!this.nowPlaying) this.processQueue();
+
+    return tracks;
   }
 
   public removeTrack(opts: RemoveTrackOptions, member?: Member): Track | null {

@@ -4,7 +4,6 @@ import { MediaSourceService } from "@media-source/services";
 import { BadRequestException, ForbiddenException, Inject, NotFoundException } from "@nestjs/common";
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { PlaylistMediaSourceRepository, PlaylistRepository } from "@playlist/repositories";
-import { Track } from "@queue/entities";
 import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 import { QueueRepository } from "@queue/repositories";
 import { ISpotifyProvider } from "@spotify/providers";
@@ -87,19 +86,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
 
     if (!sources.length) throw new BadRequestException("No tracks found");
 
-    limit = MAX_QUEUE_TRACKS - queue.tracks.length; // recalculate, in case there's any changes when fetching the data
-    if (limit <= 0) throw new BadRequestException("Queue is full");
-
-    const tracks = sources.slice(0, limit).map(
-      (source) =>
-        new Track({
-          queue,
-          mediaSource: source,
-          requestedBy: member,
-        }),
-    );
-
-    queue.addTracks(tracks);
+    const tracks = queue.addTracks(sources, member);
 
     return tracks.map((t) => t.id);
   }

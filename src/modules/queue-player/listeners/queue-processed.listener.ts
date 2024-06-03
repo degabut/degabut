@@ -71,7 +71,10 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
       await this.mediaSourceService.storeSource(currentMediaSource);
 
       if (!currentMediaSource.playedYoutubeVideoId) {
-        this.logger.error({ error: "Track load failed", message: "Can't find youtube video id" });
+        this.logger.error({
+          error: "Track load failed",
+          message: `Can't find youtube video id for ${currentMediaSource.id}`,
+        });
         const event = new TrackLoadFailedEvent({ track: queue.nowPlaying });
         return this.eventBus.publish(event);
       }

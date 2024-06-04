@@ -99,6 +99,7 @@ class AudioPlayer
   implements IAudioPlayer
 {
   private readonly player: Player<Node>;
+  private onTickListener: AudioPlayer["onTick"];
 
   constructor(player: Player<Node>) {
     super();
@@ -119,7 +120,9 @@ class AudioPlayer
       ),
     );
     this.player.on("trackException", (e) => this.emit("trackException", new Error(e || "unknown")));
-    this.player.node.on("raw", this.onTick.bind(this));
+
+    this.onTickListener = this.onTick.bind(this);
+    this.player.node.on("raw", this.onTickListener);
   }
 
   private onTick(e: Parameters<NodeEvents["raw"]>[0]) {
@@ -154,7 +157,7 @@ class AudioPlayer
 
   disconnect(): void {
     this.player.disconnect();
-    this.player.node.removeListener("raw", this.onTick);
+    this.player.node.removeListener("raw", this.onTickListener);
     this.player.node.destroyPlayer(this.player.guildId);
   }
 

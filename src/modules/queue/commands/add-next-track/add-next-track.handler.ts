@@ -3,15 +3,19 @@ import { BadRequestException, ForbiddenException, NotFoundException } from "@nes
 import { CommandHandler, IInferredCommandHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
 
-import { PlayTrackCommand, PlayTrackParamSchema } from "./play-track.command";
+import {
+  AddNextTrackCommand,
+  AddNextTrackParamSchema,
+  AddNextTrackResult,
+} from "./add-next-track.command";
 
-@CommandHandler(PlayTrackCommand)
-export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackCommand> {
+@CommandHandler(AddNextTrackCommand)
+export class AddNextTrackHandler implements IInferredCommandHandler<AddNextTrackCommand> {
   constructor(private readonly queueRepository: QueueRepository) {}
 
-  @ValidateParams(PlayTrackParamSchema)
-  public async execute(params: PlayTrackCommand): Promise<string> {
-    const { voiceChannelId, index, trackId, executor } = params;
+  @ValidateParams(AddNextTrackParamSchema)
+  public async execute(params: AddNextTrackCommand): Promise<AddNextTrackResult> {
+    const { voiceChannelId, index, playNow, trackId, executor } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found");
@@ -21,7 +25,7 @@ export class PlayTrackHandler implements IInferredCommandHandler<PlayTrackComman
     const idOrIndex = trackId || index;
     if (!idOrIndex) throw new BadRequestException("Missing track identifier");
 
-    const track = queue.playTrack(idOrIndex, member);
+    const track = queue.addNextTrack(idOrIndex, playNow, member);
 
     return track.id;
   }

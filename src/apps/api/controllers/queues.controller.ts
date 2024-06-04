@@ -3,16 +3,17 @@ import { AuthGuard } from "@auth/guards";
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
+  AddNextTrackCommand,
   AddTracksCommand,
   ChangeLoopModeCommand,
   ChangeTrackOrderCommand,
   ClearQueueCommand,
   JamCommand,
-  PlayTrackCommand,
   RemoveTrackCommand,
   RemoveTracksCommand,
   ToggleShuffleCommand,
 } from "@queue/commands";
+import { RemoveNextTrackCommand } from "@queue/commands/remove-next-track";
 import { LoopMode } from "@queue/entities";
 import { GetQueueQuery } from "@queue/queries";
 
@@ -129,7 +130,31 @@ export class QueuesController {
   @UseGuards(AuthGuard)
   async playTrack(@Param() params: TrackParam, @User() executor: AuthUser) {
     await this.commandBus.execute(
-      new PlayTrackCommand({
+      new AddNextTrackCommand({
+        ...params,
+        playNow: true,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/tracks/:trackId/next")
+  @UseGuards(AuthGuard)
+  async addNextTrack(@Param() params: TrackParam, @User() executor: AuthUser) {
+    await this.commandBus.execute(
+      new AddNextTrackCommand({
+        ...params,
+        playNow: false,
+        executor,
+      }),
+    );
+  }
+
+  @Delete("/:voiceChannelId/tracks/:trackId/next")
+  @UseGuards(AuthGuard)
+  async deleteNextTrack(@Param() params: TrackParam, @User() executor: AuthUser) {
+    await this.commandBus.execute(
+      new RemoveNextTrackCommand({
         ...params,
         executor,
       }),

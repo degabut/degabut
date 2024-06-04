@@ -7,6 +7,8 @@ import {
   MemberJoinedEvent,
   MemberLeftEvent,
   MemberUpdatedEvent,
+  NextTrackAddedEvent,
+  NextTrackRemovedEvent,
   QueueClearedEvent,
   QueueCreatedEvent,
   QueueDestroyedEvent,
@@ -15,7 +17,6 @@ import {
   QueueShuffleToggledEvent,
   QueueTextChannelChangedEvent,
   QueueVoiceChannelChangedEvent,
-  TrackMarkedPlayNextEvent,
   TrackOrderChangedEvent,
   TracksAddedEvent,
   TracksRemovedEvent,
@@ -60,7 +61,7 @@ export class Queue extends AggregateRoot {
   public tracks: Array<Track> = [];
   public history: Array<Track> = [];
   public nowPlaying: Track | null = null;
-  public nextTrack: Track | null = null;
+  public nextTrackIds: string[] = [];
   public loopMode: LoopMode = LoopMode.Disabled;
   public shuffle: boolean = false;
   public historyIds: Array<string> = [];
@@ -133,8 +134,9 @@ export class Queue extends AggregateRoot {
     const removed = this.tracks.at(index);
     if (!removed) return null;
 
-    if (removed.id === this.nowPlaying?.id && !this.shuffle) {
-      this.nextTrack = this.tracks[index + 1] || null;
+    if (removed.id === this.nowPlaying?.id && !this.shuffle && !this.nextTrackIds.length) {
+      const nextTrackId = this.tracks.at(index + 1)?.id || null;
+      if (nextTrackId) this.addNextTrackId(nextTrackId);
     }
 
     const tracks = this.tracks.splice(index, 1);
@@ -170,12 +172,14 @@ export class Queue extends AggregateRoot {
 
     if (!removedTracks.length) return [];
 
-    if (!this.shuffle && hasNowPlaying) {
+    if (!this.shuffle && hasNowPlaying && !this.nextTrackIds.length) {
       queueTrackIds = queueTrackIds.filter(
         (id) => removedTracks.some((t) => t.id === id) || id === nowPlayingId,
       );
       const nowPlayingIndex = queueTrackIds.findIndex((id) => id === nowPlayingId);
-      this.nextTrack = this.tracks[nowPlayingIndex] || null;
+
+      const nextTrack = nowPlayingIndex >= 0 ? this.tracks.at(nowPlayingIndex) : null;
+      if (nextTrack) this.addNextTrackId(nextTrack.id);
     }
 
     this.apply(
@@ -207,19 +211,30 @@ export class Queue extends AggregateRoot {
     this.apply(new TrackOrderChangedEvent({ track, to, member }));
   }
 
-  public playTrack(idOrIndex: string | number, member: Member) {
+  public addNextTrack(idOrIndex: string | number, playNow: boolean, member: Member) {
     const track =
       typeof idOrIndex === "number"
         ? this.tracks[idOrIndex]
         : this.tracks.find((t) => t.id === idOrIndex);
 
     if (!track) throw new NotFoundException("Track not found");
-    if (track.id === this.nowPlaying?.id) {
-      throw new BadRequestException("Track is currently playing");
-    }
+    if (track.id === this.nowPlaying?.id) throw new BadRequestException("Track is playing");
 
-    this.nextTrack = track;
-    this.apply(new TrackMarkedPlayNextEvent({ track, member }));
+    this.addNextTrackId(track.id);
+    this.apply(new NextTrackAddedEvent({ track, member, playNow }));
+
+    return track;
+  }
+
+  public removeNextTrack(id?: string, member?: Member): Track | null {
+    if (!id) id = this.nextTrackIds.at(0);
+
+    const track = this.tracks.find((t) => t.id === id);
+    if (!track) return null;
+
+    this.nextTrackIds = this.nextTrackIds.filter((id) => track.id !== id);
+
+    this.apply(new NextTrackRemovedEvent({ track, member }));
 
     return track;
   }
@@ -345,13 +360,20 @@ export class Queue extends AggregateRoot {
       this.nowPlaying.playedAt = null;
     }
 
-    let nextIndex = 0;
+    let nextIndex: number | null = null;
 
-    if (this.nextTrack) {
-      const index = this.tracks.findIndex((t) => t.id === this.nextTrack?.id);
-      nextIndex = Math.max(index, 0);
-      this.nextTrack = null;
-    } else {
+    while (this.nextTrackIds.length > 0) {
+      const nextTrack = this.removeNextTrack();
+      if (!nextTrack) continue;
+
+      const index = this.tracks.findIndex((t) => t.id === nextTrack.id);
+      if (index >= 0) {
+        nextIndex = index;
+        break;
+      }
+    }
+
+    if (nextIndex === null) {
       if (this.loopMode === LoopMode.Track) {
         nextIndex = Math.max(nowPlayingIndex, 0);
       } else if (this.shuffle) {
@@ -362,6 +384,8 @@ export class Queue extends AggregateRoot {
         nextIndex = nowPlayingIndex;
       }
     }
+
+    if (nextIndex === null) nextIndex = 0;
 
     this.nowPlaying = this.tracks.at(nextIndex) || this.tracks.at(0) || null;
 
@@ -389,6 +413,12 @@ export class Queue extends AggregateRoot {
 
     return randomTrack ? this.tracks.findIndex((t) => t.id === randomTrack?.id) : 0;
   }
+
+  private addNextTrackId(trackId: string) {
+    // remove existing track id
+    this.nextTrackIds = this.nextTrackIds.filter((id) => id !== trackId);
+    this.nextTrackIds.unshift(trackId);
+  }
   //#endregion
 
   //#region event handlers
@@ -397,6 +427,7 @@ export class Queue extends AggregateRoot {
       (id) => !tracks.some((t) => t.id === id),
     );
     this.historyIds = this.historyIds.filter((id) => !tracks.some((t) => t.id === id));
+    this.nextTrackIds = this.nextTrackIds.filter((id) => !tracks.some((t) => t.id === id));
   }
   //#endregion
 }

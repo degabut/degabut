@@ -27,6 +27,9 @@ export class QueueDto {
   public nowPlaying!: TrackDto;
 
   @Expose()
+  public nextTrackIds!: string[];
+
+  @Expose()
   @Type(() => VoiceChannelDto)
   public voiceChannel!: VoiceChannelDto;
 

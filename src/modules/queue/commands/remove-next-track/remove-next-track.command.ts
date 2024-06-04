@@ -3,23 +3,24 @@ import { Executor, IWithExecutor } from "@common/interfaces";
 import { ExecutorSchema } from "@common/schemas";
 import * as Joi from "joi";
 
-export class PlayTrackCommand extends Command<string> implements IWithExecutor {
+export type RemoveNextTrackResult = string | null;
+
+export class RemoveNextTrackCommand
+  extends Command<RemoveNextTrackResult>
+  implements IWithExecutor
+{
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
-  public readonly index?: number;
-  public readonly trackId?: string;
+  public readonly trackId!: string;
 
-  constructor(params: PlayTrackCommand) {
+  constructor(params: RemoveNextTrackCommand) {
     super();
     Object.assign(this, params);
   }
 }
 
-export const PlayTrackParamSchema = Joi.object<PlayTrackCommand>({
+export const RemoveNextTrackParamSchema = Joi.object<RemoveNextTrackCommand>({
   voiceChannelId: Joi.string().required(),
+  trackId: Joi.string().required(),
   executor: ExecutorSchema,
-  index: Joi.number().min(0).failover(0).allow(0),
-  trackId: Joi.string(),
-})
-  .required()
-  .xor("trackId", "index");
+}).required();

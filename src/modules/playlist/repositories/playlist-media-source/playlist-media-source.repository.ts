@@ -36,6 +36,17 @@ export class PlaylistMediaSourceRepository {
     return result ? PlaylistMediaSourceRepositoryMapper.toDomainEntity(result) : undefined;
   }
 
+  public async getByPlaylistAndMediaSourceId(
+    playlistId: string,
+    mediaSourceId: string,
+  ): Promise<PlaylistMediaSource | undefined> {
+    const result = await PlaylistMediaSourceModel.query().findOne({
+      playlist_id: playlistId,
+      media_source_id: mediaSourceId,
+    });
+    return result ? PlaylistMediaSourceRepositoryMapper.toDomainEntity(result) : undefined;
+  }
+
   public async getByPlaylistId(
     playlistId: string,
     options: IPaginationParameter,

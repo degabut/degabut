@@ -13,6 +13,7 @@ export class AddTracksCommand extends Command<AddTracksResult> implements IWithE
   public readonly spotifyPlaylistId?: string;
   public readonly spotifyAlbumId?: string;
   public readonly lastLikedCount?: number;
+  public readonly allowDuplicates?: boolean;
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
 
@@ -30,6 +31,7 @@ export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   spotifyPlaylistId: Joi.string(),
   spotifyAlbumId: Joi.string(),
   lastLikedCount: Joi.number().min(1),
+  allowDuplicates: Joi.boolean().default(false),
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
 })

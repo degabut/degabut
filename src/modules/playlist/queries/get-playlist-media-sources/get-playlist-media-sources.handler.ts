@@ -29,7 +29,7 @@ export class GetPlaylistMediaSourceHandler
       throw new ForbiddenException("Missing permissions");
 
     const playlistMediaSources = await this.playlistMediaSourceRepository.getByPlaylistId(
-      params.playlistId,
+      playlist.id,
       params,
     );
 

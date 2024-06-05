@@ -11,6 +11,7 @@ export class AddPlaylistMediaSourceCommand
 {
   public readonly playlistId!: string;
   public readonly mediaSourceId!: string;
+  public readonly allowDuplicates?: boolean;
   public readonly executor!: Executor;
 
   constructor(params: AddPlaylistMediaSourceCommand) {
@@ -22,5 +23,6 @@ export class AddPlaylistMediaSourceCommand
 export const AddPlaylistMediaSourceParamSchema = Joi.object<AddPlaylistMediaSourceCommand>({
   playlistId: Joi.string().required(),
   mediaSourceId: Joi.string().required(),
+  allowDuplicates: Joi.boolean().default(false),
   executor: ExecutorSchema,
 }).required();

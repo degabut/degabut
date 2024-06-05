@@ -97,9 +97,13 @@ export class Queue extends AggregateRoot {
     return this.tracks.filter((t) => !this.historyIds.includes(t.id));
   }
 
-  public addTracks(sources: MediaSource[], member: Member): Track[] {
+  public addTracks(sources: MediaSource[], allowDuplicates: boolean, member: Member): Track[] {
     const limit = MAX_QUEUE_TRACKS - this.tracks.length;
     if (limit <= 0) throw new BadRequestException("Queue is full");
+
+    if (!allowDuplicates) {
+      sources = sources.filter((s) => !this.tracks.some((t) => t.mediaSource.id === s.id));
+    }
 
     const tracks = sources.slice(0, limit).map(
       (source) =>

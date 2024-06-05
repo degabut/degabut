@@ -38,6 +38,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
       spotifyPlaylistId,
       spotifyAlbumId,
       lastLikedCount,
+      allowDuplicates,
       executor,
       voiceChannelId,
     } = params;
@@ -86,7 +87,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
 
     if (!sources.length) throw new BadRequestException("No tracks found");
 
-    const tracks = queue.addTracks(sources, member);
+    const tracks = queue.addTracks(sources, !!allowDuplicates, member);
 
     return tracks.map((t) => t.id);
   }

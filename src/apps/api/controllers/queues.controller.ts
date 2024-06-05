@@ -32,6 +32,7 @@ type AddTracksBody = {
   youtubePlaylistId?: string;
   spotifyPlaylistId?: string;
   spotifyAlbumId?: string;
+  allowDuplicates?: boolean;
   lastLikedCount?: number;
 };
 

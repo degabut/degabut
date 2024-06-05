@@ -26,7 +26,7 @@ export class AddPlaylistMediaSourceHandler
   public async execute(
     params: AddPlaylistMediaSourceCommand,
   ): Promise<AddPlaylistMediaSourceResult> {
-    const { mediaSourceId, playlistId, executor } = params;
+    const { mediaSourceId, playlistId, allowDuplicates, executor } = params;
 
     const playlist = await this.playlistRepository.getById(playlistId);
     if (playlist?.ownerId !== executor.id) throw new ForbiddenException("No permission");
@@ -36,13 +36,21 @@ export class AddPlaylistMediaSourceHandler
       throw new BadRequestException("Playlist item limit reached");
     }
 
+    if (!allowDuplicates) {
+      const isExists = !!this.playlistMediaSourceRepository.getByPlaylistAndMediaSourceId(
+        playlist.id,
+        mediaSourceId,
+      );
+      if (isExists) throw new BadRequestException("Media source already exists in playlist");
+    }
+
     const source = await this.mediaSourceService.getSource({ mediaSourceId });
 
     if (!source) throw new BadRequestException("Media source not found");
 
     const playlistMediaSource = new PlaylistMediaSource({
       mediaSourceId: source.id,
-      playlistId,
+      playlistId: playlist.id,
       createdBy: executor.id,
     });
 

@@ -60,6 +60,7 @@ export class PlaylistMediaSourceRepository {
       .withGraphJoined("mediaSource.spotifyTrack")
       .withGraphJoined("mediaSource.spotifyTrack.album")
       .withGraphJoined("mediaSource.spotifyTrack.artists")
+      .orderBy("created_at", "desc")
       .modify((qb) => {
         if (options.limit) {
           qb.limit(options.limit);

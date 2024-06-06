@@ -1,5 +1,6 @@
 import { IPaginationParameter } from "@common/interfaces";
 import { UserMostPlayedDto } from "@history/dtos";
+import { MAX_HISTORY_DAYS } from "@history/history.constants";
 import { MediaSourceRepositoryMapper } from "@media-source/repositories";
 import { Inject, Injectable } from "@nestjs/common";
 
@@ -71,6 +72,8 @@ export class UserPlayHistoryRepository {
     selection: GetSelections,
     options: GetLastPlayedOptions,
   ): Promise<UserPlayHistory[]> {
+    const playedAtLimit = new Date(Date.now() - MAX_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+
     const results = await this.userPlayHistoryModel
       .query()
       .from((builder) => {
@@ -86,6 +89,7 @@ export class UserPlayHistoryRepository {
 
             if (options.excludeUserIds) qb.whereNotIn("user_id", options.excludeUserIds);
           })
+          .where("played_at", ">=", playedAtLimit)
           .as("user_play_history");
       })
       .orderBy("played_at", "desc")

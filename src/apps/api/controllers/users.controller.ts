@@ -11,7 +11,7 @@ type UserIdParams = {
 type GetHistoryQuery =
   | {
       last: string;
-      page: string;
+      page?: string;
     }
   | {
       count: string;
@@ -33,7 +33,7 @@ export class UsersController {
       ? this.queryBus.execute(
           new GetLastPlayedQuery({
             limit: +query.last,
-            page: +query.page,
+            page: query.page ? +query.page : undefined,
             ...params,
             executor,
           }),

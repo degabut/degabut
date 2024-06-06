@@ -21,7 +21,7 @@ import {
 type GetHistoryQuery =
   | {
       last: string;
-      page: string;
+      page?: string;
     }
   | {
       count: string;

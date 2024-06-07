@@ -115,8 +115,8 @@ export class Queue extends AggregateRoot {
     );
 
     this.tracks.push(...tracks);
-    this.apply(new TracksAddedEvent({ queue: this, tracks, member }));
 
+    if (tracks.length) this.apply(new TracksAddedEvent({ queue: this, tracks, member }));
     if (!this.nowPlaying) this.processQueue();
 
     return tracks;

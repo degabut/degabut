@@ -1,15 +1,15 @@
-import { SpotifyImage } from "./spotify-image";
+import { Image } from "@common/entities";
 
 interface Props {
   id: string;
   name: string;
-  images: SpotifyImage[];
+  images: Image[];
 }
 
 export class SpotifyAlbumCompact {
   public readonly id: string;
   public readonly name: string;
-  public readonly images: SpotifyImage[];
+  public readonly images: Image[];
 
   constructor(props: Props) {
     this.id = props.id;

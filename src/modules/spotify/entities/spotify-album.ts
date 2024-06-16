@@ -1,11 +1,12 @@
+import { Image } from "@common/entities";
+
 import { SpotifyAlbumCompact } from "./spotify-album-compact";
-import { SpotifyImage } from "./spotify-image";
 import { SpotifyTrack } from "./spotify-track";
 
 interface Props {
   id: string;
   name: string;
-  images: SpotifyImage[];
+  images: Image[];
   tracks: SpotifyTrack[];
 }
 

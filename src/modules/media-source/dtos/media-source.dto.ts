@@ -1,3 +1,4 @@
+import { ImageDto } from "@common/dtos";
 import { SpotifyTrackDto } from "@spotify/dtos";
 import { YoutubeVideoCompactDto } from "@youtube/dtos";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
@@ -28,10 +29,8 @@ export class MediaSourceDto {
   public duration!: number;
 
   @Expose()
-  public maxThumbnailUrl!: string | null;
-
-  @Expose()
-  public minThumbnailUrl!: string | null;
+  @Type(() => ImageDto)
+  public images!: ImageDto[];
 
   @Expose()
   public playedYoutubeVideoId!: string | null;

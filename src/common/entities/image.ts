@@ -4,7 +4,7 @@ interface Props {
   height: number;
 }
 
-export class YoutubeThumbnail implements Props {
+export class Image implements Props {
   public readonly url: string;
   public readonly width: number;
   public readonly height: number;

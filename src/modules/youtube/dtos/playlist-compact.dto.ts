@@ -1,8 +1,8 @@
+import { ImageDto } from "@common/dtos";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
 import { YoutubePlaylistCompact } from "../entities";
 import { YoutubeChannelDto } from "./channel.dto";
-import { YoutubeThumbnailDto } from "./thumbnail.dto";
 
 @Exclude()
 export class YoutubePlaylistCompactDto {
@@ -16,8 +16,8 @@ export class YoutubePlaylistCompactDto {
   videoCount!: number;
 
   @Expose()
-  @Type(() => YoutubeThumbnailDto)
-  thumbnails!: YoutubeThumbnailDto[];
+  @Type(() => ImageDto)
+  thumbnails!: ImageDto[];
 
   @Expose()
   @Type(() => YoutubeChannelDto)

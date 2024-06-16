@@ -1,7 +1,7 @@
+import { ImageDto } from "@common/dtos";
 import { Exclude, Expose, Type, plainToInstance } from "class-transformer";
 
 import { SpotifyAlbum } from "../entities";
-import { SpotifyImageDto } from "./spotify-image.dto";
 
 @Exclude()
 export class SpotifyAlbumDto {
@@ -12,8 +12,8 @@ export class SpotifyAlbumDto {
   name!: string;
 
   @Expose()
-  @Type(() => SpotifyImageDto)
-  images!: SpotifyImageDto[];
+  @Type(() => ImageDto)
+  images!: ImageDto[];
 
   public static create(entity: SpotifyAlbum): SpotifyAlbumDto {
     return plainToInstance(SpotifyAlbumDto, entity);

@@ -1,11 +1,12 @@
+import { Image } from "@common/entities";
+
 import { YoutubeChannel } from "./channel";
-import { YoutubeThumbnail } from "./thumbnail";
 
 interface Props {
   id: string;
   title: string;
   duration: number;
-  thumbnails: YoutubeThumbnail[];
+  thumbnails: Image[];
   channel: YoutubeChannel | null;
   viewCount: number | null;
   updatedAt?: Date;
@@ -15,7 +16,7 @@ export class YoutubeVideoCompact implements Props {
   public readonly id: string;
   public title: string;
   public readonly duration: number;
-  public readonly thumbnails: YoutubeThumbnail[];
+  public readonly thumbnails: Image[];
   public readonly channel: YoutubeChannel | null;
   public readonly viewCount: number | null;
   public readonly updatedAt: Date;

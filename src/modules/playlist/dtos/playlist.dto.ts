@@ -1,5 +1,6 @@
+import { Image } from "@common/entities";
 import { Playlist } from "@playlist/entities";
-import { Exclude, Expose, plainToInstance, Transform } from "class-transformer";
+import { Exclude, Expose, Transform, Type, plainToInstance } from "class-transformer";
 
 @Exclude()
 export class PlaylistDto {
@@ -14,6 +15,10 @@ export class PlaylistDto {
 
   @Expose()
   mediaSourceCount!: number;
+
+  @Expose()
+  @Type(() => Image)
+  images!: Image[];
 
   @Expose()
   @Transform(({ value }) => value?.toISOString() || null)

@@ -1,4 +1,5 @@
-import { YoutubeThumbnail, YoutubeVideoCompact } from "@youtube/entities";
+import { Image } from "@common/entities";
+import { YoutubeVideoCompact } from "@youtube/entities";
 
 import { YoutubeChannelRepositoryMapper } from "../youtube-channel";
 import { YoutubeVideoModel, YoutubeVideoModelProps } from "./youtube-video.model";
@@ -23,7 +24,7 @@ export class YoutubeVideoRepositoryMapper {
       ...model,
       viewCount: model.viewCount ? +model.viewCount : null,
       channel: model.channel ? YoutubeChannelRepositoryMapper.toDomainEntity(model.channel) : null,
-      thumbnails: model.thumbnails.map((t) => new YoutubeThumbnail(t)),
+      thumbnails: model.thumbnails.map((t) => new Image(t)),
       updatedAt: model.updatedAt,
     });
 

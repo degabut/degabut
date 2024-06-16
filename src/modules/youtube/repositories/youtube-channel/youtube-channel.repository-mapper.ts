@@ -1,4 +1,5 @@
-import { YoutubeChannel, YoutubeThumbnail } from "@youtube/entities";
+import { Image } from "@common/entities";
+import { YoutubeChannel } from "@youtube/entities";
 
 import { YoutubeChannelModel, YoutubeChannelModelProps } from "./youtube-channel.model";
 
@@ -17,7 +18,7 @@ export class YoutubeChannelRepositoryMapper {
     const entity = new YoutubeChannel({
       id: model.id,
       name: model.name,
-      thumbnails: model.thumbnails?.map((t) => new YoutubeThumbnail(t)) || [],
+      thumbnails: model.thumbnails?.map((t) => new Image(t)) || [],
     });
 
     return entity;

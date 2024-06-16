@@ -1,10 +1,10 @@
+import { Image } from "@common/entities";
 import { Logger } from "@logger/logger.service";
 import { Injectable } from "@nestjs/common";
 import {
   SpotifyAlbum,
   SpotifyAlbumCompact,
   SpotifyArtist,
-  SpotifyImage,
   SpotifyPlaylist,
   SpotifyTrack,
 } from "@spotify/entities";
@@ -46,7 +46,7 @@ export class SpotifyProvider implements ISpotifyProvider {
       return new SpotifyPlaylist({
         id: playlist.id,
         name: playlist.name,
-        images: playlist.images.map((i) => new SpotifyImage(i)),
+        images: playlist.images.map((i) => new Image(i)),
         tracks: playlist.tracks.items // up to 100 tracks by default
           .filter((t) => t.track.type === "track") // ignore album
           .map((t) => this.trackToEntity(t.track as Track)),
@@ -63,7 +63,7 @@ export class SpotifyProvider implements ISpotifyProvider {
       return new SpotifyAlbum({
         id: album.id,
         name: album.name,
-        images: album.images.map((i) => new SpotifyImage(i)),
+        images: album.images.map((i) => new Image(i)),
         tracks: album.tracks.items.map((t) => this.trackToEntity({ ...t, album })),
       });
     } catch {
@@ -85,7 +85,7 @@ export class SpotifyProvider implements ISpotifyProvider {
       album: new SpotifyAlbumCompact({
         id: album.id,
         name: album.name,
-        images: album.images.map((i) => new SpotifyImage(i)),
+        images: album.images.map((i) => new Image(i)),
       }),
     });
   }

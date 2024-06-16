@@ -1,15 +1,15 @@
-import { YoutubeThumbnail } from "./thumbnail";
+import { Image } from "@common/entities";
 
 interface Props {
   id: string;
   name: string;
-  thumbnails: YoutubeThumbnail[];
+  thumbnails: Image[];
 }
 
 export class YoutubeChannel implements Props {
   public readonly id: string;
   public readonly name: string;
-  public readonly thumbnails: YoutubeThumbnail[];
+  public readonly thumbnails: Image[];
 
   constructor(props: Props) {
     this.id = props.id;

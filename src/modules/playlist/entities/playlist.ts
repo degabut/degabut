@@ -1,3 +1,4 @@
+import { Image } from "@common/entities";
 import { v4 } from "uuid";
 
 interface ConstructorProps {
@@ -14,6 +15,7 @@ export class Playlist {
   public name: string;
   public readonly ownerId: string;
   public mediaSourceCount: number;
+  public images: Image[];
   public readonly createdAt: Date;
   public updatedAt: Date;
 
@@ -22,6 +24,7 @@ export class Playlist {
     this.name = props.name;
     this.ownerId = props.ownerId;
     this.mediaSourceCount = props.mediaSourceCount;
+    this.images = [];
     this.createdAt = props.createdAt || new Date();
     this.updatedAt = props.updatedAt || new Date();
   }

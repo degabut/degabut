@@ -1,3 +1,4 @@
+import { Image } from "@common/entities";
 import { SpotifyTrack } from "@spotify/entities";
 import { YoutubeVideoCompact } from "@youtube/entities";
 import { v4 } from "uuid";
@@ -98,14 +99,8 @@ export class MediaSource {
     return MediaSourceType.YOUTUBE;
   }
 
-  public get maxThumbnailUrl(): string | undefined {
-    const thumbnails = this.youtubeVideo?.thumbnails || this.spotifyTrack?.album?.images;
-    return thumbnails?.sort((a, b) => b.width - a.width).at(0)?.url;
-  }
-
-  public get minThumbnailUrl(): string | undefined {
-    const thumbnails = this.youtubeVideo?.thumbnails || this.spotifyTrack?.album?.images;
-    return thumbnails?.sort((a, b) => a.width - b.width).at(0)?.url;
+  public get images(): Image[] {
+    return this.youtubeVideo?.thumbnails || this.spotifyTrack?.album?.images || [];
   }
 
   public get url(): string {

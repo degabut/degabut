@@ -1,7 +1,7 @@
+import { ImageDto } from "@common/dtos";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
 import { YoutubeChannel } from "../entities";
-import { YoutubeThumbnailDto } from "./thumbnail.dto";
 
 @Exclude()
 export class YoutubeChannelDto {
@@ -12,8 +12,8 @@ export class YoutubeChannelDto {
   public name!: string;
 
   @Expose()
-  @Type(() => YoutubeThumbnailDto)
-  thumbnails!: YoutubeThumbnailDto[];
+  @Type(() => ImageDto)
+  thumbnails!: ImageDto[];
 
   public static create(entity: YoutubeChannel): YoutubeChannelDto {
     return plainToInstance(YoutubeChannelDto, entity);

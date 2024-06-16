@@ -1,12 +1,13 @@
+import { Image } from "@common/entities";
+
 import { YoutubeChannel } from "./channel";
-import { YoutubeThumbnail } from "./thumbnail";
 
 interface Props {
   id: string;
   title: string;
   videoCount: number;
   channel: YoutubeChannel | null;
-  thumbnails: YoutubeThumbnail[];
+  thumbnails: Image[];
 }
 
 export class YoutubePlaylistCompact implements Props {
@@ -14,7 +15,7 @@ export class YoutubePlaylistCompact implements Props {
   public readonly title: string;
   public readonly videoCount: number;
   public readonly channel: YoutubeChannel | null;
-  public readonly thumbnails: YoutubeThumbnail[];
+  public readonly thumbnails: Image[];
 
   constructor(props: Props) {
     this.id = props.id;

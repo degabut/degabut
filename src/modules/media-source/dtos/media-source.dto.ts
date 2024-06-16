@@ -33,6 +33,12 @@ export class MediaSourceDto {
   public images!: ImageDto[];
 
   @Expose()
+  public maxThumbnailUrl!: string | null;
+
+  @Expose()
+  public minThumbnailUrl!: string | null;
+
+  @Expose()
   public playedYoutubeVideoId!: string | null;
 
   @Expose()

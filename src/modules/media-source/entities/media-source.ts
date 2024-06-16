@@ -103,6 +103,16 @@ export class MediaSource {
     return this.youtubeVideo?.thumbnails || this.spotifyTrack?.album?.images || [];
   }
 
+  public get maxThumbnailUrl(): string | undefined {
+    const thumbnails = this.youtubeVideo?.thumbnails || this.spotifyTrack?.album?.images;
+    return thumbnails?.sort((a, b) => b.width - a.width).at(0)?.url;
+  }
+
+  public get minThumbnailUrl(): string | undefined {
+    const thumbnails = this.youtubeVideo?.thumbnails || this.spotifyTrack?.album?.images;
+    return thumbnails?.sort((a, b) => a.width - b.width).at(0)?.url;
+  }
+
   public get url(): string {
     if (this.youtubeVideo) return `https://youtu.be/${this.youtubeVideo.id}`;
     if (this.spotifyTrack) return `https://open.spotify.com/track/${this.spotifyTrack.id}`;

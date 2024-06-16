@@ -37,7 +37,7 @@ export class AddPlaylistMediaSourceHandler
     }
 
     if (!allowDuplicates) {
-      const isExists = !!this.playlistMediaSourceRepository.getByPlaylistAndMediaSourceId(
+      const isExists = await this.playlistMediaSourceRepository.getByPlaylistAndMediaSourceId(
         playlist.id,
         mediaSourceId,
       );
@@ -55,6 +55,7 @@ export class AddPlaylistMediaSourceHandler
     });
 
     playlist.mediaSourceCount = count + 1;
+    playlist.images = source.images;
 
     await Promise.all([
       this.playlistRepository.update(playlist),

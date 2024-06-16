@@ -32,8 +32,13 @@ export class RemovePlaylistMediaSourceHandler
       throw new NotFoundException("Playlist media source not found");
     }
 
-    const count = await this.playlistMediaSourceRepository.getCountByPlaylistId(playlistId);
+    const [count, [lastMediaSource]] = await Promise.all([
+      this.playlistMediaSourceRepository.getCountByPlaylistId(playlistId),
+      this.playlistMediaSourceRepository.getByPlaylistId(playlistId, { limit: 1 }),
+    ]);
+
     playlist.mediaSourceCount = count - 1;
+    playlist.images = lastMediaSource.mediaSource?.images || [];
 
     await Promise.all([
       this.playlistRepository.update(playlist),

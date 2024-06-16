@@ -6,6 +6,7 @@ interface ConstructorProps {
   name: string;
   ownerId: string;
   mediaSourceCount: number;
+  images?: Image[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -24,7 +25,7 @@ export class Playlist {
     this.name = props.name;
     this.ownerId = props.ownerId;
     this.mediaSourceCount = props.mediaSourceCount;
-    this.images = [];
+    this.images = props.images || [];
     this.createdAt = props.createdAt || new Date();
     this.updatedAt = props.updatedAt || new Date();
   }

@@ -10,7 +10,7 @@ export type PlaylistModelProps = {
   id: string;
   name: string;
   ownerId: string;
-  images: ImageProps[];
+  images: ImageProps[] | null;
   mediaSourceCount: number;
   createdAt: Date;
   updatedAt: Date;
@@ -20,7 +20,7 @@ export class PlaylistModel extends Model implements PlaylistModelProps {
   id!: string;
   name!: string;
   ownerId!: string;
-  images!: ImageProps[];
+  images!: ImageProps[] | null;
   mediaSourceCount!: number;
   createdAt!: Date;
   updatedAt!: Date;

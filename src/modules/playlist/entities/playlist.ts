@@ -6,7 +6,7 @@ interface ConstructorProps {
   name: string;
   ownerId: string;
   mediaSourceCount: number;
-  images?: Image[];
+  images?: Image[] | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -16,7 +16,7 @@ export class Playlist {
   public name: string;
   public readonly ownerId: string;
   public mediaSourceCount: number;
-  public images: Image[];
+  public images: Image[] | null;
   public readonly createdAt: Date;
   public updatedAt: Date;
 

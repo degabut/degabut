@@ -32,17 +32,16 @@ export class RemovePlaylistMediaSourceHandler
       throw new NotFoundException("Playlist media source not found");
     }
 
-    const [count, [lastMediaSource]] = await Promise.all([
+    await this.playlistMediaSourceRepository.deleteById(mediaSourceId);
+
+    const [count, playlistMediaSources] = await Promise.all([
       this.playlistMediaSourceRepository.getCountByPlaylistId(playlistId),
       this.playlistMediaSourceRepository.getByPlaylistId(playlistId, { limit: 1 }),
     ]);
 
-    playlist.mediaSourceCount = count - 1;
-    playlist.images = lastMediaSource.mediaSource?.images || [];
+    playlist.mediaSourceCount = count;
+    playlist.images = playlistMediaSources.at(0)?.mediaSource?.images || null;
 
-    await Promise.all([
-      this.playlistRepository.update(playlist),
-      this.playlistMediaSourceRepository.deleteById(mediaSourceId),
-    ]);
+    await this.playlistRepository.update(playlist);
   }
 }

@@ -6,7 +6,7 @@ export type IConfig = {
 } & IGlobalConfig;
 
 export interface IGlobalConfig {
-  lavalink?: ILavalinkConfig;
+  lavalink: ILavalinkConfig;
   postgres: IPostgresConfig;
   logging?: ILoggerConfig;
   spotify?: ISpotifyConfig;

@@ -46,7 +46,7 @@ export class ConfigUtil {
       host: Joi.string().required(),
       port: Joi.number().optional().default(2333),
       password: Joi.string().required(),
-    }).optional(),
+    }).required(),
     spotify: Joi.object({
       clientId: Joi.string().required(),
       clientSecret: Joi.string().required(),
@@ -91,8 +91,16 @@ export class ConfigUtil {
   private static async getYmlConfig() {
     // read config from yml file
     const path = process.env.CONFIG_PATH || "./config.yml";
-    const file = await readFile(path, "utf8");
-    const config: NestedPartial<IConfig> = parse(file);
+    let config: NestedPartial<IConfig> = {};
+    let file: string;
+
+    try {
+      file = await readFile(path, "utf8");
+    } catch {
+      return {};
+    }
+
+    config = parse(file);
     return config || {};
   }
 
@@ -118,6 +126,17 @@ export class ConfigUtil {
 
       config.apps = {
         bots: { degabut: defaultBot },
+      };
+    }
+
+    // youtube api
+    const youtubeApiPort = process.env.YOUTUBE_API_PORT;
+    if (youtubeApiPort) {
+      config.apps = {
+        ...config.apps,
+        youtubeApi: {
+          port: +youtubeApiPort,
+        },
       };
     }
 

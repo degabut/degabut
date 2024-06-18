@@ -22,9 +22,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@discord-nestjs/common": "^5.2.12",
-    "@discordjs/opus": "^0.9.0",
-    "@discordjs/voice": "^0.17.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.3.7",
     "@nestjs/config": "^3.2.2",
@@ -32,7 +29,6 @@
     "@nestjs/cqrs": "^10.2.7",
     "@nestjs/platform-fastify": "^10.3.7",
     "@nestjs/platform-ws": "^10.3.7",
-    "@nestjs/terminus": "^10.2.3",
     "@nestjs/websockets": "^10.3.7",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "@willsoto/nestjs-objection": "^8.1.2",
@@ -48,11 +44,8 @@
     "pg": "^8.11.5",
     "pino-http": "^10.1.0",
     "pino-pretty": "^11.1.0",
-    "play-dl": "^1.9.7",
     "reflect-metadata": "^0.2.2",
-    "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
-    "sodium-native": "^4.1.1",
     "uuid": "^9.0.1",
     "yaml": "^2.4.1",
     "youtubei": "^1.4.0"
@@ -78,6 +71,7 @@
     "jest": "29.7.0",
     "jest-mock": "^29.7.0",
     "prettier": "^3.2.5",
+    "rimraf": "^5.0.7",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.4",
     "ts-jest": "29.1.2",

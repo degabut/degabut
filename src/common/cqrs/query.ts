@@ -5,11 +5,6 @@ export class Query<T> implements IQuery {
 }
 
 export class PaginatedQuery<T> extends Query<T> {
-  nextToken?: string;
-  limit!: number;
-}
-
-export interface IPaginatedResult<T> {
-  data: T[];
-  nextToken: string | null;
+  page?: number;
+  limit?: number;
 }

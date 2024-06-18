@@ -8,6 +8,7 @@ RUN rm -r node_modules
 RUN pnpm i --prod
 
 FROM node:18.19-alpine
+ENV CONFIG_PATH=/app/config.yml
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/builder .
 CMD ["npm", "run", "start:prod"]

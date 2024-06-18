@@ -1,53 +1,84 @@
-import { ApiModule } from "@api/api.module";
-import { AuthModule } from "@auth/auth.module";
-import { DatabaseModule } from "@database/database.module";
-import { DiscordBotModule } from "@discord-bot/discord-bot.module";
-import { EventsModule } from "@events/events.module";
-import { HealthModule } from "@health/health.module";
-import { HistoryModule } from "@history/history.module";
+import { WebSocketAdapter } from "@common/adapters";
+import { IBotConfig, IConfig, IGlobalConfig, IYoutubeApiConfig } from "@common/config";
+import { GlobalLogger } from "@logger/global-logger.service";
 import { LoggerModule } from "@logger/logger.module";
-import { MediaSourceModule } from "@media-source/media-source.module";
-import { Logger, Module } from "@nestjs/common";
-import { PlaylistModule } from "@playlist/playlist.module";
-import { QueuePlayerModule } from "@queue-player/queue-player.module";
-import { QueueModule } from "@queue/queue.module";
-import { SpotifyModule } from "@spotify/spotify.module";
-import { UserModule } from "@user/user.module";
+import { Logger } from "@logger/logger.service";
+import { DynamicModule, Module, OnModuleInit } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { NestFactory } from "@nestjs/core";
 
-@Module({
-  imports: [
-    ApiModule,
-    AuthModule,
-    DatabaseModule,
-    DiscordBotModule,
-    EventsModule,
-    HistoryModule,
-    HealthModule,
-    LoggerModule,
-    PlaylistModule,
-    MediaSourceModule,
-    SpotifyModule,
-    QueueModule,
-    QueuePlayerModule,
-    UserModule,
-  ],
-})
-export class AppModule {
-  private logger = new Logger(AppModule.name);
+@Module({})
+export class AppModule implements OnModuleInit {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly logger: Logger,
+  ) {
+    this.logger.setContext(AppModule.name);
+  }
 
-  onModuleInit() {
-    // TODO dirty workaround to catch error on CQRS event
-    // https://github.com/nestjs/cqrs/issues/409
-    process.on("unhandledRejection", (reason, promise) => {
-      this.logger.error({ error: "unhandledRejection", reason, promise });
+  static forRoot(config: IConfig): DynamicModule {
+    return {
+      module: AppModule,
+      imports: [
+        ConfigModule.forRoot({ load: [() => ({ main: config })] }),
+        LoggerModule.forRoot({ appId: "main", ...config.logging }),
+      ],
+    };
+  }
+
+  async onModuleInit() {
+    // config
+    const config = this.configService.getOrThrow<IConfig>("main");
+
+    if (config.logging?.printConfig) this.logger.info({ config });
+
+    const { apps, ...globalConfig } = config;
+    const { bots, youtubeApi } = apps;
+
+    // bots initialization
+    const botsConfig = Object.entries(bots || {});
+    for (const [id, botConfig] of botsConfig) {
+      await this.initBot(id, { ...botConfig, ...globalConfig });
+    }
+
+    // youtube api initialization
+    if (youtubeApi) await this.initYoutube({ ...youtubeApi, ...globalConfig });
+  }
+
+  private async initBot(id: string, config: IBotConfig & IGlobalConfig) {
+    const { DiscordBotModule } = await import("./apps/discord-bot/discord-bot.module");
+    const { FastifyAdapter } = await import("@nestjs/platform-fastify");
+
+    const app = await NestFactory.create(
+      DiscordBotModule.forRoot(id, config),
+      new FastifyAdapter(),
+      {
+        bufferLogs: true,
+        cors: process.env.NODE_ENV === "development",
+      },
+    );
+
+    app.useLogger(app.get(GlobalLogger));
+
+    if (config.ws) app.useWebSocketAdapter(new WebSocketAdapter(app, +config.ws.port));
+
+    if (config.http) await app.listen(+config.http.port, "0.0.0.0");
+    else await app.init();
+  }
+
+  private async initYoutube(config: IYoutubeApiConfig & IGlobalConfig) {
+    const { YoutubeApiModule } = await import("./apps/youtube-api/youtube-api.module");
+    const { FastifyAdapter } = await import("@nestjs/platform-fastify");
+
+    if (!config.auth?.jwt) return;
+
+    const app = await NestFactory.create(YoutubeApiModule.forRoot(config), new FastifyAdapter(), {
+      bufferLogs: true,
+      cors: process.env.NODE_ENV === "development",
     });
-    process.on("uncaughtException", (reason, origin) => {
-      const r: Record<string, any> = {};
-      for (const propertyName of Object.getOwnPropertyNames(reason)) {
-        r[propertyName] = reason[propertyName as keyof typeof reason];
-      }
 
-      this.logger.error({ error: "uncaughtException", ...r, origin });
-    });
+    app.useLogger(app.get(GlobalLogger));
+
+    await app.listen(+config.port, "0.0.0.0");
   }
 }

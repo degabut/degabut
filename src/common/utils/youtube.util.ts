@@ -16,7 +16,7 @@ export class YoutubeUtil {
 
       const videoId =
         url.searchParams.get("v") ||
-        (host === "youtube.be" ? url.pathname.split("/").pop() : undefined);
+        (host === "youtu.be" ? url.pathname.split("/").pop() : undefined);
       const playlistId = url.searchParams.get("list") || undefined;
 
       return { videoId, playlistId };

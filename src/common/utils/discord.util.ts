@@ -89,7 +89,8 @@ export class DiscordUtil {
       });
     }
 
-    const { title, url, maxThumbnailUrl, youtubeVideo, spotifyTrack } = track.mediaSource;
+    const { title, url, images, youtubeVideo, spotifyTrack } = track.mediaSource;
+    const thumbnail = images.sort((a, b) => b.width - a.width).at(0);
 
     if (youtubeVideo?.channel) {
       fields.unshift({
@@ -110,7 +111,7 @@ export class DiscordUtil {
     return new EmbedBuilder({
       title,
       url,
-      thumbnail: maxThumbnailUrl ? { url: maxThumbnailUrl } : undefined,
+      thumbnail,
       fields,
     });
   }

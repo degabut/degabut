@@ -76,7 +76,7 @@ export class LavalinkPlayerProvider
   }
 
   get isReady(): boolean {
-    return this.node.state === NodeState.Connected;
+    return this.node?.state === NodeState.Connected;
   }
 
   private async reconnectNode(delay = 10000) {

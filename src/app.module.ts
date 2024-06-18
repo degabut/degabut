@@ -33,30 +33,23 @@ export class AppModule implements OnModuleInit {
     if (config.logging?.printConfig) this.logger.info({ config });
 
     const { apps, ...globalConfig } = config;
-    const { bots, youtubeApi } = apps;
+    const { bot, youtubeApi } = apps;
 
     // bots initialization
-    const botsConfig = Object.entries(bots || {});
-    for (const [id, botConfig] of botsConfig) {
-      await this.initBot(id, { ...botConfig, ...globalConfig });
-    }
+    if (bot) await this.initBot({ ...bot, ...globalConfig });
 
     // youtube api initialization
     if (youtubeApi) await this.initYoutube({ ...youtubeApi, ...globalConfig });
   }
 
-  private async initBot(id: string, config: IBotConfig & IGlobalConfig) {
+  private async initBot(config: IBotConfig & IGlobalConfig) {
     const { DiscordBotModule } = await import("./apps/discord-bot/discord-bot.module");
     const { FastifyAdapter } = await import("@nestjs/platform-fastify");
 
-    const app = await NestFactory.create(
-      DiscordBotModule.forRoot(id, config),
-      new FastifyAdapter(),
-      {
-        bufferLogs: true,
-        cors: process.env.NODE_ENV === "development",
-      },
-    );
+    const app = await NestFactory.create(DiscordBotModule.forRoot(config), new FastifyAdapter(), {
+      bufferLogs: true,
+      cors: process.env.NODE_ENV === "development",
+    });
 
     app.useLogger(app.get(GlobalLogger));
 

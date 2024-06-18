@@ -1,15 +1,11 @@
 apps:
-  bots:
-    degabut:
-      token: "..."
-      prefix: "!"
-      # http: # optional, if you want to enable the http server
-      #   port: 8080
-      # ws: # optional, if you want to enable the ws server
-      #   port: 8081
-    # another-bot: # optional, you can run multiple bots on one process, make sure that http and ws port is not overlapping with other bots
-    #   token: "..."
-    #   prefix: "="
+  bot:
+    token: "..."
+    prefix: "!"
+    # http: # optional, if you want to enable the http server
+    #   port: 8080
+    # ws: # optional, if you want to enable the ws server
+    #   port: 8081
   # youtubeApi: # if you want to start http server for youtube api, used by official web client
   #   port: 8082
 lavalink: # optional, if you want to use lavalink instead of built in player

@@ -1,6 +1,6 @@
 export type IConfig = {
   apps: {
-    bots?: Record<string, IBotConfig>;
+    bot?: IBotConfig;
     youtubeApi?: IYoutubeApiConfig;
   };
 } & IGlobalConfig;

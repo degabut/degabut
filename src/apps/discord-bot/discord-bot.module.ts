@@ -28,9 +28,9 @@ import { Interactions } from "./interactions";
   providers: [DiscordBotGateway, ...Explorers, ...DiscordCommands, ...Interactions],
 })
 export class DiscordBotModule {
-  static forRoot(id: string, config: IBotConfig & IGlobalConfig): DynamicModule {
+  static forRoot(config: IBotConfig & IGlobalConfig): DynamicModule {
     const imports = [
-      LoggerModule.forRoot({ appId: id, ...config.logging }),
+      LoggerModule.forRoot({ appId: "bot", ...config.logging }),
       DatabaseModule.forRoot(config.postgres),
       QueuePlayerModule.forRoot(config.lavalink),
       SpotifyModule.forRoot(config.spotify),

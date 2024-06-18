@@ -8,21 +8,16 @@ import { IBotConfig, IConfig } from "./interfaces";
 export class ConfigUtil {
   private static schema = Joi.object<IConfig>({
     apps: Joi.object({
-      bots: Joi.object()
-        .pattern(
-          Joi.string(),
-          Joi.object({
-            token: Joi.string().required(),
-            prefix: Joi.string().required(),
-            http: Joi.object({
-              port: Joi.number().required(),
-            }).optional(),
-            ws: Joi.object({
-              port: Joi.number().required(),
-            }).optional(),
-          }),
-        )
-        .optional(),
+      bot: Joi.object({
+        token: Joi.string().required(),
+        prefix: Joi.string().required(),
+        http: Joi.object({
+          port: Joi.number().required(),
+        }).optional(),
+        ws: Joi.object({
+          port: Joi.number().required(),
+        }).optional(),
+      }).optional(),
       youtubeApi: Joi.object({
         port: Joi.number().required(),
       }).optional(),
@@ -72,13 +67,8 @@ export class ConfigUtil {
 
     // validate oauth manually because I don't know how to do it with Joi lol
     let requiredOauth = false;
-    if (config.apps?.bots) {
-      for (const [_, bot] of Object.entries(config.apps.bots)) {
-        if (bot.http || bot.ws) {
-          requiredOauth = true;
-          break;
-        }
-      }
+    if (config.apps?.bot?.http || config.apps?.bot?.ws) {
+      requiredOauth = true;
     }
 
     if (requiredOauth && !config.auth?.discordOAuth) {
@@ -112,31 +102,28 @@ export class ConfigUtil {
       config.logging = { level: process.env.LOG_LEVEL };
     }
 
+    config.apps = {};
+
     // bot
     const prefix = process.env.PREFIX;
     const token = process.env.TOKEN;
     if (prefix && token) {
-      const defaultBot: IBotConfig = {
+      const botConfig: IBotConfig = {
         token,
         prefix,
       };
 
-      if (process.env.API_PORT) defaultBot.http = { port: +process.env.API_PORT };
-      if (process.env.WS_PORT) defaultBot.ws = { port: +process.env.WS_PORT };
+      if (process.env.API_PORT) botConfig.http = { port: +process.env.API_PORT };
+      if (process.env.WS_PORT) botConfig.ws = { port: +process.env.WS_PORT };
 
-      config.apps = {
-        bots: { degabut: defaultBot },
-      };
+      config.apps.bot = botConfig;
     }
 
     // youtube api
     const youtubeApiPort = process.env.YOUTUBE_API_PORT;
     if (youtubeApiPort) {
-      config.apps = {
-        ...config.apps,
-        youtubeApi: {
-          port: +youtubeApiPort,
-        },
+      config.apps.youtubeApi = {
+        port: +youtubeApiPort,
       };
     }
 

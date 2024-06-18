@@ -2,6 +2,7 @@ import { Provider } from "@nestjs/common";
 
 import { ClearAllDiscordCommand } from "./clear-all.command";
 import { ClearDiscordCommand } from "./clear.command";
+import { HelpDiscordCommand } from "./help.command";
 import { JoinDiscordCommand } from "./join.command";
 import { LoopQueueDiscordCommand } from "./loop-queue.command";
 import { LoopDiscordCommand } from "./loop.command";
@@ -40,4 +41,5 @@ export const DiscordCommands: Provider[] = [
   StopDiscordCommand,
   UnpauseDiscordCommand,
   RedirectDiscordCommand,
+  HelpDiscordCommand,
 ];

@@ -1,6 +1,7 @@
 import { Logger } from "@logger/logger.service";
 import { Injectable } from "@nestjs/common";
 import { EventBus } from "@nestjs/cqrs";
+import { ActivityType } from "discord.js";
 import { ContextOf, On, Once } from "necord";
 
 import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent, VoiceMemberUpdatedEvent } from "./events";
@@ -17,9 +18,14 @@ export class DiscordBotGateway {
   }
 
   @Once("ready")
-  onReady([client]: ContextOf<"ready">) {
+  onceReady([client]: ContextOf<"ready">) {
     this.logger.info("Discord bot ready");
     this.botId = client.user.id;
+  }
+
+  @On("ready")
+  onReady([client]: ContextOf<"ready">) {
+    client.user.setActivity({ name: `${client.prefix}help`, type: ActivityType.Listening });
   }
 
   @On("voiceStateUpdate")

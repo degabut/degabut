@@ -49,6 +49,8 @@ export class TextCommandExplorer {
   }
 
   private registerPrefixCommands(commands: DecoratedPrefixCommand[]) {
+    this.discordClient.prefix = this.prefix;
+
     this.discordClient.prefixCommands = commands.sort((a, b) =>
       a.options.name.localeCompare(b.options.name),
     );

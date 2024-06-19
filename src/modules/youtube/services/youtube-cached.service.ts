@@ -24,10 +24,10 @@ export class YoutubeCachedService {
     let video: YoutubeVideoCompact | undefined = await this.videoRepository.getById(videoId);
     if (!video || TimeUtil.getSecondDifference(video.updatedAt, new Date()) > MAX_VIDEO_AGE) {
       const newVideo = await this.youtubeProvider.getVideo(videoId);
-      if (!newVideo) return undefined;
-
-      video = this.videoToVideoCompact(newVideo);
-      await this.cacheVideo(video);
+      if (newVideo) {
+        video = this.videoToVideoCompact(newVideo);
+        await this.cacheVideo(video);
+      }
     }
 
     return video;

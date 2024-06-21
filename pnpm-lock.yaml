@@ -80,8 +80,8 @@ dependencies:
     specifier: ^2.4.1
     version: 2.4.1
   youtubei:
-    specifier: ^1.4.4
-    version: 1.4.4
+    specifier: ^1.4.5
+    version: 1.4.5
 
 devDependencies:
   '@nestjs/cli':
@@ -6144,8 +6144,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /youtubei@1.4.4:
-    resolution: {integrity: sha512-U/Zp1ZLoV5boR/MxXsotYjZli8AGiwDLSXx6Itkd8wpWnR3JmkPq1KyWyQj58FsHE7o+DLhb+Uyy1N7zmV4FeA==}
+  /youtubei@1.4.5:
+    resolution: {integrity: sha512-rP9B12ixAjg3wiaW+ORBcqVnjHxT+VcQOjxxsf2XRBhf7ITlTCbU+s6FAE8EwhwiIs+alL8E2eShDlaGSIMAqA==}
     dependencies:
       node-fetch: 2.6.7
       protobufjs: 7.2.6

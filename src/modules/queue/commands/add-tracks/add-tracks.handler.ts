@@ -32,6 +32,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
   public async execute(params: AddTracksCommand): Promise<AddTracksResult> {
     const {
       mediaSourceId,
+      mediaSourceIds,
       youtubeKeyword,
       playlistId,
       youtubePlaylistId,
@@ -60,6 +61,8 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
         youtubeKeyword,
       });
       if (mediaSource) sources.push(mediaSource);
+    } else if (mediaSourceIds) {
+      sources = await this.mediaSourceService.getStoredSources(mediaSourceIds);
     } else if (playlistId) {
       const playlist = await this.playlistRepository.getById(playlistId);
       if (!playlist) throw new NotFoundException("Playlist not found");

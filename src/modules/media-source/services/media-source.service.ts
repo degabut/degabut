@@ -54,6 +54,10 @@ export class MediaSourceService {
     return mediaSource;
   }
 
+  async getStoredSources(mediaSourceIds: string[]): Promise<MediaSource[]> {
+    return this.mediaSourceRepository.getByIds(mediaSourceIds);
+  }
+
   async storeSource(mediaSource: MediaSource): Promise<void> {
     if (mediaSource.youtubeVideo) await this.youtubeService.cacheVideo(mediaSource.youtubeVideo);
     if (mediaSource.spotifyTrack) await this.spotifyService.cacheTrack(mediaSource.spotifyTrack);

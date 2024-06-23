@@ -26,6 +26,7 @@ type TrackParam = VoiceChannelIdParams & {
 };
 
 type AddTracksBody = {
+  mediaSourceIds?: string[];
   mediaSourceId?: string;
   keyword?: string;
   playlistId?: string;

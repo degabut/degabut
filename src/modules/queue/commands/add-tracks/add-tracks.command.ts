@@ -8,6 +8,7 @@ export type AddTracksResult = string[];
 export class AddTracksCommand extends Command<AddTracksResult> implements IWithExecutor {
   public readonly youtubeKeyword?: string;
   public readonly mediaSourceId?: string;
+  public readonly mediaSourceIds?: string[];
   public readonly playlistId?: string;
   public readonly youtubePlaylistId?: string;
   public readonly spotifyPlaylistId?: string;
@@ -26,6 +27,7 @@ export class AddTracksCommand extends Command<AddTracksResult> implements IWithE
 export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   youtubeKeyword: Joi.string(),
   mediaSourceId: Joi.string(),
+  mediaSourceIds: Joi.array().items(Joi.string()).min(1).max(100),
   playlistId: Joi.string(),
   youtubePlaylistId: Joi.string(),
   spotifyPlaylistId: Joi.string(),
@@ -39,6 +41,7 @@ export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   .xor(
     "youtubeKeyword",
     "mediaSourceId",
+    "mediaSourceIds",
     "playlistId",
     "youtubePlaylistId",
     "spotifyPlaylistId",

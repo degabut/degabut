@@ -20,7 +20,7 @@ export class RemoveTracksCommand extends Command<RemoveTracksResult> implements 
 export const RemoveTracksParamSchema = Joi.object<RemoveTracksCommand>({
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
-  trackIds: Joi.array().items(Joi.string()),
+  trackIds: Joi.array().items(Joi.string()).min(1),
   memberId: Joi.string(),
 })
   .required()

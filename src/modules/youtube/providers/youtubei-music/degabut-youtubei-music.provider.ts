@@ -1,7 +1,6 @@
 import { HttpService } from "@nestjs/axios";
-import { YoutubeSong } from "@youtube/entities";
 
-import { IYoutubeiMusicProvider } from "./youtubei-music.interface";
+import { IYoutubeiMusicProvider, YoutubeMusicSong } from "./youtubei-music.interface";
 
 export class DegabutYoutubeiMusicProvider implements IYoutubeiMusicProvider {
   constructor(
@@ -10,9 +9,14 @@ export class DegabutYoutubeiMusicProvider implements IYoutubeiMusicProvider {
     private readonly authToken: string,
   ) {}
 
-  public async searchSong(keyword: string): Promise<YoutubeSong[]> {
+  public async searchAll(keyword: string) {
+    const response = await this.get("/music/search", { keyword });
+    return response.data;
+  }
+
+  public async searchSong(keyword: string): Promise<YoutubeMusicSong[]> {
     const response = await this.get("/music/songs", { keyword });
-    return response.data.items.map((s: { id: string }) => new YoutubeSong({ id: s.id }));
+    return response.data.items;
   }
 
   private async get(path: string, params?: Record<string, string>) {

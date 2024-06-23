@@ -11,17 +11,29 @@ import {
   MusicClient as YoutubeiMusicClient,
 } from "youtubei";
 
-type SearchResult = Shelf<
-  MusicSongCompact[] | MusicVideoCompact[] | MusicAlbumCompact[] | MusicPlaylistCompact[]
->[];
+type SearchResult = {
+  top?: {
+    item: MusicVideoCompact | MusicAlbumCompact | MusicPlaylistCompact | MusicArtistCompact;
+    more?: (MusicVideoCompact | MusicAlbumCompact | MusicPlaylistCompact | MusicArtistCompact)[];
+  };
+  shelves: Shelf<
+    MusicSongCompact[] | MusicVideoCompact[] | MusicAlbumCompact[] | MusicPlaylistCompact[]
+  >[];
+};
 
 @Injectable()
 export class YoutubeiMusicProvider {
   private readonly musicClient = new YoutubeiMusicClient();
 
-  public async search(keyword: string): Promise<SearchResult> {
-    const result = await this.musicClient.search(keyword);
-    return result.filter((i) => !(i.items.at(0) instanceof MusicArtistCompact)) as SearchResult;
+  public async searchAll(keyword: string): Promise<SearchResult> {
+    const result = await this.musicClient.searchAll(keyword);
+
+    return {
+      top: result.top,
+      shelves: result.shelves.filter(
+        (i) => !(i.items.at(0) instanceof MusicArtistCompact),
+      ) as SearchResult["shelves"],
+    };
   }
 
   public async searchSong(keyword: string) {

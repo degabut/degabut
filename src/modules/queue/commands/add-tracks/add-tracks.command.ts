@@ -1,6 +1,6 @@
 import { Command } from "@common/cqrs";
 import { Executor, IWithExecutor } from "@common/interfaces";
-import { ExecutorSchema } from "@common/schemas";
+import { ExecutorSchema, PAGINATION_DEFAULT_LIMIT } from "@common/schemas";
 import * as Joi from "joi";
 
 export type AddTracksResult = string[];
@@ -27,7 +27,7 @@ export class AddTracksCommand extends Command<AddTracksResult> implements IWithE
 export const AddTracksParamSchema = Joi.object<AddTracksCommand>({
   youtubeKeyword: Joi.string(),
   mediaSourceId: Joi.string(),
-  mediaSourceIds: Joi.array().items(Joi.string()).min(1).max(100),
+  mediaSourceIds: Joi.array().items(Joi.string()).min(1).max(PAGINATION_DEFAULT_LIMIT),
   playlistId: Joi.string(),
   youtubePlaylistId: Joi.string(),
   spotifyPlaylistId: Joi.string(),

@@ -21,11 +21,17 @@ import { NecordModule } from "necord";
 import { DiscordCommands } from "./commands";
 import { DiscordBotGateway } from "./discord-bot.gateway";
 import { Explorers, TextCommandExplorer } from "./explorers";
-import { Interactions } from "./interactions";
+import { ButtonInteractions, Interactions } from "./interactions";
 
 @Module({
   imports: [CqrsModule, DiscoveryModule],
-  providers: [DiscordBotGateway, ...Explorers, ...DiscordCommands, ...Interactions],
+  providers: [
+    DiscordBotGateway,
+    ...Explorers,
+    ...DiscordCommands,
+    ...Interactions,
+    ...ButtonInteractions,
+  ],
 })
 export class DiscordBotModule {
   static forRoot(config: IBotConfig & IGlobalConfig): DynamicModule {

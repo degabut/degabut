@@ -45,6 +45,15 @@ export class DiscordUtil {
     };
   }
 
+  static sourceToSelectOption(mediaSource: MediaSource | MediaSourceDto) {
+    return {
+      value: mediaSource.id,
+      label: mediaSource.title.substring(0, 100),
+      description:
+        `[${TimeUtil.secondToTime(mediaSource.duration)}] ${mediaSource.creator}`.substring(0, 100),
+    };
+  }
+
   static sourceToMessageButton(
     mediaSource: MediaSource | MediaSourceDto,
     index: number,

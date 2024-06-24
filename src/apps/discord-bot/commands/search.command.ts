@@ -1,5 +1,6 @@
 import { DiscordUtil } from "@common/utils";
 import { CommandExceptionFilter } from "@discord-bot/filters";
+import { MEDIA_SOURCE_SELECT_INTERACTION } from "@discord-bot/interactions/media-source.select-interaction";
 import { CommandResult } from "@discord-bot/interfaces";
 import { MediaSource } from "@media-source/entities";
 import { Inject, Injectable, UseFilters } from "@nestjs/common";
@@ -7,11 +8,11 @@ import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 import {
   ActionRowBuilder,
-  EmbedBuilder,
   Message,
   MessageActionRowComponentBuilder,
+  StringSelectMenuBuilder,
 } from "discord.js";
-import { Options, SlashCommand, StringOption } from "necord";
+import { Context, Options, SlashCommand, SlashCommandContext, StringOption } from "necord";
 
 import { TextCommand } from "../decorators";
 
@@ -45,26 +46,26 @@ export class SearchDiscordCommand {
     name: SearchDiscordCommand.commandName,
     description: SearchDiscordCommand.description,
   })
-  async slashHandler(@Options() options: SearchDto) {
+  async slashHandler(@Context() context: SlashCommandContext, @Options() options: SearchDto) {
+    const [interaction] = context;
     const { keyword } = options;
-    return await this.handler(keyword);
+    const response = await this.handler(keyword);
+    await interaction.reply(response);
   }
 
   private async handler(keyword: string) {
     const videos = await this.youtubeiProvider.searchVideo(keyword);
     const sources = videos.slice(0, 10).map((v) => MediaSource.fromYoutube(v));
 
-    const buttons = sources.map(DiscordUtil.sourceToMessageButton);
-    const fields = sources.map(DiscordUtil.sourceToEmbedField);
-
     return {
-      embeds: [new EmbedBuilder({ fields })],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
-          components: buttons.slice(0, 5),
-        }),
-        new ActionRowBuilder<MessageActionRowComponentBuilder>({
-          components: buttons.slice(5, 10),
+          components: [
+            new StringSelectMenuBuilder()
+              .setCustomId(MEDIA_SOURCE_SELECT_INTERACTION)
+              .setPlaceholder("Search Result")
+              .setOptions(sources.map(DiscordUtil.sourceToSelectOption)),
+          ],
         }),
       ],
     };

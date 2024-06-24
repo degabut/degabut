@@ -1,4 +1,5 @@
 import { DiscordUtil } from "@common/utils";
+import { MEDIA_SOURCE_SELECT_INTERACTION } from "@discord-bot/interactions/media-source.select-interaction";
 import { MediaSource } from "@media-source/entities";
 import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
@@ -7,9 +8,9 @@ import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 import {
   ActionRowBuilder,
-  EmbedBuilder,
   Message,
   MessageActionRowComponentBuilder,
+  StringSelectMenuBuilder,
 } from "discord.js";
 
 import { TextCommand } from "../decorators";
@@ -44,19 +45,17 @@ export class RelatedDiscordCommand {
     const video = await this.youtubeiProvider.getVideo(playedYoutubeVideoId);
     if (!video) return;
 
-    const sources = video.related.map(MediaSource.fromYoutube);
-    const buttons = sources.map(DiscordUtil.sourceToMessageButton);
-    const fields = sources.slice(0, 10).map(DiscordUtil.sourceToEmbedField);
+    const mediaSources = video.related.map(MediaSource.fromYoutube);
 
     await message.reply({
-      content: `⭐ **Songs related with ${title}**`,
-      embeds: [new EmbedBuilder({ fields })],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
-          components: buttons.slice(0, 5),
-        }),
-        new ActionRowBuilder<MessageActionRowComponentBuilder>({
-          components: buttons.slice(5, 10),
+          components: [
+            new StringSelectMenuBuilder()
+              .setCustomId(MEDIA_SOURCE_SELECT_INTERACTION)
+              .setPlaceholder(`Songs related with ${title}`.substring(0, 150))
+              .setOptions(mediaSources.map(DiscordUtil.sourceToSelectOption)),
+          ],
         }),
       ],
     });

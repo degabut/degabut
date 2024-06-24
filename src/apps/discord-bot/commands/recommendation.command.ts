@@ -1,15 +1,24 @@
 import { DiscordUtil } from "@common/utils";
-import { Injectable } from "@nestjs/common";
+import { CommandExceptionFilter } from "@discord-bot/filters";
+import { MEDIA_SOURCE_SELECT_INTERACTION } from "@discord-bot/interactions/media-source.select-interaction";
+import { Injectable, UseFilters } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
 import {
   ActionRowBuilder,
-  EmbedBuilder,
   Message,
   MessageActionRowComponentBuilder,
+  StringSelectMenuBuilder,
+  User,
 } from "discord.js";
+import { Context, Options, SlashCommand, SlashCommandContext, UserOption } from "necord";
 
 import { TextCommand } from "../decorators";
+
+class RecommendationDto {
+  @UserOption({ name: "user", description: "User", required: false })
+  user?: User;
+}
 
 @Injectable()
 export class RecommendationDiscordCommand {
@@ -24,12 +33,38 @@ export class RecommendationDiscordCommand {
     description: RecommendationDiscordCommand.description,
   })
   public async prefixHandler(message: Message) {
-    const userId = message.mentions.users.first()?.id || message.author.id;
+    const userId = message.mentions.users.first() || message.author;
+    const response = await this.handler(userId, message.author.id);
+    await message.reply(response);
+  }
 
-    const executor = { id: message.author.id };
+  @UseFilters(CommandExceptionFilter)
+  @SlashCommand({
+    name: RecommendationDiscordCommand.commandName,
+    description: RecommendationDiscordCommand.description,
+  })
+  public async slashHandler(
+    @Context() context: SlashCommandContext,
+    @Options() options: RecommendationDto,
+  ) {
+    const [interaction] = context;
+    const userId = options.user || interaction.user;
+    const response = await this.handler(userId, interaction.user.id);
+    await interaction.reply(response);
+  }
+
+  private async handler(user: User, executorId: string) {
+    const executor = { id: executorId };
+    const userId = user.id;
 
     const lastPlayedQuery = new GetLastPlayedQuery({
       limit: 10,
+      userId,
+      executor,
+    });
+    const recentMostPlayedQuery = new GetMostPlayedQuery({
+      days: 14,
+      limit: 5,
       userId,
       executor,
     });
@@ -39,33 +74,40 @@ export class RecommendationDiscordCommand {
       userId,
       executor,
     });
-    const [lastPlayed, mostPlayed] = await Promise.all([
+    const [lastPlayed, recentMostPlayed, mostPlayed] = await Promise.all([
       this.queryBus.execute(lastPlayedQuery),
+      this.queryBus.execute(recentMostPlayedQuery),
       this.queryBus.execute(mostPlayedQuery),
     ]);
 
-    const slicedMostPlayed = mostPlayed.slice(0, 7);
-    const slicedLastPlayed = lastPlayed
-      .filter((v) => !mostPlayed.find((l) => l.id === v.id))
-      .slice(0, 10 - slicedMostPlayed.length);
-    const mediaSources = [...slicedMostPlayed, ...slicedLastPlayed];
+    const mediaSources = [...recentMostPlayed];
+
+    mediaSources.push(
+      ...mostPlayed.filter((v) => !recentMostPlayed.find((l) => l.id === v.id)).slice(0, 5),
+    );
+    mediaSources.push(
+      ...lastPlayed
+        .filter((v) => !mediaSources.find((l) => l.id === v.id))
+        .slice(0, 20 - mediaSources.length),
+    );
+
     if (!mediaSources.length) return "No recommendation found";
 
-    const buttons = mediaSources.map((v, i) => DiscordUtil.sourceToMessageButton(v, i));
-    const components = [
-      new ActionRowBuilder<MessageActionRowComponentBuilder>({ components: buttons.slice(0, 5) }),
-    ];
-    if (buttons.length > 5) {
-      components.push(
+    return {
+      components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>({
-          components: buttons.slice(5, 10),
+          components: [
+            new StringSelectMenuBuilder()
+              .setCustomId(MEDIA_SOURCE_SELECT_INTERACTION)
+              .setPlaceholder(
+                executorId === user.id
+                  ? "Your Recommendation"
+                  : `Recommendation for ${user.displayName}`,
+              )
+              .setOptions(mediaSources.map(DiscordUtil.sourceToSelectOption)),
+          ],
         }),
-      );
-    }
-
-    await message.reply({
-      embeds: [new EmbedBuilder({ fields: mediaSources.map(DiscordUtil.sourceToEmbedField) })],
-      components,
-    });
+      ],
+    };
   }
 }

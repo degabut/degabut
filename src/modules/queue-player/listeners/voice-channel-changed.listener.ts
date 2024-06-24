@@ -7,7 +7,7 @@ import { QueuePlayerRepository } from "@queue-player/repositories";
 import { PlayerDestroyReason, QueuePlayerService } from "@queue-player/services";
 
 const events = [VoiceMemberLeftEvent, VoiceMemberJoinedEvent, PlayerVoiceChannelChangedEvent];
-type Events = InstanceType<typeof events[number]>;
+type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)
 export class VoiceChannelChangedListener implements IEventHandler<Events> {

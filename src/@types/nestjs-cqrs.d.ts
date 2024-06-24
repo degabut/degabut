@@ -8,11 +8,8 @@ declare module "@nestjs/cqrs/dist/query-bus" {
     execute<X>(query: Query<X>): Promise<X>;
   }
 
-  type IInferredQueryHandler<QueryType extends Query<unknown>> = QueryType extends Query<
-    infer ResultType
-  >
-    ? IQueryHandler<QueryType, ResultType>
-    : never;
+  type IInferredQueryHandler<QueryType extends Query<unknown>> =
+    QueryType extends Query<infer ResultType> ? IQueryHandler<QueryType, ResultType> : never;
 }
 
 declare module "@nestjs/cqrs/dist/command-bus" {
@@ -20,9 +17,8 @@ declare module "@nestjs/cqrs/dist/command-bus" {
     execute<X>(command: Command<X>): Promise<X>;
   }
 
-  type IInferredCommandHandler<CommandType extends Command<unknown>> = CommandType extends Command<
-    infer ResultType
-  >
-    ? ICommandHandler<CommandType, ResultType>
-    : never;
+  type IInferredCommandHandler<CommandType extends Command<unknown>> =
+    CommandType extends Command<infer ResultType>
+      ? ICommandHandler<CommandType, ResultType>
+      : never;
 }

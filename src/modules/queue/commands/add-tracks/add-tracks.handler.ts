@@ -50,7 +50,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    let limit = MAX_QUEUE_TRACKS - queue.tracks.length; // early checking
+    const limit = MAX_QUEUE_TRACKS - queue.tracks.length; // early checking
     if (limit <= 0) throw new BadRequestException("Queue is full");
 
     let sources: MediaSource[] = [];

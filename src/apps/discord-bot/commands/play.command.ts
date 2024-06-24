@@ -5,14 +5,10 @@ import { Injectable, NotFoundException, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JoinCommand } from "@queue-player/commands";
 import { AddTracksCommand } from "@queue/commands";
-import {
-  BaseGuildTextChannel,
-  BaseGuildVoiceChannel,
-  Message
-} from "discord.js";
+import { BaseGuildTextChannel, BaseGuildVoiceChannel, Message } from "discord.js";
 import { Context, Options, SlashCommand, SlashCommandContext, StringOption } from "necord";
-import { TextCommand } from "../decorators";
 
+import { TextCommand } from "../decorators";
 
 class PlayDto {
   @StringOption({ name: "keyword", description: "Search keyword", required: true, min_length: 1 })
@@ -32,7 +28,7 @@ type JoinOptions = {
 };
 
 @Injectable()
-export class PlayDiscordCommand  {
+export class PlayDiscordCommand {
   private static readonly commandName = "play";
   private static readonly description = "Add a song to queue by keyword";
 
@@ -61,10 +57,8 @@ export class PlayDiscordCommand  {
     name: PlayDiscordCommand.commandName,
     description: PlayDiscordCommand.description,
   })
-  async slashHandler(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() options: PlayDto,
-  ) {
+  async slashHandler(@Context() context: SlashCommandContext, @Options() options: PlayDto) {
+    const [interaction] = context;
     const voiceData = DiscordUtil.getVoiceFromInteraction(interaction);
     if (!voiceData || !(interaction.channel instanceof BaseGuildTextChannel)) return;
     const { keyword } = options;
@@ -79,7 +73,6 @@ export class PlayDiscordCommand  {
     await interaction.deferReply();
     await interaction.deleteReply();
   }
-
 
   private async handler(options: AddTrackOptions & JoinOptions) {
     try {

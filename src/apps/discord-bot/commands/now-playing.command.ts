@@ -5,8 +5,8 @@ import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";
 import { GuildMember, Message } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
-import { TextCommand } from "../decorators";
 
+import { TextCommand } from "../decorators";
 
 @Injectable()
 export class NowPlayingDiscordCommand {
@@ -23,7 +23,7 @@ export class NowPlayingDiscordCommand {
   public async prefixHandler(message: Message) {
     if (!message.member) return;
 
-    const result = await  this.handler(message.member);
+    const result = await this.handler(message.member);
     if (!result) return;
 
     await message.reply(result);
@@ -34,11 +34,12 @@ export class NowPlayingDiscordCommand {
     name: NowPlayingDiscordCommand.commandName,
     description: NowPlayingDiscordCommand.description,
   })
-  public async slashHandler(@Context() [interaction]: SlashCommandContext) {
+  public async slashHandler(@Context() context: SlashCommandContext) {
+    const [interaction] = context;
     if (!(interaction.member instanceof GuildMember)) return;
 
     const result = await this.handler(interaction.member);
-    if (!result) return
+    if (!result) return;
 
     await interaction.reply(result);
   }

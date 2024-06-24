@@ -4,13 +4,8 @@ import { Injectable, UseFilters } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";
 import { EmbedBuilder, Message } from "discord.js";
-import {
-  Context,
-  NumberOption,
-  Options,
-  SlashCommand,
-  SlashCommandContext
-} from "necord";
+import { Context, NumberOption, Options, SlashCommand, SlashCommandContext } from "necord";
+
 import { TextCommand } from "../decorators";
 
 class QueueDto {
@@ -38,7 +33,7 @@ export class QueueDiscordCommand {
 
   @TextCommand({
     name: QueueDiscordCommand.commandName,
-    aliases:["q"],
+    aliases: ["q"],
     description: QueueDiscordCommand.description,
   })
   public async prefixHandler(message: Message, args: string[]) {
@@ -51,7 +46,7 @@ export class QueueDiscordCommand {
       voiceChannelId: voiceData.voiceChannel.id,
       userId: voiceData.member.id,
     });
-    
+
     await message.reply(result);
   }
 
@@ -60,8 +55,8 @@ export class QueueDiscordCommand {
     name: QueueDiscordCommand.commandName,
     description: QueueDiscordCommand.description,
   })
-  public async slashHandler(@Context() [interaction]: SlashCommandContext, @Options() options: QueueDto) {
-
+  public async slashHandler(@Context() context: SlashCommandContext, @Options() options: QueueDto) {
+    const [interaction] = context;
     const voiceData = DiscordUtil.getVoiceFromInteraction(interaction);
     if (!voiceData) return;
 

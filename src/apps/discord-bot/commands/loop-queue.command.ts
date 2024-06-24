@@ -5,8 +5,8 @@ import { ChangeLoopModeCommand } from "@queue/commands";
 import { LoopMode } from "@queue/entities";
 import { GuildMember, Message } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
-import { TextCommand } from "../decorators";
 
+import { TextCommand } from "../decorators";
 
 @Injectable()
 export class LoopQueueDiscordCommand {
@@ -30,7 +30,8 @@ export class LoopQueueDiscordCommand {
     name: LoopQueueDiscordCommand.commandName,
     description: LoopQueueDiscordCommand.description,
   })
-  public async slashHandler(@Context() [interaction]: SlashCommandContext) {
+  public async slashHandler(@Context() context: SlashCommandContext) {
+    const [interaction] = context;
     if (!(interaction.member instanceof GuildMember) || !interaction.member?.voice.channelId) {
       return;
     }

@@ -4,6 +4,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { ClearQueueCommand } from "@queue/commands";
 import { GuildMember, Message } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
+
 import { TextCommand } from "../decorators";
 
 @Injectable()
@@ -28,7 +29,8 @@ export class ClearAllDiscordCommand {
     name: ClearAllDiscordCommand.commandName,
     description: ClearAllDiscordCommand.description,
   })
-  public async slashHandler(@Context() [interaction]: SlashCommandContext) {
+  public async slashHandler(@Context() context: SlashCommandContext) {
+    const [interaction] = context;
     if (!(interaction.member instanceof GuildMember)) return;
     const result = await this.handler(interaction.member);
     if (result) await interaction.reply("🗑️");

@@ -6,6 +6,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { RedirectCommand } from "@queue-player/commands";
 import { BaseGuildTextChannel, Message } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
+
 import { TextCommand } from "../decorators";
 
 type HandlerOptions = {
@@ -43,7 +44,8 @@ export class RedirectDiscordCommand {
     name: RedirectDiscordCommand.commandName,
     description: RedirectDiscordCommand.description,
   })
-  public async slashHandler(@Context() [interaction]: SlashCommandContext) {
+  public async slashHandler(@Context() context: SlashCommandContext) {
+    const [interaction] = context;
     const voiceData = DiscordUtil.getVoiceFromInteraction(interaction);
     if (!voiceData || !(interaction.channel instanceof BaseGuildTextChannel)) return;
 

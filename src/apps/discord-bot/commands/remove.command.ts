@@ -1,12 +1,12 @@
 import { DiscordUtil } from "@common/utils";
+import { CommandExceptionFilter } from "@discord-bot/filters";
 import { CommandResult } from "@discord-bot/interfaces";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { RemoveTrackCommand } from "@queue/commands";
 import { Message } from "discord.js";
-
-import { CommandExceptionFilter } from "@discord-bot/filters";
 import { Context, NumberOption, Options, SlashCommand, SlashCommandContext } from "necord";
+
 import { TextCommand } from "../decorators";
 
 class RemoveDto {
@@ -53,7 +53,8 @@ export class RemoveDiscordCommand {
     name: RemoveDiscordCommand.commandName,
     description: RemoveDiscordCommand.description,
   })
-  async slashHandler(@Context() [interaction]: SlashCommandContext, @Options() options: RemoveDto) {
+  async slashHandler(@Context() context: SlashCommandContext, @Options() options: RemoveDto) {
+    const [interaction] = context;
     const voiceData = DiscordUtil.getVoiceFromInteraction(interaction);
     if (!voiceData) return;
 

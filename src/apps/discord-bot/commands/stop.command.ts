@@ -5,6 +5,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { StopCommand } from "@queue-player/commands";
 import { Message } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
+
 import { TextCommand } from "../decorators";
 
 type HandlerOptions = {
@@ -41,7 +42,8 @@ export class StopDiscordCommand {
     name: StopDiscordCommand.commandName,
     description: StopDiscordCommand.description,
   })
-  async slashHandler(@Context() [interaction]: SlashCommandContext) {
+  public async slashHandler(@Context() context: SlashCommandContext) {
+    const [interaction] = context;
     const voiceData = DiscordUtil.getVoiceFromInteraction(interaction);
     if (!voiceData) return;
 

@@ -57,7 +57,7 @@ export class DiscordBotGateway {
   }
 
   @On("guildMemberUpdate")
-  onGuildMemberUpdate([_, member]: ContextOf<"guildMemberUpdate">) {
+  onGuildMemberUpdate([, member]: ContextOf<"guildMemberUpdate">) {
     if (member.user.bot) return;
 
     const voiceChannel = member.voice.channel;

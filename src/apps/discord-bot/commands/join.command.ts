@@ -3,12 +3,9 @@ import { CommandExceptionFilter } from "@discord-bot/filters";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JoinCommand } from "@queue-player/commands";
-import {
-  BaseGuildTextChannel,
-  Message,
-  VoiceBasedChannel
-} from "discord.js";
+import { BaseGuildTextChannel, Message, VoiceBasedChannel } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
+
 import { TextCommand } from "../decorators";
 
 @Injectable()
@@ -40,7 +37,8 @@ export class JoinDiscordCommand {
     name: JoinDiscordCommand.commandName,
     description: JoinDiscordCommand.description,
   })
-  async slashHandler(@Context() [interaction]: SlashCommandContext) {
+  public async slashHandler(@Context() context: SlashCommandContext) {
+    const [interaction] = context;
     const voiceData = DiscordUtil.getVoiceFromInteraction(interaction);
 
     if (!voiceData || !(interaction.channel instanceof BaseGuildTextChannel)) {
@@ -48,7 +46,7 @@ export class JoinDiscordCommand {
     }
 
     await this.handler(voiceData.voiceChannel, interaction.channel, interaction.user.id);
-    await interaction.reply( `Joined <#${voiceData.voiceChannel.id}>`);
+    await interaction.reply(`Joined <#${voiceData.voiceChannel.id}>`);
   }
 
   private async handler(

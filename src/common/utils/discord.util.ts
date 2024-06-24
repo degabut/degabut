@@ -3,6 +3,7 @@ import { MediaSource } from "@media-source/entities";
 import { TrackDto } from "@queue/dtos";
 import { Track } from "@queue/entities";
 import {
+  AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
   CommandInteraction,
@@ -20,7 +21,9 @@ const numbers = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣
 type VoiceData = { member: GuildMember; voiceChannel: VoiceBasedChannel };
 
 export class DiscordUtil {
-  static getVoiceFromInteraction(interaction: CommandInteraction): VoiceData | null {
+  static getVoiceFromInteraction(
+    interaction: CommandInteraction | AutocompleteInteraction,
+  ): VoiceData | null {
     if (
       !interaction.member ||
       !("voice" in interaction.member) ||

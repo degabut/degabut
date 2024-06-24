@@ -6,18 +6,19 @@ import { QueryBus } from "@nestjs/cqrs";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
 import {
   ActionRowBuilder,
+  GuildMember,
   Message,
   MessageActionRowComponentBuilder,
   StringSelectMenuBuilder,
   User,
 } from "discord.js";
-import { Context, Options, SlashCommand, SlashCommandContext, UserOption } from "necord";
+import { Context, MemberOption, Options, SlashCommand, SlashCommandContext } from "necord";
 
 import { TextCommand } from "../decorators";
 
 class RecommendationDto {
-  @UserOption({ name: "user", description: "User", required: false })
-  user?: User;
+  @MemberOption({ name: "user", description: "User", required: false })
+  member?: GuildMember;
 }
 
 @Injectable()
@@ -48,12 +49,12 @@ export class RecommendationDiscordCommand {
     @Options() options: RecommendationDto,
   ) {
     const [interaction] = context;
-    const userId = options.user || interaction.user;
-    const response = await this.handler(userId, interaction.user.id);
+    const user = options.member || interaction.user;
+    const response = await this.handler(user, interaction.user.id);
     await interaction.reply(response);
   }
 
-  private async handler(user: User, executorId: string) {
+  private async handler(user: GuildMember | User, executorId: string) {
     const executor = { id: executorId };
     const userId = user.id;
 

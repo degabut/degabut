@@ -28,7 +28,7 @@ export class YoutubeMusicController {
     return {
       top: result.top
         ? {
-            item: YoutubeApiDtoUtils.toDto(result.top.item),
+            item: result.top.item ? YoutubeApiDtoUtils.toDto(result.top.item) : null,
             more: result.top.more?.map((item) => YoutubeApiDtoUtils.toDto(item)) || null,
           }
         : null,

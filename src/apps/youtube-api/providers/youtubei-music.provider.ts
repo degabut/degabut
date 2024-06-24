@@ -13,7 +13,7 @@ import {
 
 type SearchResult = {
   top?: {
-    item: MusicVideoCompact | MusicAlbumCompact | MusicPlaylistCompact | MusicArtistCompact;
+    item?: MusicVideoCompact | MusicAlbumCompact | MusicPlaylistCompact | MusicArtistCompact;
     more?: (MusicVideoCompact | MusicAlbumCompact | MusicPlaylistCompact | MusicArtistCompact)[];
   };
   shelves: Shelf<

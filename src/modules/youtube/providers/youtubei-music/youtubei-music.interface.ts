@@ -15,7 +15,7 @@ export type YoutubeMusicArtist = MusicArtistCompact;
 
 export type SearchAllResult = {
   top?: {
-    item:
+    item?:
       | YoutubeMusicSong
       | YoutubeMusicAlbum
       | YoutubeMusicPlaylist

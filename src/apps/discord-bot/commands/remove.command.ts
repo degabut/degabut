@@ -112,7 +112,6 @@ export class RemoveDiscordCommand {
   @SlashCommand({
     name: RemoveDiscordCommand.commandName,
     description: RemoveDiscordCommand.description,
-    guilds: ["954618520560361512"],
   })
   async slashHandler(@Context() context: SlashCommandContext, @Options() options: RemoveDto) {
     const [interaction] = context;

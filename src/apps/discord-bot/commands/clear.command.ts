@@ -37,7 +37,6 @@ export class ClearDiscordCommand {
   @SlashCommand({
     name: ClearDiscordCommand.commandName,
     description: ClearDiscordCommand.description,
-    guilds: ["954618520560361512"],
   })
   public async slashHandler(@Context() context: SlashCommandContext, @Options() options: ClearDto) {
     const [interaction] = context;

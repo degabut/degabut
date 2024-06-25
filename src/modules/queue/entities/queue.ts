@@ -158,33 +158,28 @@ export class Queue extends AggregateRoot {
   }
 
   public removeTracks({ trackIds, memberId }: RemoveTracksOptions, member: Member): Track[] {
-    let queueTrackIds = this.tracks.map((t) => t.id);
     const removedTracks: Track[] = [];
 
-    if (trackIds) {
-      removedTracks.push(...this.tracks.filter((t) => trackIds.includes(t.id)));
-      this.tracks = this.tracks.filter((t) => !trackIds.includes(t.id));
-    }
-
-    if (memberId) {
-      removedTracks.push(...this.tracks.filter((t) => t.requestedBy?.id === memberId));
-      this.tracks = this.tracks.filter((t) => t.requestedBy?.id !== memberId);
-    }
+    if (trackIds) removedTracks.push(...this.tracks.filter((t) => trackIds.includes(t.id)));
+    if (memberId) removedTracks.push(...this.tracks.filter((t) => t.requestedBy?.id === memberId));
+    if (!removedTracks.length) return [];
 
     const nowPlayingId = this.nowPlaying?.id;
     const hasNowPlaying = removedTracks.some((t) => t.id === nowPlayingId);
 
-    if (!removedTracks.length) return [];
-
     if (!this.shuffle && hasNowPlaying && !this.nextTrackIds.length) {
-      queueTrackIds = queueTrackIds.filter(
-        (id) => removedTracks.some((t) => t.id === id) || id === nowPlayingId,
-      );
-      const nowPlayingIndex = queueTrackIds.findIndex((id) => id === nowPlayingId);
+      const nowPlayingIndex = this.tracks.findIndex((t) => t.id === nowPlayingId);
 
-      const nextTrack = nowPlayingIndex >= 0 ? this.tracks.at(nowPlayingIndex) : null;
-      if (nextTrack) this.addNextTrackId(nextTrack.id);
+      for (let i = nowPlayingIndex + 1; i < this.tracks.length; i++) {
+        const nextTrack = this.tracks.at(i);
+        if (!nextTrack) break;
+        if (removedTracks.some((t) => t.id === nextTrack.id)) continue;
+        this.addNextTrackId(nextTrack.id);
+        break;
+      }
     }
+
+    this.tracks = this.tracks.filter((t) => !removedTracks.some((rt) => rt.id === t.id));
 
     this.apply(
       new TracksRemovedEvent({

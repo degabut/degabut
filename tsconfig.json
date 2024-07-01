@@ -20,8 +20,8 @@
     "paths": {
       "@api": ["./src/apps/api"],
       "@api/*": ["./src/apps/api/*"],
-      "@api-youtube": ["./src/apps/api-youtube"],
-      "@api-youtube/*": ["./src/apps/api-youtube/*"],
+      "@youtube-api": ["./src/apps/youtube-api"],
+      "@youtube-api/*": ["./src/apps/youtube-api/*"],
       "@discord-bot": ["./src/apps/discord-bot"],
       "@discord-bot/*": ["./src/apps/discord-bot/*"],
       "@events": ["./src/apps/events"],

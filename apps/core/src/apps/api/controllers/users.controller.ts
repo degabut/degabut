@@ -1,0 +1,53 @@
+import { AuthUser, User } from "@auth/decorators";
+import { AuthGuard } from "@auth/guards";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { QueryBus } from "@nestjs/cqrs";
+import { ApiBearerAuth, ApiProperty } from "@nestjs/swagger";
+import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";
+
+class UserIdParams {
+  @ApiProperty()
+  userId!: string;
+}
+
+type GetHistoryQuery =
+  | {
+      last: string;
+      page?: string;
+    }
+  | {
+      count: string;
+      days: string;
+    };
+
+@Controller("users")
+export class UsersController {
+  constructor(private readonly queryBus: QueryBus) {}
+
+  @Get("/:userId/play-history")
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("AccessToken")
+  getHistories(
+    @Query() query: GetHistoryQuery,
+    @Param() params: UserIdParams,
+    @User() executor: AuthUser,
+  ) {
+    return "last" in query
+      ? this.queryBus.execute(
+          new GetLastPlayedQuery({
+            limit: +query.last,
+            page: query.page ? +query.page : undefined,
+            ...params,
+            executor,
+          }),
+        )
+      : this.queryBus.execute(
+          new GetMostPlayedQuery({
+            limit: +query.count,
+            days: +query.days,
+            ...params,
+            executor,
+          }),
+        );
+  }
+}

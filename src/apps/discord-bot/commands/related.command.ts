@@ -39,7 +39,10 @@ export class RelatedDiscordCommand {
     });
     const queue = await this.queryBus.execute(query);
 
-    const { playedYoutubeVideoId, title } = queue?.nowPlaying?.mediaSource;
+    const nowPlaying = queue?.nowPlaying;
+    if (!nowPlaying) return;
+
+    const { playedYoutubeVideoId, title } = nowPlaying.mediaSource;
     if (!playedYoutubeVideoId) return;
 
     const video = await this.youtubeiProvider.getVideo(playedYoutubeVideoId);

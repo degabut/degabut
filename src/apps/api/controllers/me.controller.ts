@@ -1,9 +1,21 @@
-import { IPaginationQuery } from "@api/interfaces";
+import { PaginationQueryDto } from "@api/dto";
 import { AuthUser, User } from "@auth/decorators";
 import { AuthGuard } from "@auth/guards";
+import { MAX_HISTORY_DAYS } from "@history/history.constants";
+import { MediaSourceDto } from "@media-source/dtos";
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import {
+  ApiBearerAuth,
+  ApiParam,
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiQuery,
+  ApiResponse,
+} from "@nestjs/swagger";
+import { PlaylistDto } from "@playlist/dtos";
 import { GetPlaylistsQuery } from "@playlist/queries";
+import { QueueDto } from "@queue/dtos";
 import { GetQueueQuery } from "@queue/queries";
 import {
   LikeMediaSourceCommand,
@@ -18,31 +30,48 @@ import {
   IsLikedQuery,
 } from "@user/queries";
 
-type GetHistoryQuery =
-  | {
-      last: string;
-      page?: string;
-    }
-  | {
-      count: string;
-      days: string;
-    };
+class LastPlayedQuery {
+  @ApiProperty()
+  last!: string;
+
+  @ApiPropertyOptional({ default: 1 })
+  page?: string;
+}
+
+class TopPlayedQuery {
+  @ApiProperty()
+  count!: string;
+
+  @ApiProperty({
+    minimum: 1,
+    maximum: MAX_HISTORY_DAYS,
+  })
+  days!: string;
+}
+
+type GetHistoryQuery = LastPlayedQuery | TopPlayedQuery;
 
 type GetSelfHistoryQuery = GetHistoryQuery & { guild: string; voiceChannel: string };
 
-type MediaSourceIdParams = {
-  mediaSourceId: string;
-};
+class MediaSourceIdParams {
+  @ApiProperty()
+  mediaSourceId!: string;
+}
 
-type MediaSourceIdsParams = {
-  mediaSourceIds: string[];
-};
+class MediaSourceIdsBody {
+  @ApiProperty()
+  mediaSourceIds!: string[];
+}
 
-type GetLikedParam = IPaginationQuery & { keyword?: string };
+class GetLikedParam extends PaginationQueryDto {
+  @ApiPropertyOptional()
+  keyword?: string;
+}
 
-type YearParams = {
+class YearParams {
+  @ApiPropertyOptional()
   year?: string;
-};
+}
 
 @Controller("me")
 export class MeController {
@@ -80,14 +109,47 @@ export class MeController {
         );
   }
 
+  @Get("/top")
+  @UseGuards(AuthGuard)
+  @ApiQuery({ type: TopPlayedQuery })
+  @ApiBearerAuth()
+  getTopTracks(@Query() query: TopPlayedQuery, @User() executor: AuthUser) {
+    return this.queryBus.execute(
+      new GetMostPlayedQuery({
+        limit: +query.count,
+        days: +query.days,
+        executor,
+      }),
+    );
+  }
+
+  @Get("/last-played")
+  @UseGuards(AuthGuard)
+  @ApiQuery({ type: PaginationQueryDto })
+  @ApiBearerAuth()
+  @ApiResponse({ type: [MediaSourceDto] })
+  getLastPlayed(@Query() query: PaginationQueryDto, @User() executor: AuthUser) {
+    return this.queryBus.execute(
+      new GetLastPlayedQuery({
+        limit: query.limit ? +query.limit : undefined,
+        page: query.page ? +query.page : undefined,
+        executor,
+      }),
+    );
+  }
+
   @Get("/playlists")
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiResponse({ type: [PlaylistDto] })
   getSelfPlaylists(@User() executor: AuthUser) {
     return this.queryBus.execute(new GetPlaylistsQuery({ executor }));
   }
 
   @Get("/queue")
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiResponse({ type: [QueueDto] })
   getSelfQueue(@User() executor: AuthUser) {
     return this.queryBus.execute(new GetQueueQuery({ executor }));
   }
@@ -125,12 +187,13 @@ export class MeController {
 
   @Post("/liked/is-liked")
   @UseGuards(AuthGuard)
-  isLiked(@Body() body: MediaSourceIdsParams, @User() executor: AuthUser) {
+  isLiked(@Body() body: MediaSourceIdsBody, @User() executor: AuthUser) {
     return this.queryBus.execute(new IsLikedQuery({ executor, ...body }));
   }
 
   @Get("/recap/:year?")
   @UseGuards(AuthGuard)
+  @ApiParam(YearParams)
   getRecap(@Param() params: YearParams, @User() executor: AuthUser) {
     const year = params.year ? +params.year : new Date().getFullYear();
     return this.queryBus.execute(new GetRecapQuery({ executor, year }));

@@ -1,4 +1,4 @@
-import { IPaginationQuery } from "@api/interfaces";
+import { PaginationQueryDto } from "@api/dto";
 import { AuthUser, User } from "@auth/decorators";
 import { AuthGuard } from "@auth/guards";
 import {
@@ -113,7 +113,7 @@ export class PlaylistsController {
   @UseGuards(AuthGuard)
   getPlaylistMediaSources(
     @Param() params: PlaylistIdParams,
-    @Query() query: IPaginationQuery,
+    @Query() query: PaginationQueryDto,
     @User() user: AuthUser,
   ) {
     const executor = { id: user.id };

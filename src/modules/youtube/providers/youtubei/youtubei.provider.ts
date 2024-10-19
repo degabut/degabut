@@ -13,7 +13,18 @@ import { IYoutubeiProvider } from "./youtubei.interface";
 
 @Injectable()
 export class YoutubeiProvider implements IYoutubeiProvider {
-  private readonly youtubeClient = new YoutubeiClient();
+  private readonly youtubeClient: YoutubeiClient;
+
+  constructor(refreshToken?: string) {
+    this.youtubeClient = new YoutubeiClient({
+      oauth: refreshToken
+        ? {
+            enabled: true,
+            refreshToken,
+          }
+        : undefined,
+    });
+  }
 
   public async searchVideo(keyword: string): Promise<YoutubeVideoCompact[]> {
     const videos = await this.youtubeClient.search(keyword, { type: "video" });

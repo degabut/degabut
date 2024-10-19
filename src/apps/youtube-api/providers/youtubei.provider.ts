@@ -1,4 +1,5 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { YoutubeApiConfigService } from "@youtube-api/config";
 import {
   LiveVideo,
   MixPlaylist,
@@ -12,7 +13,18 @@ import {
 
 @Injectable()
 export class YoutubeiProvider {
-  private readonly youtubeClient = new YoutubeiClient();
+  private readonly youtubeClient: YoutubeiClient;
+
+  constructor(@Inject(YoutubeApiConfigService) config: YoutubeApiConfigService) {
+    this.youtubeClient = new YoutubeiClient({
+      oauth: config.refreshToken
+        ? {
+            enabled: true,
+            refreshToken: config.refreshToken,
+          }
+        : undefined,
+    });
+  }
 
   public async search(keyword: string): Promise<(VideoCompact | PlaylistCompact)[]> {
     const result = await this.youtubeClient.search(keyword);

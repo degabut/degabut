@@ -21,6 +21,9 @@ postgres:
   user: "postgres"
   password: "password"
   database: "degabut"
+# youtube: # if you want to use oauth for youtube, used on youtube api and youtube module
+#   oauth:
+#     refreshToken: "1//..."
 # auth: # optional
 #   jwt: # must be enabled if running bot http server / youtube api server
 #     secret: "..."

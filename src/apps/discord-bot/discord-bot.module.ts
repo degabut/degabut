@@ -40,7 +40,7 @@ export class DiscordBotModule {
       DatabaseModule.forRoot(config.postgres),
       QueuePlayerModule.forRoot(config.lavalink),
       SpotifyModule.forRoot(config.spotify),
-      YoutubeModule.forRoot(config.youtubeApi),
+      YoutubeModule.forRoot(config.youtubeApi || config.youtube),
       NecordModule.forRoot({
         token: config.token,
         prefix: config.prefix,

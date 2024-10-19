@@ -60,6 +60,11 @@ export class ConfigUtil {
       baseUrl: Joi.string().required(),
       authToken: Joi.string().required(),
     }).optional(),
+    youtube: Joi.object({
+      oauth: Joi.object({
+        refreshToken: Joi.string().required(),
+      }).required(),
+    }).optional(),
   });
 
   static async getConfig() {
@@ -202,6 +207,17 @@ export class ConfigUtil {
         ...config.youtubeApi,
         baseUrl,
         authToken,
+      };
+    }
+
+    // youtube
+    const youtubeRefreshToken = process.env.YOUTUBE_OAUTH_REFRESH_TOKEN;
+    if (youtubeRefreshToken) {
+      config.youtube = {
+        ...config.youtube,
+        oauth: {
+          refreshToken: youtubeRefreshToken,
+        },
       };
     }
 

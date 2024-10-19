@@ -12,6 +12,7 @@ export interface IGlobalConfig {
   spotify?: ISpotifyConfig;
   auth?: IAuthConfig;
   youtubeApi?: IYoutubeClientConfig;
+  youtube?: IYoutubeConfig;
 }
 
 export interface IBotConfig {
@@ -72,4 +73,10 @@ export interface IDiscordOAuthConfig {
 export interface IJwtConfig {
   secret: string;
   expirationTime?: string;
+}
+
+export interface IYoutubeConfig {
+  oauth: {
+    refreshToken: string;
+  };
 }

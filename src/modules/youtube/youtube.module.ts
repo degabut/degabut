@@ -1,4 +1,4 @@
-import { IYoutubeClientConfig } from "@common/config";
+import { IYoutubeClientConfig, IYoutubeConfig } from "@common/config";
 import { DatabaseModule } from "@database/database.module";
 import { HttpModule, HttpService } from "@nestjs/axios";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -28,7 +28,7 @@ import { YOUTUBEI_MUSIC_PROVIDER, YOUTUBEI_PROVIDER } from "./youtube.constants"
   exports: [YoutubeCachedService, YoutubeVideoRepository, YoutubeChannelRepository],
 })
 export class YoutubeModule {
-  static forRoot(config?: IYoutubeClientConfig): DynamicModule {
+  static forRoot(config?: IYoutubeClientConfig | IYoutubeConfig): DynamicModule {
     return {
       global: true,
       module: YoutubeModule,
@@ -37,16 +37,22 @@ export class YoutubeModule {
           provide: YOUTUBEI_PROVIDER,
           inject: [HttpService],
           useFactory: (http: HttpService): IYoutubeiProvider => {
-            if (!config) return new YoutubeiProvider();
-            else return new DegabutYoutubeiProvider(http, config.baseUrl, config.authToken);
+            if (config && "baseUrl" in config) {
+              return new DegabutYoutubeiProvider(http, config.baseUrl, config.authToken);
+            } else {
+              return new YoutubeiProvider(config?.oauth.refreshToken);
+            }
           },
         },
         {
           provide: YOUTUBEI_MUSIC_PROVIDER,
           inject: [HttpService],
           useFactory: (http: HttpService): IYoutubeiMusicProvider => {
-            if (!config) return new YoutubeiMusicProvider();
-            else return new DegabutYoutubeiMusicProvider(http, config.baseUrl, config.authToken);
+            if (config && "baseUrl" in config) {
+              return new DegabutYoutubeiMusicProvider(http, config.baseUrl, config.authToken);
+            } else {
+              return new YoutubeiMusicProvider();
+            }
           },
         },
       ],

@@ -76,7 +76,14 @@ export interface IJwtConfig {
 }
 
 export interface IYoutubeConfig {
-  oauth: {
+  oauth?: {
     refreshToken: string;
+  };
+  proxy?: {
+    protocol: "http" | "https";
+    host: string;
+    port: number
+    username: string;
+    password: string;
   };
 }

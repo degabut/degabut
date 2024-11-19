@@ -44,6 +44,12 @@ importers:
       discord.js:
         specifier: ^14.14.1
         version: 14.14.1
+      http-proxy-agent:
+        specifier: ^7.0.2
+        version: 7.0.2
+      https-proxy-agent:
+        specifier: ^7.0.5
+        version: 7.0.5
       joi:
         specifier: ^17.12.3
         version: 17.12.3
@@ -87,8 +93,8 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1
       youtubei:
-        specifier: ^1.6.4
-        version: 1.6.4
+        specifier: ^1.6.7
+        version: 1.6.7
     devDependencies:
       '@nestjs/cli':
         specifier: ^10.3.2
@@ -1078,6 +1084,10 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
+  agent-base@7.1.1:
+    resolution: {integrity: sha512-H0TSyFNDMomMNJQBn8wFV5YC/2eJ+VXECwOadZJT554xP6cODZHPX3H9QMQECxvrgiSOP1pHjy1sMWQVYJOUOA==}
+    engines: {node: '>= 14'}
+
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
     peerDependencies:
@@ -1898,6 +1908,14 @@ packages:
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
+
+  http-proxy-agent@7.0.2:
+    resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
+    engines: {node: '>= 14'}
+
+  https-proxy-agent@7.0.5:
+    resolution: {integrity: sha512-1e4Wqeblerz+tMKPIq2EMGiiWW1dIjZOksyHWSUm1rmuvw/how9hBHZ38lAGj5ID4Ik6EdkOw7NmWPy6LAwalw==}
+    engines: {node: '>= 14'}
 
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
@@ -3381,8 +3399,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  youtubei@1.6.4:
-    resolution: {integrity: sha512-fElPc9SUnaJUvQKBlHhEVB4Gvqz8Hq4PA3I+WzlN5jw9DvazjgKizGPYLyaVIDcsJ2ny7fJan22sES3VCebVPA==}
+  youtubei@1.6.7:
+    resolution: {integrity: sha512-J3Q4dSspZkIf7StlFt1muJdaURjfSGCUZsQp9rbU13temXn1hA7JO0Ep8g9qnz222kUg8SyPINyoKECFG3j/+g==}
 
 snapshots:
 
@@ -4548,6 +4566,12 @@ snapshots:
 
   acorn@8.11.3: {}
 
+  agent-base@7.1.1:
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+
   ajv-formats@2.1.1(ajv@8.12.0):
     optionalDependencies:
       ajv: 8.12.0
@@ -5409,6 +5433,20 @@ snapshots:
   hexoid@1.0.0: {}
 
   html-escaper@2.0.2: {}
+
+  http-proxy-agent@7.0.2:
+    dependencies:
+      agent-base: 7.1.1
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+
+  https-proxy-agent@7.0.5:
+    dependencies:
+      agent-base: 7.1.1
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
 
   human-signals@2.1.0: {}
 
@@ -7055,7 +7093,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  youtubei@1.6.4:
+  youtubei@1.6.7:
     dependencies:
       node-fetch: 2.6.7
       protobufjs: 7.2.6

@@ -67,7 +67,7 @@ export class ConfigUtil {
       proxy: Joi.object({
         host: Joi.string().required(),
         port: Joi.number().required(),
-        user: Joi.string().required(),
+        username: Joi.string().required(),
         password: Joi.string().required(),
       }).optional(),
     }).optional(),

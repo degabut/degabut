@@ -2,6 +2,8 @@ import { MediaSourceDto } from "@media-source/dtos";
 import { MediaSource } from "@media-source/entities";
 import { TrackDto } from "@queue/dtos";
 import { Track } from "@queue/entities";
+import { SpotifyArtistDto } from "@spotify/dtos";
+import { SpotifyArtist } from "@spotify/entities";
 import {
   AutocompleteInteraction,
   ButtonBuilder,
@@ -115,7 +117,7 @@ export class DiscordUtil {
     if (spotifyTrack?.artists) {
       fields.unshift({
         name: "Artists",
-        value: spotifyTrack.artists.map((a) => a.name).join(", "),
+        value: spotifyTrack.artists.map((a: SpotifyArtist | SpotifyArtistDto) => a.name).join(", "),
         inline: true,
       });
     }

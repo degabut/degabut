@@ -37,7 +37,7 @@
     "joi": "^17.12.3",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
-    "lavaclient": "4",
+    "lavaclient": "5.0.0-rc.3",
     "necord": "^6.8.3",
     "nestjs-pino": "^4.1.0",
     "objection": "^3.1.4",

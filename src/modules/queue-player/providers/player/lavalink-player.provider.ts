@@ -4,7 +4,7 @@ import { Logger } from "@logger/logger.service";
 import { Injectable } from "@nestjs/common";
 import { Client, GatewayDispatchEvents } from "discord.js";
 import { EventEmitter } from "events";
-import { Node, NodeEvents, NodeState, Player } from "lavaclient";
+import { Node, NodeEvents, Player } from "lavaclient";
 import TypedEventEmitter from "typed-emitter";
 
 import {
@@ -22,6 +22,7 @@ export class LavalinkPlayerProvider
 {
   private readonly config: ILavalinkConfig;
 
+  private isNodeConnected = false;
   private isNodeReconnecting = false;
   private client!: Client;
   private node!: Node;
@@ -38,49 +39,53 @@ export class LavalinkPlayerProvider
   init(client: Client): IAudioPlayerManager {
     this.client = client;
     this.node = new Node({
-      sendGatewayPayload: (id, payload) => client.guilds.cache.get(id)?.shard?.send(payload),
-      connection: {
+      discord: {
+        sendGatewayCommand: (id, payload) => client.guilds.cache.get(id)?.shard?.send(payload),
+      },
+      info: {
+        host: this.config.host,
+        auth: this.config.password,
         port: 2333,
-        ...this.config,
       },
     });
 
     client.ws.on(GatewayDispatchEvents.VoiceServerUpdate, (data) =>
-      this.node.handleVoiceUpdate(data),
+      this.node.players.handleVoiceUpdate(data),
     );
     client.ws.on(GatewayDispatchEvents.VoiceStateUpdate, (data) =>
-      this.node.handleVoiceUpdate(data),
+      this.node.players.handleVoiceUpdate(data),
     );
 
-    this.node.on("connect", () => {
+    this.node.on("connected", () => {
+      this.isNodeConnected = true;
       this.logger.info("Lavalink connected");
     });
 
-    this.node.on("disconnect", async (e) => {
+    this.node.on("disconnected", async (e) => {
+      this.isNodeConnected = false;
       this.logger.error({ error: "Lavalink disconnected", ...e });
       this.reconnectNode();
     });
 
     this.node.on("error", async (e) => {
       this.logger.error({ error: "Lavalink error", ...e });
-      if (this.node.state !== NodeState.Connected) this.reconnectNode();
+      if (!this.isNodeConnected) this.reconnectNode();
     });
 
-    this.node.connect(this.client.user?.id);
+    this.node.connect({ userId: this.client.user?.id });
 
     return this;
   }
 
   createAudioPlayer(guildId: string): IAudioPlayer {
-    return new AudioPlayer(this.node.createPlayer(guildId));
+    return new AudioPlayer(this.node.players.create(guildId), guildId);
   }
 
   get isReady(): boolean {
-    return this.node?.state === NodeState.Connected;
+    return this.isNodeConnected;
   }
 
   private async reconnectNode(delay = 10000) {
-    const node = this.node;
     if (this.isNodeReconnecting) return;
 
     this.isNodeReconnecting = true;
@@ -89,7 +94,9 @@ export class LavalinkPlayerProvider
     this.logger.info(`Reconnecting to lavalink in ${delay}ms`);
 
     await AsyncUtil.sleep(delay);
-    node.conn.reconnect();
+
+    this.node.disconnect();
+    this.node.connect({ userId: this.client.user?.id });
     this.isNodeReconnecting = false;
   }
 }
@@ -98,36 +105,40 @@ class AudioPlayer
   extends (EventEmitter as new () => TypedEventEmitter<AudioPlayerEvents>)
   implements IAudioPlayer
 {
+  private guildId: string;
   private readonly player: Player<Node>;
   private onTickListener: AudioPlayer["onTick"];
 
-  constructor(player: Player<Node>) {
+  constructor(player: Player<Node>, guildId: string) {
     super();
     this.player = player;
+    this.guildId = guildId;
 
-    this.player.on("channelJoin", () => this.emit("ready"));
-    this.player.on("channelMove", (from, to) => this.emit("moved", from, to));
+    this.player.voice.on("channelJoin", () => this.emit("ready"));
+    this.player.voice.on("channelMove", (from, to) => this.emit("moved", from, to));
     this.player.on("disconnected", () => this.emit("disconnected"));
     this.player.on("trackStart", () => this.emit("trackStart"));
     this.player.on("trackEnd", (_, reason) =>
       this.emit(
         "trackEnd",
-        reason === "FINISHED"
+        reason === "finished"
           ? TrackEndReason.FINISHED
-          : reason === "STOPPED"
+          : reason === "stopped"
             ? TrackEndReason.STOPPED
             : TrackEndReason.ERROR,
       ),
     );
-    this.player.on("trackException", (e) => this.emit("trackException", new Error(e || "unknown")));
+    this.player.on("trackException", (e) =>
+      this.emit("trackException", new Error(JSON.stringify(e) || "unknown")),
+    );
 
     this.onTickListener = this.onTick.bind(this);
-    this.player.node.on("raw", this.onTickListener);
+    this.player.node.on("message", this.onTickListener);
   }
 
-  private onTick(e: Parameters<NodeEvents["raw"]>[0]) {
+  private onTick(e: Parameters<NodeEvents["message"]>[0]) {
     if (e.op !== "playerUpdate") return;
-    if (e.guildId !== this.player.guildId) return;
+    if (e.guildId !== this.guildId) return;
     this.emit("tick", this.position || null);
   }
 
@@ -136,7 +147,7 @@ class AudioPlayer
   }
 
   get isConnected() {
-    return this.player.connected;
+    return this.player.voice.connected;
   }
 
   get isPaused() {
@@ -152,25 +163,25 @@ class AudioPlayer
   }
 
   connect(voiceChannelId: string): void {
-    this.player.connect(voiceChannelId, { deafened: true });
+    this.player.voice.connect(voiceChannelId, { deafened: true });
   }
 
   disconnect(): void {
-    this.player.disconnect();
-    this.player.node.removeListener("raw", this.onTickListener);
-    this.player.node.destroyPlayer(this.player.guildId);
+    this.player.voice.disconnect();
+    this.player.node.removeListener("message", this.onTickListener);
+    this.player.node.players.destroy(this.guildId, true);
   }
 
   async play(videoId: string) {
-    const res = await this.player.node.rest.loadTracks(videoId);
+    const res = await this.player.node.api.loadTracks(videoId);
 
-    if (res?.loadType !== "TRACK_LOADED") {
-      if (res.loadType === "NO_MATCHES") throw new Error("Track Not Found");
-      if (res.exception) throw res.exception;
+    if (res?.loadType !== "track") {
+      if (res.loadType === "empty") throw new Error("Track Not Found");
+      if (res.loadType === "error") throw res.data;
       else throw new Error("Unknown");
     }
 
-    const track = res.tracks.at(0);
+    const track = res.data;
     if (!track) throw new Error("Track Not Found");
 
     await this.player.play(track);

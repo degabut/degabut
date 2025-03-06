@@ -54,8 +54,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(pg@8.11.5)
       lavaclient:
-        specifier: '4'
-        version: 4.1.1
+        specifier: 5.0.0-rc.3
+        version: 5.0.0-rc.3(effect@2.0.0-next.56)(fast-check@3.23.2)
       necord:
         specifier: ^6.8.3
         version: 6.8.3(@nestjs/common@10.3.7(class-transformer@0.5.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.7(@nestjs/common@10.3.7(class-transformer@0.5.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/websockets@10.3.7)(reflect-metadata@0.2.2)(rxjs@7.8.1))(discord.js@14.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -424,6 +424,16 @@ packages:
     resolution: {integrity: sha512-+XI82Rm2hKnFwAySXEep4A7Kfoowt6weO6381jgW+wVdTpMS/56qCvoXyFRY0slcv7c/U8My2PwIB2/wEaAh7Q==}
     engines: {node: '>=16.11.0'}
 
+  '@effect/data@0.17.6':
+    resolution: {integrity: sha512-/vwz7Jh05eS0qY8kczR/YyJd18d0C+PMtUkAealh4f6gwvhABLGCnktNJTcq/+UHxY0Cbv18r5uaJ4+7PPC+WQ==}
+
+  '@effect/schema@0.49.4':
+    resolution: {integrity: sha512-Em5qFV7kXfHpt6n89B2Zwd0ccGgfFpZbBAfQuGPdw/zY18k01Tl3ufKfBA6fFphKQiWrU6JS9btTlq1+/WRRIg==}
+    deprecated: this package has been merged into the main effect package
+    peerDependencies:
+      effect: 2.0.0-next.56
+      fast-check: ^3.13.2
+
   '@eslint-community/eslint-utils@4.4.0':
     resolution: {integrity: sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -585,9 +595,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
-
-  '@lavaclient/types@2.1.1':
-    resolution: {integrity: sha512-r69sXGyUQgqsNiDHYRm2uWuDumRydylIB0k51lKkVzFinI+DcBq2hKW3KJkImT4+YY5boQ6K7HPAO9RvhJkQDg==}
 
   '@ljharb/through@2.3.13':
     resolution: {integrity: sha512-/gKJun8NNiWGZJkGzI/Ragc53cOdcLNdzjLaIa+GEjguQs0ulsurx8WN0jijdK9yPqDvziX995sMRLyLt1uZMQ==}
@@ -1501,6 +1508,9 @@ packages:
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
 
+  effect@2.0.0-next.56:
+    resolution: {integrity: sha512-Z6L9rf78OveZorl4pC82hUM/kNhQ8epChuCBVNIjVsookbb6iqTuP9goi3qi6CR7xUZE+HnOKF2bzMIdOOP+Vw==}
+
   electron-to-chromium@1.4.744:
     resolution: {integrity: sha512-nAGcF0yeKKfrP13LMFr5U1eghfFSvFLg302VUFzWlcjPOnUYd52yU5x6PBYrujhNbc4jYmZFrGZFK+xasaEzVA==}
 
@@ -1652,6 +1662,10 @@ packages:
   external-editor@3.1.0:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
     engines: {node: '>=4'}
+
+  fast-check@3.23.2:
+    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
+    engines: {node: '>=8.0.0'}
 
   fast-content-type-parse@1.1.0:
     resolution: {integrity: sha512-fBHHqSTFLVnR61C+gltJuE5GkVQMV0S2nqUO8TJ+5Z3qAKG8vAx4FKai1s5jq/inV1+sREynIWSuQ6HgoSXpDQ==}
@@ -2274,9 +2288,26 @@ packages:
       tedious:
         optional: true
 
-  lavaclient@4.1.1:
-    resolution: {integrity: sha512-j2X7zYGv6WNf4KWNSc6Vl5emSVmNaAsCLbOuUdAeuRzNZ+2JLhXGhBy00m4Qct/wvDkRzujVSVrR7powY6jPUA==}
-    engines: {node: '>=16.x.x'}
+  lavaclient@5.0.0-rc.3:
+    resolution: {integrity: sha512-zSB0wK9SEhXwWd918ije4UjjqMeDlP7Nry8mo5UFvQlD2YMFKxJJuKTJKc9VwgBhBjRVB0cCujAlru7NsTRdDg==}
+    engines: {node: '>=20'}
+
+  lavalink-api-client@1.0.1:
+    resolution: {integrity: sha512-ur4rrOf68mEKQQ6SwDdzG/8W+ew6zpguLPxny14DjEGxDz/mXvDtILovXpFRR5S4d8Ko9xZygIJ9YqEQfgKC/w==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      lavalink-protocol: 1.0.2
+
+  lavalink-protocol@1.0.2:
+    resolution: {integrity: sha512-OLd4ZDrYeT35UxJY1K/Pu6PjqPnHN0X5HutcQ7E/UNz+3YBvieaki9z0gk08gPwsxkBhYjRKDNIVNTAT0sH0fA==}
+    engines: {node: '>=20'}
+
+  lavalink-ws-client@1.0.1:
+    resolution: {integrity: sha512-jXntoMJe/lk4vuO3RVfSVQPNx28CwammqP4I3+pi5uIF/WHBAJxzwyIzDCmUPIIXcuEveUH53bs2aE8uCq9Sig==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      lavalink-api-client: 1.0.1
+      lavalink-protocol: 1.0.2
 
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
@@ -3705,6 +3736,13 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  '@effect/data@0.17.6': {}
+
+  '@effect/schema@0.49.4(effect@2.0.0-next.56)(fast-check@3.23.2)':
+    dependencies:
+      effect: 2.0.0-next.56
+      fast-check: 3.23.2
+
   '@eslint-community/eslint-utils@4.4.0(eslint@9.0.0)':
     dependencies:
       eslint: 9.0.0
@@ -3988,8 +4026,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
-
-  '@lavaclient/types@2.1.1': {}
 
   '@ljharb/through@2.3.13':
     dependencies:
@@ -4978,6 +5014,8 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
+  effect@2.0.0-next.56: {}
+
   electron-to-chromium@1.4.744: {}
 
   emittery@0.13.1: {}
@@ -5139,6 +5177,10 @@ snapshots:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.0.33
+
+  fast-check@3.23.2:
+    dependencies:
+      pure-rand: 6.1.0
 
   fast-content-type-parse@1.1.0: {}
 
@@ -5981,11 +6023,40 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  lavaclient@4.1.1:
+  lavaclient@5.0.0-rc.3(effect@2.0.0-next.56)(fast-check@3.23.2):
     dependencies:
-      '@lavaclient/types': 2.1.1
+      '@effect/schema': 0.49.4(effect@2.0.0-next.56)(fast-check@3.23.2)
+      lavalink-api-client: 1.0.1(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2))
+      lavalink-protocol: 1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)
+      lavalink-ws-client: 1.0.1(lavalink-api-client@1.0.1(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)))(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2))
       tiny-typed-emitter: 2.1.0
-      undici: 5.27.2
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - bufferutil
+      - effect
+      - fast-check
+      - utf-8-validate
+
+  lavalink-api-client@1.0.1(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)):
+    dependencies:
+      lavalink-protocol: 1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)
+      tslib: 2.6.2
+
+  lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2):
+    dependencies:
+      '@effect/data': 0.17.6
+      '@effect/schema': 0.49.4(effect@2.0.0-next.56)(fast-check@3.23.2)
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - effect
+      - fast-check
+
+  lavalink-ws-client@1.0.1(lavalink-api-client@1.0.1(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)))(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)):
+    dependencies:
+      lavalink-api-client: 1.0.1(lavalink-protocol@1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2))
+      lavalink-protocol: 1.0.2(effect@2.0.0-next.56)(fast-check@3.23.2)
+      tslib: 2.6.2
+      typed-emitter: 2.1.0
       ws: 8.16.0
     transitivePeerDependencies:
       - bufferutil

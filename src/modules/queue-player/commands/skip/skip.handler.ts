@@ -23,9 +23,10 @@ export class SkipHandler implements IInferredCommandHandler<SkipCommand> {
     if (!member) throw new ForbiddenException("Missing permissions");
 
     if (!player.currentTrack) return;
+    const skippedTrack = player.currentTrack;
 
     await player.audioPlayer.stop();
 
-    this.eventBus.publish(new TrackSkippedEvent({ track: player.currentTrack, member }));
+    this.eventBus.publish(new TrackSkippedEvent({ track: skippedTrack, member }));
   }
 }

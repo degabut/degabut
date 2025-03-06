@@ -40,7 +40,10 @@ export class YoutubeModule {
             if (config && "baseUrl" in config) {
               return new DegabutYoutubeiProvider(http, config.baseUrl, config.authToken);
             } else {
-              return new YoutubeiProvider(config?.oauth.refreshToken);
+              return new YoutubeiProvider({
+                oauthRefreshToken: config?.oauth?.refreshToken,
+                proxyUrl: this.getProxyUrl(config?.proxy),
+              });
             }
           },
         },
@@ -51,12 +54,19 @@ export class YoutubeModule {
             if (config && "baseUrl" in config) {
               return new DegabutYoutubeiMusicProvider(http, config.baseUrl, config.authToken);
             } else {
-              return new YoutubeiMusicProvider();
+              return new YoutubeiMusicProvider({
+                oauthRefreshToken: config?.oauth?.refreshToken,
+                proxyUrl: this.getProxyUrl(config?.proxy)
+              });
             }
           },
         },
       ],
       exports: [YOUTUBEI_PROVIDER, YOUTUBEI_MUSIC_PROVIDER],
     };
+  }
+
+  static getProxyUrl(config: IYoutubeConfig["proxy"]): string | undefined {
+    return config ? `${config.protocol}://${config.username}:${config.password}@${config.host}:${config.port}` : undefined;
   }
 }

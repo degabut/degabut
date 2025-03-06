@@ -63,7 +63,14 @@ export class ConfigUtil {
     youtube: Joi.object({
       oauth: Joi.object({
         refreshToken: Joi.string().required(),
-      }).required(),
+      }).optional(),
+      proxy: Joi.object({
+        protocol: Joi.string().valid("http", "https").required(),
+        host: Joi.string().required(),
+        port: Joi.number().required(),
+        username: Joi.string().required(),
+        password: Joi.string().required(),
+      }).optional(),
     }).optional(),
   });
 
@@ -211,13 +218,29 @@ export class ConfigUtil {
     }
 
     // youtube
+    config.youtube = {};
+
     const youtubeRefreshToken = process.env.YOUTUBE_OAUTH_REFRESH_TOKEN;
     if (youtubeRefreshToken) {
-      config.youtube = {
-        ...config.youtube,
-        oauth: {
-          refreshToken: youtubeRefreshToken,
-        },
+      config.youtube.oauth = {
+        ...config.youtube.oauth,
+        refreshToken: youtubeRefreshToken,
+      }
+    }
+
+    const proxyProtocol = process.env.YOUTUBE_PROXY_PROTOCOL;
+    const proxyHost = process.env.YOUTUBE_PROXY_HOST;
+    const proxyPort = process.env.YOUTUBE_PROXY_PORT;
+    const proxyUser = process.env.YOUTUBE_PROXY_USERNAME;
+    const proxyPassword = process.env.YOUTUBE_PROXY_PASSWORD;
+    if (proxyHost && proxyPort && proxyUser && proxyPassword) {
+      config.youtube.proxy = {
+        ...config.youtube.proxy,
+        protocol: proxyProtocol as "http" | "https" || "http",
+        host: proxyHost,
+        port: +proxyPort,
+        username: proxyUser,
+        password: proxyPassword
       };
     }
 

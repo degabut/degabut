@@ -9,20 +9,37 @@ import {
   VideoCompact as YoutubeiVideoCompact,
 } from "youtubei";
 
+import { HttpProxyAgent } from "http-proxy-agent";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { IYoutubeiProvider } from "./youtubei.interface";
+
+type YoutubeiProviderOptions = {
+  oauthRefreshToken?: string;
+  proxyUrl?: string;
+};
 
 @Injectable()
 export class YoutubeiProvider implements IYoutubeiProvider {
   private readonly youtubeClient: YoutubeiClient;
 
-  constructor(refreshToken?: string) {
+  constructor(options?: YoutubeiProviderOptions) {
+    const { oauthRefreshToken: refreshToken, proxyUrl } = options || {};
+
+    let agent: HttpsProxyAgent<string> | HttpProxyAgent<string> | undefined = undefined;
+    if (proxyUrl?.startsWith("https")) {
+      agent = new HttpsProxyAgent(proxyUrl);
+    } else if (proxyUrl) {
+      agent = new HttpProxyAgent(proxyUrl);
+    }
+
     this.youtubeClient = new YoutubeiClient({
       oauth: refreshToken
         ? {
-            enabled: true,
-            refreshToken,
-          }
+          enabled: true,
+          refreshToken,
+        }
         : undefined,
+      fetchOptions: { agent }
     });
   }
 
@@ -55,10 +72,10 @@ export class YoutubeiProvider implements IYoutubeiProvider {
   private videoToEntity(video: YoutubeiVideo | LiveVideo) {
     const channel = video.channel
       ? new YoutubeChannel({
-          id: video.channel.id,
-          name: video.channel.name,
-          thumbnails: video.channel.thumbnails || [],
-        })
+        id: video.channel.id,
+        name: video.channel.name,
+        thumbnails: video.channel.thumbnails || [],
+      })
       : null;
 
     const entity = new YoutubeVideo({
@@ -84,10 +101,10 @@ export class YoutubeiProvider implements IYoutubeiProvider {
       viewCount: video.viewCount || null,
       channel: video.channel
         ? new YoutubeChannel({
-            id: video.channel.id,
-            name: video.channel.name,
-            thumbnails: video.channel.thumbnails || [],
-          })
+          id: video.channel.id,
+          name: video.channel.name,
+          thumbnails: video.channel.thumbnails || [],
+        })
         : null,
     });
   }

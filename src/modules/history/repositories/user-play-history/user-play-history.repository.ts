@@ -28,6 +28,11 @@ type GetCountOptions = {
   to?: Date;
 };
 
+type GetMonthlyAggregationOptions = {
+  from: Date | null;
+  to: Date | null;
+};
+
 @Injectable()
 export class UserPlayHistoryRepository {
   constructor(
@@ -217,5 +222,30 @@ export class UserPlayHistoryRepository {
       duration: +result.duration,
       count: +result.count,
     };
+  }
+
+  public async getMonthlyAggregation(options: GetMonthlyAggregationOptions) {
+    const query = this.userPlayHistoryModel
+      .query()
+      .select("user_id as userId")
+      .select(this.userPlayHistoryModel.knex().raw("TO_CHAR(played_at, 'YYYY-MM') as date"))
+      .count("* as playCount")
+      .countDistinct("media_source_id as uniquePlayCount")
+      .groupBy("user_id")
+      .groupBy(this.userPlayHistoryModel.knex().raw("TO_CHAR(played_at, 'YYYY-MM')"))
+      .orderBy("date")
+      .orderBy("userId");
+
+    if (options.from) query.andWhere("played_at", ">=", options.from);
+    if (options.to) query.andWhere("played_at", "<=", options.to);
+
+    const results = await query;
+
+    return results.map((result: any) => ({
+      userId: result.userId as string,
+      date: new Date(`${result.date}-01`),
+      playCount: +result.playCount,
+      uniquePlayCount: +result.uniquePlayCount,
+    }));
   }
 }

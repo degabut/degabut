@@ -1,5 +1,9 @@
 import { IPostgresConfig } from "@common/config";
-import { UserListenHistoryModel, UserPlayHistoryModel } from "@history/repositories";
+import {
+  UserListenHistoryModel,
+  UserMonthlyPlayActivityModel,
+  UserPlayHistoryModel,
+} from "@history/repositories";
 import { MediaSourceModel } from "@media-source/repositories";
 import { DynamicModule, Inject, Module } from "@nestjs/common";
 import { PlaylistMediaSourceModel, PlaylistModel } from "@playlist/repositories";
@@ -20,6 +24,7 @@ import * as path from "path";
       UserPlayHistoryModel,
       UserListenHistoryModel,
       UserLikeMediaSourceModel,
+      UserMonthlyPlayActivityModel,
       MediaSourceModel,
       YoutubeVideoModel,
       YoutubeChannelModel,

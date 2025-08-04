@@ -29,6 +29,7 @@
     "@nestjs/cqrs": "^10.2.7",
     "@nestjs/platform-fastify": "^10.3.7",
     "@nestjs/platform-ws": "^10.3.7",
+    "@nestjs/schedule": "^6.0.0",
     "@nestjs/websockets": "^10.3.7",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "@willsoto/nestjs-objection": "^8.1.2",

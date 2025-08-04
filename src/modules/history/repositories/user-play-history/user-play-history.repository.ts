@@ -12,6 +12,7 @@ type GetSelections = { userId: string } | { guildId: string } | { voiceChannelId
 
 type CommonOptions = {
   limit?: number;
+  excludeIds?: string[];
   excludeUserIds?: string[];
   includeContent?: boolean;
 };
@@ -93,6 +94,7 @@ export class UserPlayHistoryRepository {
             else qb.where({ voice_channel_id: selection.voiceChannelId });
 
             if (options.excludeUserIds) qb.whereNotIn("user_id", options.excludeUserIds);
+            if (options.excludeIds) qb.whereNotIn("media_source_id", options.excludeIds);
           })
           .where("played_at", ">=", playedAtLimit)
           .as("user_play_history");
@@ -150,6 +152,7 @@ export class UserPlayHistoryRepository {
         else qb.where({ voice_channel_id: selection.voiceChannelId });
 
         if (options.excludeUserIds) qb.whereNotIn("user_id", options.excludeUserIds);
+        if (options.excludeIds) qb.whereNotIn("media_source_id", options.excludeIds);
       })
       .groupBy("user_play_history.media_source_id")
       .orderBy("count", "desc")

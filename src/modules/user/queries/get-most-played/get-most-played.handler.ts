@@ -29,12 +29,55 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
       throw new NotFoundException("Queue not found");
     }
 
-    const from = new Date();
-    from.setDate(from.getDate() - params.days);
+    let excludeIds: string[] | undefined;
+    if (params.excludeFrom) {
+      const options = {
+        includeContent: true,
+        from: params.excludeFrom,
+        to: params.excludeTo,
+        limit: 100,
+      };
+
+      let excludedHistories: UserMostPlayedDto[] = [];
+
+      if (params.userId) {
+        excludedHistories = await this.repository.getMostPlayedByUserId(params.userId, options);
+      } else if (params.guild && queue) {
+        excludedHistories = await this.repository.getMostPlayedByGuildId(queue.guild.id, {
+          ...options,
+          excludeUserIds: [params.executor.id],
+        });
+      } else if (params.voiceChannel && queue) {
+        excludedHistories = await this.repository.getMostPlayedByVoiceChannelId(
+          queue.voiceChannelId,
+          {
+            ...options,
+            excludeUserIds: [params.executor.id],
+          },
+        );
+      }
+
+      const excludedCount = Math.floor(excludedHistories.length * 0.25); // top 25%
+      excludeIds = excludedHistories.slice(0, excludedCount).map((h) => h.mediaSourceId);
+    }
+
+    let from = new Date();
+    let to: undefined | Date;
+
+    if (params.days) {
+      from = new Date();
+      from.setDate(from.getDate() - params.days);
+    } else if (params.from) {
+      from = params.from;
+      to = params.to;
+    }
+
     const options = {
       includeContent: true,
       limit: params.limit,
+      excludeIds,
       from,
+      to,
     };
 
     let histories: UserMostPlayedDto[] = [];

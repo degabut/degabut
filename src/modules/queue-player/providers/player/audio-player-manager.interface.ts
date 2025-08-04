@@ -1,6 +1,8 @@
 import { Client } from "discord.js";
 import TypedEmitter from "typed-emitter";
 
+import { LavalinkFilter } from "./lavalink-player.provider";
+
 export type AudioPlayerManagerEvents = {
   disconnected: () => void;
 };
@@ -17,6 +19,9 @@ export enum TrackEndReason {
   ERROR = "ERROR",
   STOPPED = "STOPPED",
 }
+
+// TODO standard type for filters
+export type PlayerFilters = LavalinkFilter;
 
 export type AudioPlayerEvents = {
   tick: (position: number | null) => void;
@@ -35,6 +40,7 @@ export interface IAudioPlayer extends TypedEmitter<AudioPlayerEvents> {
   get isPaused(): boolean;
   get isPlaying(): boolean;
   get position(): number | undefined;
+  get filters(): PlayerFilters;
 
   connect(voiceChannelId: string): void;
   disconnect(): void;
@@ -43,4 +49,5 @@ export interface IAudioPlayer extends TypedEmitter<AudioPlayerEvents> {
   resume(): Promise<void>;
   pause(): Promise<void>;
   stop(): Promise<void>;
+  applyFilters(filter: PlayerFilters): Promise<void>;
 }

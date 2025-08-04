@@ -1,4 +1,5 @@
 export * from "./player-destroyed.event";
+export * from "./player-filters-changed.event";
 export * from "./player-pause-state-changed.event";
 export * from "./player-ready.event";
 export * from "./player-text-channel-changed.event";

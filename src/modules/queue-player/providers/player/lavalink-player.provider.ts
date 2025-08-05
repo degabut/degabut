@@ -135,7 +135,7 @@ class AudioPlayer
     );
 
     this.onTickListener = this.onTick.bind(this);
-    this.player.node.on("message", this.onTickListener);
+    this.player.node.ws.on("message", this.onTickListener);
   }
 
   private onTick(e: Parameters<NodeEvents["message"]>[0]) {

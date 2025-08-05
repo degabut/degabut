@@ -15,6 +15,8 @@ import {
   TrackEndReason,
 } from "./audio-player-manager.interface";
 
+export type LavalinkFilter = Player["filters"];
+
 @Injectable()
 export class LavalinkPlayerProvider
   extends (EventEmitter as new () => TypedEventEmitter<AudioPlayerManagerEvents>)
@@ -133,7 +135,7 @@ class AudioPlayer
     );
 
     this.onTickListener = this.onTick.bind(this);
-    this.player.node.on("message", this.onTickListener);
+    this.player.node.ws.on("message", this.onTickListener);
   }
 
   private onTick(e: Parameters<NodeEvents["message"]>[0]) {
@@ -160,6 +162,10 @@ class AudioPlayer
 
   get position() {
     return this.player.position;
+  }
+
+  get filters() {
+    return this.player.filters;
   }
 
   connect(voiceChannelId: string): void {
@@ -201,5 +207,9 @@ class AudioPlayer
 
   async stop(): Promise<void> {
     await this.player.stop();
+  }
+
+  async applyFilters(filter: LavalinkFilter): Promise<void> {
+    await this.player.setFilters(filter);
   }
 }

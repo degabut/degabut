@@ -2,6 +2,7 @@ import { Constructor, IEventHandler } from "@nestjs/cqrs";
 
 import { MemberJammedListener } from "./member-jammed.listener";
 import { MemberListener } from "./member.listener";
+import { PlayerFiltersChangedListener } from "./player-filters-changed.listener";
 import { PlayerPauseStateChangedListener } from "./player-pause-state-changed.listener";
 import { PlayerTickListener } from "./player-tick.listener";
 import { QueueDestroyedListener } from "./queue-destroyed.listener";
@@ -23,6 +24,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   MemberJammedListener,
   MemberListener,
   PlayerPauseStateChangedListener,
+  PlayerFiltersChangedListener,
   QueueListener,
   QueueDestroyedListener,
   QueueLoopModeChangedListener,

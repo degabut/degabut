@@ -1,6 +1,6 @@
 import { AuthUser, User } from "@auth/decorators";
 import { AuthGuard } from "@auth/guards";
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   JoinCommand,
@@ -9,6 +9,7 @@ import {
   SkipCommand,
   StopCommand,
 } from "@queue-player/commands";
+import { SetFiltersCommand } from "@queue-player/commands/set-filters";
 import { GetQueuePlayerQuery } from "@queue-player/queries";
 
 type VoiceChannelIdParams = {
@@ -108,6 +109,22 @@ export class PlayersController {
     await this.commandBus.execute(
       new SetPauseCommand({
         isPaused: false,
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Put("/:voiceChannelId/filters")
+  @UseGuards(AuthGuard)
+  async setFilters(
+    @Param() params: VoiceChannelIdParams,
+    @Body() body: any,
+    @User() executor: AuthUser,
+  ) {
+    await this.commandBus.execute(
+      new SetFiltersCommand({
+        filters: body,
         ...params,
         executor,
       }),

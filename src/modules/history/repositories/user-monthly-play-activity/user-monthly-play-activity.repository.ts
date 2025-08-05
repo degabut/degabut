@@ -15,10 +15,14 @@ export class UserMonthlyPlayActivityRepository {
     userId: string,
     from: Date,
     to: Date,
-    count?: number,
   ): Promise<UserMonthlyPlayActivity[]> {
-    // TODO to implement
-    return [];
+    const results = await this.userMonthlyPlayActivityModel
+      .query()
+      .where("user_id", userId)
+      .andWhere("date", ">=", from)
+      .andWhere("date", "<=", to);
+
+    return results.map((r) => UserMonthlyPlayActivityRepositoryMapper.toDomainEntity(r));
   }
 
   public async upsert(data: UserMonthlyPlayActivity[]): Promise<void> {

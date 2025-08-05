@@ -1,1 +1,2 @@
-export const MAX_HISTORY_DAYS = 365;
+export const MAX_HISTORY_DAYS = 180;
+export const MAX_MONTHLY_ACTIVITY_HISTORY = 12 * 3;

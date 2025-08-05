@@ -35,7 +35,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
         includeContent: true,
         from: params.excludeFrom,
         to: params.excludeTo,
-        limit: 100,
+        limit: params.excludeLimit || 100,
       };
 
       let excludedHistories: UserMostPlayedDto[] = [];
@@ -57,7 +57,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
         );
       }
 
-      const excludedCount = Math.floor(excludedHistories.length * 0.25); // top 25%
+      const excludedCount = Math.floor(excludedHistories.length * (params.excludeTopPercent || 1));
       excludeIds = excludedHistories.slice(0, excludedCount).map((h) => h.mediaSourceId);
     }
 

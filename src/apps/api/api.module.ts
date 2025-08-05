@@ -24,4 +24,4 @@ import {
     HealthController,
   ],
 })
-export class ApiModule { }
+export class ApiModule {}

@@ -13,6 +13,7 @@ import {
 import {
   GetLastPlayedQuery,
   GetLikedQuery,
+  GetMonthlyPlayActivityQuery,
   GetMostPlayedQuery,
   GetRecapQuery,
   IsLikedQuery,
@@ -78,6 +79,36 @@ export class MeController {
             ...selections,
           }),
         );
+  }
+
+  @Get("/most-played")
+  @UseGuards(AuthGuard)
+  getMostPlayed(@Query() query: GetMostPlayedQuery, @User() executor: AuthUser) {
+    return this.queryBus.execute(
+      new GetMostPlayedQuery({
+        limit: query.limit,
+        days: query.days,
+        from: query.from,
+        to: query.to,
+        excludeFrom: query.excludeFrom,
+        excludeTo: query.excludeTo,
+        userId: executor.id,
+        executor,
+      }),
+    );
+  }
+
+  @Get("/monthly-play-activity")
+  @UseGuards(AuthGuard)
+  getMonthlyPlayActivity(@Query() query: GetMonthlyPlayActivityQuery, @User() executor: AuthUser) {
+    return this.queryBus.execute(
+      new GetMonthlyPlayActivityQuery({
+        from: query.from,
+        to: query.to,
+        userId: executor.id,
+        executor,
+      }),
+    );
   }
 
   @Get("/playlists")

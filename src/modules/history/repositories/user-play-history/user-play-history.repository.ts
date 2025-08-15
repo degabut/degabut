@@ -1,11 +1,11 @@
 import { IPaginationParameter } from "@common/interfaces";
-import { UserMostPlayedDto } from "@history/dtos";
 import { MAX_HISTORY_DAYS } from "@history/history.constants";
 import { MediaSourceRepositoryMapper } from "@media-source/repositories";
 import { Inject, Injectable } from "@nestjs/common";
 
 import { UserPlayHistory } from "../../entities";
 import { UserPlayHistoryModel } from "./user-play-history.model";
+import { UserMostPlayedQueryModel } from "./user-play-history.query-model";
 import { UserPlayHistoryRepositoryMapper } from "./user-play-history.repository-mapper";
 
 type GetSelections = { userId: string } | { guildId: string } | { voiceChannelId: string };
@@ -123,21 +123,21 @@ export class UserPlayHistoryRepository {
   public async getMostPlayedByUserId(
     userId: string,
     options: GetMostPlayedOptions = {},
-  ): Promise<UserMostPlayedDto[]> {
+  ): Promise<UserMostPlayedQueryModel[]> {
     return this.getMostPlayed({ userId }, options);
   }
 
   public async getMostPlayedByVoiceChannelId(
     voiceChannelId: string,
     options: GetMostPlayedOptions = {},
-  ): Promise<UserMostPlayedDto[]> {
+  ): Promise<UserMostPlayedQueryModel[]> {
     return this.getMostPlayed({ voiceChannelId }, options);
   }
 
   public async getMostPlayedByGuildId(
     guildId: string,
     options: GetMostPlayedOptions = {},
-  ): Promise<UserMostPlayedDto[]> {
+  ): Promise<UserMostPlayedQueryModel[]> {
     return this.getMostPlayed({ guildId }, options);
   }
 
@@ -173,15 +173,13 @@ export class UserPlayHistoryRepository {
 
     const results = (await query) as unknown as (UserPlayHistoryModel & { count: number })[];
 
-    return results.map((r) =>
-      UserMostPlayedDto.create({
-        count: +r.count as number,
-        mediaSourceId: r.mediaSourceId,
-        mediaSource: r.mediaSource
-          ? MediaSourceRepositoryMapper.toDomainEntity(r.mediaSource)
-          : undefined,
-      }),
-    );
+    return results.map((r) => ({
+      count: +r.count as number,
+      mediaSourceId: r.mediaSourceId,
+      mediaSource: r.mediaSource
+        ? MediaSourceRepositoryMapper.toDomainEntity(r.mediaSource)
+        : undefined,
+    }));
   }
 
   public async getUniqueCount(userId: string, options: GetCountOptions = {}): Promise<number> {

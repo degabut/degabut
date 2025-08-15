@@ -1,4 +1,5 @@
 import { ValidateParams } from "@common/decorators";
+import { UserMostPlayedDto } from "@history/dtos";
 import { UserListenHistoryRepository, UserPlayHistoryRepository } from "@history/repositories";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
@@ -22,8 +23,11 @@ export class GetRecapHandler implements IInferredQueryHandler<GetRecapQuery> {
     ]);
 
     return {
-      mostPlayed,
-      monthly,
+      mostPlayed: mostPlayed.map((m) => UserMostPlayedDto.create(m)),
+      monthly: monthly.map((m) => ({
+        ...m,
+        mostPlayed: UserMostPlayedDto.create(m.mostPlayed!),
+      })),
       ...other,
     };
   }

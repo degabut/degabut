@@ -1,6 +1,6 @@
 import { ValidateParams } from "@common/decorators";
-import { UserMostPlayedDto } from "@history/dtos";
-import { UserPlayHistoryRepository } from "@history/repositories";
+import { UserMostPlayedQueryModel, UserPlayHistoryRepository } from "@history/repositories";
+import { MediaSourceDto } from "@media-source/dtos";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IInferredQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
@@ -38,7 +38,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
         limit: params.excludeLimit || 100,
       };
 
-      let excludedHistories: UserMostPlayedDto[] = [];
+      let excludedHistories: UserMostPlayedQueryModel[] = [];
 
       if (params.userId) {
         excludedHistories = await this.repository.getMostPlayedByUserId(params.userId, options);
@@ -80,7 +80,7 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
       to,
     };
 
-    let histories: UserMostPlayedDto[] = [];
+    let histories: UserMostPlayedQueryModel[] = [];
 
     if (params.userId) {
       histories = await this.repository.getMostPlayedByUserId(params.userId, options);
@@ -96,6 +96,6 @@ export class GetMostPlayedHandler implements IInferredQueryHandler<GetMostPlayed
       });
     }
 
-    return histories.filter((h) => h.mediaSource).map((h) => h.mediaSource);
+    return histories.filter((h) => h.mediaSource).map((h) => MediaSourceDto.create(h.mediaSource!));
   }
 }

@@ -9,6 +9,7 @@ import {
   MemberUpdatedEvent,
   NextTrackAddedEvent,
   NextTrackRemovedEvent,
+  QueueAutoplayToggledEvent,
   QueueClearedEvent,
   QueueCreatedEvent,
   QueueDestroyedEvent,
@@ -64,6 +65,7 @@ export class Queue extends AggregateRoot {
   public nextTrackIds: string[] = [];
   public loopMode: LoopMode = LoopMode.Disabled;
   public shuffle: boolean = false;
+  public autoplay: boolean = false;
   public historyIds: Array<string> = [];
   public previousHistoryIds: Array<string> = [];
   public guild: Guild;
@@ -97,7 +99,11 @@ export class Queue extends AggregateRoot {
     return this.tracks.filter((t) => !this.historyIds.includes(t.id));
   }
 
-  public addTracks(sources: MediaSource[], allowDuplicates: boolean, member: Member): Track[] {
+  public addTracks(
+    sources: MediaSource[],
+    allowDuplicates: boolean,
+    member: Member | null = null,
+  ): Track[] {
     const limit = MAX_QUEUE_TRACKS - this.tracks.length;
     if (limit <= 0) throw new BadRequestException("Queue is full");
 
@@ -116,7 +122,7 @@ export class Queue extends AggregateRoot {
 
     this.tracks.push(...tracks);
 
-    if (tracks.length) this.apply(new TracksAddedEvent({ queue: this, tracks, member }));
+    if (tracks.length) this.apply(new TracksAddedEvent({ queue: this, tracks, member: member }));
     if (!this.nowPlaying) this.processQueue();
 
     return tracks;
@@ -245,6 +251,13 @@ export class Queue extends AggregateRoot {
     this.apply(new QueueShuffleToggledEvent({ queue: this, member }));
 
     return this.shuffle;
+  }
+
+  public toggleAutoplay(member: Member) {
+    this.autoplay = !this.autoplay;
+    this.apply(new QueueAutoplayToggledEvent({ queue: this, member }));
+
+    return this.autoplay;
   }
 
   public changeLoopMode(loopMode: LoopMode, member: Member): LoopMode {

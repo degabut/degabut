@@ -11,6 +11,7 @@ import {
   JamCommand,
   RemoveTrackCommand,
   RemoveTracksCommand,
+  ToggleAutoplayCommand,
   ToggleShuffleCommand,
 } from "@queue/commands";
 import { RemoveNextTrackCommand } from "@queue/commands/remove-next-track";
@@ -122,6 +123,17 @@ export class QueuesController {
   async toggleShuffle(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     await this.commandBus.execute(
       new ToggleShuffleCommand({
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/autoplay")
+  @UseGuards(AuthGuard)
+  async toggleAutoplay(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    await this.commandBus.execute(
+      new ToggleAutoplayCommand({
         ...params,
         executor,
       }),

@@ -5,6 +5,7 @@ import { MemberListener } from "./member.listener";
 import { PlayerFiltersChangedListener } from "./player-filters-changed.listener";
 import { PlayerPauseStateChangedListener } from "./player-pause-state-changed.listener";
 import { PlayerTickListener } from "./player-tick.listener";
+import { QueueAutoplayToggledListener } from "./queue-autoplay-toggled.listener";
 import { QueueDestroyedListener } from "./queue-destroyed.listener";
 import { QueueLoopModeChangedListener } from "./queue-loop-mode-changed.listener";
 import { QueueShuffleToggledListener } from "./queue-shuffle-toggled.listener";
@@ -26,6 +27,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   PlayerPauseStateChangedListener,
   PlayerFiltersChangedListener,
   QueueListener,
+  QueueAutoplayToggledListener,
   QueueDestroyedListener,
   QueueLoopModeChangedListener,
   QueueShuffleToggledListener,

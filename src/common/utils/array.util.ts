@@ -14,6 +14,16 @@ export class ArrayUtil {
     return arr[index >= 0 ? index : 0];
   }
 
+  static pickRandom<T>(arr: T[]): T | undefined {
+    if (!arr.length) return undefined;
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  static randomIndex<T>(array: T[]): number {
+    if (!array.length) return -1;
+    return Math.floor(Math.random() * array.length);
+  }
+
   static shuffle<T>(array: T[]): T[] {
     const shuffled = [...array];
 

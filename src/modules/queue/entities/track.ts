@@ -7,7 +7,7 @@ import { Queue } from "./queue";
 interface ConstructorProps {
   queue: Queue;
   mediaSource: MediaSource;
-  requestedBy?: Member;
+  requestedBy?: Member | null;
 }
 
 export class Track {

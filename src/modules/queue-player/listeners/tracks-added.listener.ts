@@ -22,7 +22,7 @@ export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
     const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 
-    const requestedBy = member.id;
+    const requestedBy = member?.id;
 
     if (tracks.length === 1) {
       const track = tracks[0];
@@ -52,7 +52,9 @@ export class TracksAddedListener implements IEventHandler<TracksAddedEvent> {
         content: "🎵 **Added To Queue**",
         embeds: [
           new EmbedBuilder({
-            description: `**<@!${requestedBy}> added ${tracks.length} tracks to queue**`,
+            description: requestedBy
+              ? `**<@!${requestedBy}> added ${tracks.length} tracks to queue**`
+              : `**${tracks.length} tracks added to queue**`,
           }),
         ],
       });

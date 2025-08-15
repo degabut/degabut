@@ -9,6 +9,7 @@ import { JamHandler } from "./jam";
 import { RemoveNextTrackHandler } from "./remove-next-track";
 import { RemoveTrackHandler } from "./remove-track";
 import { RemoveTracksHandler } from "./remove-tracks";
+import { ToggleAutoplayHandler } from "./toggle-autoplay";
 import { ToggleShuffleHandler } from "./toggle-shuffle";
 
 export * from "./add-next-track";
@@ -19,6 +20,7 @@ export * from "./clear-queue";
 export * from "./jam";
 export * from "./remove-track";
 export * from "./remove-tracks";
+export * from "./toggle-autoplay";
 export * from "./toggle-shuffle";
 
 export const Commands: Constructor<ICommandHandler>[] = [
@@ -31,5 +33,6 @@ export const Commands: Constructor<ICommandHandler>[] = [
   JamHandler,
   RemoveTrackHandler,
   RemoveTracksHandler,
+  ToggleAutoplayHandler,
   ToggleShuffleHandler,
 ];

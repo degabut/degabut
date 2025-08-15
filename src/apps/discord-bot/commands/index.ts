@@ -1,5 +1,6 @@
 import { Provider } from "@nestjs/common";
 
+import { AutoplayDiscordCommand } from "./autoplay.command";
 import { ClearAllDiscordCommand } from "./clear-all.command";
 import { ClearDiscordCommand } from "./clear.command";
 import { HelpDiscordCommand } from "./help.command";
@@ -22,6 +23,7 @@ import { StopDiscordCommand } from "./stop.command";
 import { UnpauseDiscordCommand } from "./unpause.command";
 
 export const DiscordCommands: Provider[] = [
+  AutoplayDiscordCommand,
   PlayDiscordCommand,
   ClearAllDiscordCommand,
   ClearDiscordCommand,

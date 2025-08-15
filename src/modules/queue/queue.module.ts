@@ -19,6 +19,7 @@ import { QueueRepository } from "./repositories";
     PlaylistModule,
     HistoryModule,
     UserModule,
+    YoutubeModule,
   ],
   providers: [QueueRepository, ...Commands, ...Queries, ...Listeners],
   exports: [QueueRepository],

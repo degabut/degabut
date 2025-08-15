@@ -20,6 +20,9 @@ export class QueueDto {
   public shuffle!: boolean;
 
   @Expose()
+  public autoplay!: boolean;
+
+  @Expose()
   public loopMode!: LoopMode;
 
   @Expose()

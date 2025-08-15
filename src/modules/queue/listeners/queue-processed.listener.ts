@@ -4,6 +4,7 @@ import {
   UserMonthlyPlayActivityRepository,
   UserPlayHistoryRepository,
 } from "@history/repositories";
+import { Logger } from "@logger/logger.service";
 import { MediaSource } from "@media-source/entities";
 import { Inject } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
@@ -32,6 +33,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
   ];
 
   constructor(
+    private readonly logger: Logger,
     @Inject(YOUTUBEI_PROVIDER)
     private readonly youtubeiProvider: IYoutubeiProvider,
     private readonly userLikeRepository: UserLikeMediaSourceRepository,
@@ -84,15 +86,20 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
   }
 
   private async getRelatedTracks(queue: Queue): Promise<MediaSource[]> {
-    if (!queue.historyIds.length) return [];
+    if (!queue.history.length) return [];
 
     const track = ArrayUtil.pickRandom(queue.history);
     if (!track?.mediaSource.playedYoutubeVideoId) return [];
 
-    const video = await this.youtubeiProvider.getVideo(track.mediaSource.playedYoutubeVideoId);
-    if (!video) return [];
+    try {
+      const video = await this.youtubeiProvider.getVideo(track.mediaSource.playedYoutubeVideoId);
+      if (!video) return [];
 
-    return video.related.map((v) => MediaSource.fromYoutube(v));
+      return video.related.map((v) => MediaSource.fromYoutube(v));
+    } catch (err) {
+      this.logger.error("Failed to autoplay from related tracks", err);
+      return [];
+    }
   }
 
   private async getUserRecentlyLikedTracks(queue: Queue): Promise<MediaSource[]> {
@@ -100,7 +107,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     if (!randomUser) return [];
 
     const likedTracks = await this.userLikeRepository.getByUserId(randomUser.id, {
-      limit: 5,
+      limit: 10,
       page: 1,
     });
 
@@ -115,6 +122,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
       limit: 10,
       page: 1,
       includeContent: true,
+      excludeIds: queue.history.map((h) => h.mediaSource.id),
     });
 
     return playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
@@ -132,6 +140,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
       from,
       to,
       includeContent: true,
+      excludeIds: queue.history.map((h) => h.mediaSource.id),
     });
 
     return playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
@@ -162,6 +171,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
       from: dayjs(randomMonth.date).startOf("month").toDate(),
       to: dayjs(randomMonth.date).endOf("month").toDate(),
       includeContent: true,
+      excludeIds: queue.history.map((h) => h.mediaSource.id),
     });
 
     return playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);

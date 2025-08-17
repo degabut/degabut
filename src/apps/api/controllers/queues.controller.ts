@@ -1,10 +1,11 @@
 import { AuthUser, User } from "@auth/decorators";
 import { AuthGuard } from "@auth/guards";
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddNextTrackCommand,
   AddTracksCommand,
+  ChangeAutoplayOptionsCommand,
   ChangeLoopModeCommand,
   ChangeTrackOrderCommand,
   ClearQueueCommand,
@@ -15,7 +16,7 @@ import {
   ToggleShuffleCommand,
 } from "@queue/commands";
 import { RemoveNextTrackCommand } from "@queue/commands/remove-next-track";
-import { LoopMode } from "@queue/entities";
+import { LoopMode, QueueAutoplayOptions } from "@queue/entities";
 import { GetQueueQuery } from "@queue/queries";
 
 type VoiceChannelIdParams = {
@@ -49,6 +50,8 @@ type RemoveTracksBody = {
   trackIds?: string[];
   memberId?: string;
 };
+
+type ChangeAutoplayOptionsBody = QueueAutoplayOptions;
 
 @Controller("queues")
 export class QueuesController {
@@ -135,6 +138,22 @@ export class QueuesController {
     await this.commandBus.execute(
       new ToggleAutoplayCommand({
         ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Put("/:voiceChannelId/autoplay/options")
+  @UseGuards(AuthGuard)
+  async changeAutoplayOptions(
+    @Param() params: VoiceChannelIdParams,
+    @Body() body: ChangeAutoplayOptionsBody,
+    @User() executor: AuthUser,
+  ) {
+    await this.commandBus.execute(
+      new ChangeAutoplayOptionsCommand({
+        ...params,
+        ...body,
         executor,
       }),
     );

@@ -9,6 +9,7 @@ import {
   MemberUpdatedEvent,
   NextTrackAddedEvent,
   NextTrackRemovedEvent,
+  QueueAutoplayOptionsChangedEvent,
   QueueAutoplayToggledEvent,
   QueueClearedEvent,
   QueueCreatedEvent,
@@ -43,6 +44,14 @@ export enum LoopMode {
   Queue = "QUEUE",
 }
 
+export type QueueAutoplayOptions = {
+  minDuration: number;
+  maxDuration: number;
+  includeQueueRelated: boolean;
+  includeQueueLastPlayedRelated: boolean;
+  includeUserLibrary: boolean;
+};
+
 type RemoveTrackOptions = {
   index?: number;
   trackId?: string;
@@ -66,6 +75,13 @@ export class Queue extends AggregateRoot {
   public loopMode: LoopMode = LoopMode.Disabled;
   public shuffle: boolean = false;
   public autoplay: boolean = false;
+  public autoplayOptions: QueueAutoplayOptions = {
+    minDuration: 0,
+    maxDuration: 0,
+    includeUserLibrary: true,
+    includeQueueLastPlayedRelated: true,
+    includeQueueRelated: true,
+  };
   public historyIds: Array<string> = [];
   public previousHistoryIds: Array<string> = [];
   public guild: Guild;
@@ -258,6 +274,11 @@ export class Queue extends AggregateRoot {
     this.apply(new QueueAutoplayToggledEvent({ queue: this, member }));
 
     return this.autoplay;
+  }
+
+  public setAutoplayOptions(member: Member, options: QueueAutoplayOptions) {
+    this.autoplayOptions = options;
+    this.apply(new QueueAutoplayOptionsChangedEvent({ queue: this, member }));
   }
 
   public changeLoopMode(loopMode: LoopMode, member: Member): LoopMode {

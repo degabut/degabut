@@ -4,28 +4,32 @@ import {
   UserMonthlyPlayActivityRepository,
   UserPlayHistoryRepository,
 } from "@history/repositories";
-import { Logger } from "@logger/logger.service";
 import { MediaSource } from "@media-source/entities";
 import { Inject } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { Queue } from "@queue/entities";
-import { QueueProcessedEvent } from "@queue/events";
+import { QueueAutoplayToggledEvent, QueueProcessedEvent } from "@queue/events";
 import { UserLikeMediaSourceRepository } from "@user/repositories";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 import * as dayjs from "dayjs";
+import { Logger } from "nestjs-pino";
 
 type AutoplayType =
-  | "RELATED"
+  | "QUEUE_RELATED"
+  | "QUEUE_LAST_PLAYED_RELATED"
   | "USER_RECENTLY_LIKED"
   | "USER_RECENTLY_PLAYED"
   | "USER_RECENT_MOST_PLAYED"
   | "USER_OLD_MOST_PLAYED";
 
-@EventsHandler(QueueProcessedEvent)
-export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent> {
-  private autoplayTypes: AutoplayType[] = [
-    "RELATED",
+@EventsHandler(QueueAutoplayToggledEvent, QueueProcessedEvent)
+export class QueueAutoplayListener
+  implements IEventHandler<QueueAutoplayToggledEvent | QueueProcessedEvent>
+{
+  private allAutoplayTypes: AutoplayType[] = [
+    "QUEUE_RELATED",
+    "QUEUE_LAST_PLAYED_RELATED",
     "USER_RECENTLY_LIKED",
     "USER_RECENTLY_PLAYED",
     "USER_RECENT_MOST_PLAYED",
@@ -44,16 +48,66 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
   public async handle({ queue }: QueueProcessedEvent): Promise<void> {
     if (!queue.autoplay || queue.nowPlaying) return;
 
-    const autoplayTypes = [...this.autoplayTypes];
+    const excludedAutoplayTypes: Set<AutoplayType> = new Set(this.allAutoplayTypes);
+    const autoplayTypes: Set<AutoplayType> = new Set();
+
+    const {
+      includeQueueLastPlayedRelated,
+      includeQueueRelated,
+      includeUserLibrary,
+      minDuration,
+      maxDuration,
+    } = queue.autoplayOptions;
+
+    if (includeQueueLastPlayedRelated) {
+      excludedAutoplayTypes.delete("QUEUE_LAST_PLAYED_RELATED");
+      autoplayTypes.add("QUEUE_LAST_PLAYED_RELATED");
+    }
+
+    if (includeQueueRelated) {
+      excludedAutoplayTypes.delete("QUEUE_RELATED");
+      autoplayTypes.add("QUEUE_RELATED");
+    }
+
+    if (includeUserLibrary) {
+      const userTypes: AutoplayType[] = [
+        "USER_RECENTLY_LIKED",
+        "USER_RECENTLY_PLAYED",
+        "USER_RECENT_MOST_PLAYED",
+        "USER_OLD_MOST_PLAYED",
+      ];
+      userTypes.forEach((t) => {
+        excludedAutoplayTypes.delete(t);
+        autoplayTypes.add(t);
+      });
+    }
+
+    if (!autoplayTypes.size) {
+      this.allAutoplayTypes.forEach((t) => {
+        autoplayTypes.add(t);
+      });
+    }
+
     let randomType: AutoplayType | null = null;
     let mediaSources: MediaSource[] = [];
 
     do {
-      randomType = autoplayTypes.splice(ArrayUtil.randomIndex(autoplayTypes), 1)[0];
+      const autoplayTypesArray = Array.from(autoplayTypes);
+      randomType = ArrayUtil.pickRandom(autoplayTypesArray) || null;
+
+      if (randomType) {
+        autoplayTypes.delete(randomType);
+      } else if (!randomType && !excludedAutoplayTypes.size) {
+        excludedAutoplayTypes.forEach((t) => autoplayTypes.add(t));
+        randomType = ArrayUtil.pickRandom(autoplayTypesArray) || null;
+      }
 
       switch (randomType) {
-        case "RELATED":
-          mediaSources = await this.getRelatedTracks(queue);
+        case "QUEUE_RELATED":
+          mediaSources = await this.getRelatedTracks(queue, true);
+          break;
+        case "QUEUE_LAST_PLAYED_RELATED":
+          mediaSources = await this.getRelatedTracks(queue, false);
           break;
         case "USER_RECENTLY_LIKED":
           mediaSources = await this.getUserRecentlyLikedTracks(queue);
@@ -68,15 +122,19 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
           mediaSources = await this.getUserOldMostPlayedTracks(queue);
           break;
         default:
-          randomType = null;
           break;
       }
     } while (randomType && !mediaSources.length);
 
     if (!mediaSources.length) return;
-    const filteredMediaSources = mediaSources.filter(
-      (m) => !queue.history.find((h) => h.mediaSource.id === m.id),
-    );
+
+    const filteredMediaSources = mediaSources.filter((m) => {
+      if (queue.history.find((h) => h.mediaSource.id === m.id)) return false;
+      if (minDuration || maxDuration) {
+        return m.duration >= minDuration && m.duration <= maxDuration;
+      }
+      return true;
+    });
 
     const randomMediaSource = ArrayUtil.pickRandom(filteredMediaSources);
 
@@ -85,10 +143,10 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     }
   }
 
-  private async getRelatedTracks(queue: Queue): Promise<MediaSource[]> {
+  private async getRelatedTracks(queue: Queue, randomTrack: boolean): Promise<MediaSource[]> {
     if (!queue.history.length) return [];
 
-    const track = ArrayUtil.pickRandom(queue.history);
+    const track = randomTrack ? ArrayUtil.pickRandom(queue.history) : queue.history.at(0);
     if (!track?.mediaSource.playedYoutubeVideoId) return [];
 
     try {
@@ -136,7 +194,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     const from = dayjs(to).subtract(14, "days").toDate();
 
     const playedTracks = await this.userPlayRepository.getMostPlayedByUserId(randomUser.id, {
-      limit: 10,
+      limit: 20,
       from,
       to,
       includeContent: true,
@@ -167,7 +225,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     if (!randomMonth) return [];
 
     const playedTracks = await this.userPlayRepository.getMostPlayedByUserId(randomUser.id, {
-      limit: 10,
+      limit: 20,
       from: dayjs(randomMonth.date).startOf("month").toDate(),
       to: dayjs(randomMonth.date).endOf("month").toDate(),
       includeContent: true,

@@ -4,8 +4,7 @@ import { PlayerDestroyedListener } from "./player-destroyed.listener";
 import { PlayerReadyListener } from "./player-ready.listener";
 import { PlayerTextChannelChangedListener } from "./player-text-channel-changed.listener";
 import { PlayerVoiceChannelChangedListener } from "./player-voice-channel-changed.listener";
-import { QueueAutoplayToggledListener } from "./queue-autoplay-toggled.listener";
-import { QueueProcessedListener } from "./queue-processed.listener";
+import { QueueAutoplayListener } from "./queue-autoplay.listener";
 import { TrackAudioEndedListener } from "./track-audio-ended.listener";
 import { TrackAudioStartedListener } from "./track-audio-started.listener";
 import { TrackLoadFailedListener } from "./track-load-failed.listener";
@@ -21,8 +20,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   PlayerDestroyedListener,
   PlayerVoiceChannelChangedListener,
   PlayerTextChannelChangedListener,
-  QueueAutoplayToggledListener,
-  QueueProcessedListener,
+  QueueAutoplayListener,
   VoiceMemberJoinedListener,
   VoiceMemberLeftListener,
   VoiceMemberUpdatedListener,

@@ -1,6 +1,6 @@
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 
-import { LoopMode, Queue } from "../entities";
+import { LoopMode, Queue, QueueAutoplayOptions } from "../entities";
 import { GuildDto } from "./guild.dto";
 import { TextChannelDto } from "./text-channel.dto";
 import { TrackDto } from "./track.dto";
@@ -21,6 +21,9 @@ export class QueueDto {
 
   @Expose()
   public autoplay!: boolean;
+
+  @Expose()
+  public autoplayOptions!: QueueAutoplayOptions;
 
   @Expose()
   public loopMode!: LoopMode;

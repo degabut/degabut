@@ -4,6 +4,7 @@ export * from "./member-left.event";
 export * from "./member-updated.event";
 export * from "./next-track-added.event";
 export * from "./next-track-removed.event";
+export * from "./queue-autoplay-options-changed.event";
 export * from "./queue-autoplay-toggled.event";
 export * from "./queue-cleared.event";
 export * from "./queue-created.event";

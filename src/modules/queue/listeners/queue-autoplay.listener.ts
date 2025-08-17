@@ -97,7 +97,7 @@ export class QueueAutoplayListener
 
       if (randomType) {
         autoplayTypes.delete(randomType);
-      } else if (!randomType && !excludedAutoplayTypes.size) {
+      } else if (!randomType && excludedAutoplayTypes.size) {
         excludedAutoplayTypes.forEach((t) => autoplayTypes.add(t));
         randomType = ArrayUtil.pickRandom(autoplayTypesArray) || null;
       }

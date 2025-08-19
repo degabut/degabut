@@ -14,7 +14,8 @@ export class ArrayUtil {
     return arr[index >= 0 ? index : 0];
   }
 
-  static pickRandom<T>(arr: T[]): T | undefined {
+  static pickRandom<T>(arr: T[] | Set<T>): T | undefined {
+    if (arr instanceof Set) arr = Array.from(arr);
     if (!arr.length) return undefined;
     return arr[Math.floor(Math.random() * arr.length)];
   }

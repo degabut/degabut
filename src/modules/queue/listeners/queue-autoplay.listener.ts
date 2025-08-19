@@ -106,10 +106,10 @@ export class QueueAutoplayListener
 
       switch (randomType) {
         case "QUEUE_RELATED":
-          mediaSources = await this.getRelatedTracks(queue, true);
+          mediaSources = await this.getMixedTracks(queue, true);
           break;
         case "QUEUE_LAST_PLAYED_RELATED":
-          mediaSources = await this.getRelatedTracks(queue, false);
+          mediaSources = await this.getMixedTracks(queue, false);
           break;
         case "USER_RECENTLY_LIKED":
           mediaSources = await this.getUserRecentlyLikedTracks(queue);
@@ -145,17 +145,17 @@ export class QueueAutoplayListener
     }
   }
 
-  private async getRelatedTracks(queue: Queue, randomTrack: boolean): Promise<MediaSource[]> {
+  private async getMixedTracks(queue: Queue, randomTrack: boolean): Promise<MediaSource[]> {
     if (!queue.history.length) return [];
 
     const track = randomTrack ? ArrayUtil.pickRandom(queue.history) : queue.history.at(0);
     if (!track?.mediaSource.playedYoutubeVideoId) return [];
 
     try {
-      const video = await this.youtubeiProvider.getVideo(track.mediaSource.playedYoutubeVideoId);
-      if (!video) return [];
-
-      return video.related.map((v) => MediaSource.fromYoutube(v));
+      const videos = await this.youtubeiProvider.getPlaylistVideos(
+        "RDAMVM" + track.mediaSource.playedYoutubeVideoId,
+      );
+      return videos.map((v) => MediaSource.fromYoutube(v));
     } catch (err) {
       this.logger.error("Failed to autoplay from related tracks", err);
       return [];

@@ -92,14 +92,16 @@ export class QueueAutoplayListener
     let mediaSources: MediaSource[] = [];
 
     do {
-      const autoplayTypesArray = Array.from(autoplayTypes);
-      randomType = ArrayUtil.pickRandom(autoplayTypesArray) || null;
+      randomType = ArrayUtil.pickRandom(autoplayTypes) || null;
 
       if (randomType) {
         autoplayTypes.delete(randomType);
       } else if (!randomType && excludedAutoplayTypes.size) {
-        excludedAutoplayTypes.forEach((t) => autoplayTypes.add(t));
-        randomType = ArrayUtil.pickRandom(autoplayTypesArray) || null;
+        for (const t of excludedAutoplayTypes) {
+          excludedAutoplayTypes.delete(t);
+          autoplayTypes.add(t);
+        }
+        randomType = ArrayUtil.pickRandom(autoplayTypes) || null;
       }
 
       switch (randomType) {

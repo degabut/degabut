@@ -92,17 +92,15 @@ export class QueueAutoplayListener
     let mediaSources: MediaSource[] = [];
 
     do {
-      randomType = ArrayUtil.pickRandom(autoplayTypes) || null;
-
-      if (randomType) {
-        autoplayTypes.delete(randomType);
-      } else if (!randomType && excludedAutoplayTypes.size) {
+      if (!autoplayTypes.size && excludedAutoplayTypes.size) {
         for (const t of excludedAutoplayTypes) {
           excludedAutoplayTypes.delete(t);
           autoplayTypes.add(t);
         }
-        randomType = ArrayUtil.pickRandom(autoplayTypes) || null;
       }
+
+      randomType = ArrayUtil.pickRandom(autoplayTypes) || null;
+      if (randomType) autoplayTypes.delete(randomType);
 
       switch (randomType) {
         case "QUEUE_RELATED":
@@ -126,19 +124,19 @@ export class QueueAutoplayListener
         default:
           break;
       }
+
+      mediaSources = mediaSources.filter((m) => {
+        if (queue.history.find((h) => h.mediaSource.id === m.id)) return false;
+        if (minDuration || maxDuration) {
+          return m.duration >= minDuration && m.duration <= maxDuration;
+        }
+        return true;
+      });
     } while (randomType && !mediaSources.length);
 
     if (!mediaSources.length) return;
 
-    const filteredMediaSources = mediaSources.filter((m) => {
-      if (queue.history.find((h) => h.mediaSource.id === m.id)) return false;
-      if (minDuration || maxDuration) {
-        return m.duration >= minDuration && m.duration <= maxDuration;
-      }
-      return true;
-    });
-
-    const randomMediaSource = ArrayUtil.pickRandom(filteredMediaSources);
+    const randomMediaSource = ArrayUtil.pickRankedRandom(mediaSources);
 
     if (randomMediaSource) {
       queue.addTracks([randomMediaSource], false);

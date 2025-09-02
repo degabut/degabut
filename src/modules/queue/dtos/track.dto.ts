@@ -1,7 +1,7 @@
 import { MediaSourceDto } from "@media-source/dtos";
 import { Exclude, Expose, plainToInstance, Transform, Type } from "class-transformer";
 
-import { Track } from "../entities";
+import { Track, TrackAutoplayData } from "../entities";
 import { MemberDto } from "./member.dto";
 
 @Exclude()
@@ -16,6 +16,9 @@ export class TrackDto {
   @Expose()
   @Type(() => MemberDto)
   public requestedBy!: MemberDto;
+
+  @Expose()
+  public autoplayData!: TrackAutoplayData | null;
 
   @Expose()
   @Transform(({ value }) => value?.toISOString() || null)

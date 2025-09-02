@@ -29,7 +29,7 @@ import { Guild } from "./guild";
 import { Jam, JamCollection } from "./jam";
 import { Member } from "./member";
 import { TextChannel } from "./text-channel";
-import { Track } from "./track";
+import { Track, TrackAutoplayData } from "./track";
 import { VoiceChannel } from "./voice-channel";
 
 interface ConstructorProps {
@@ -44,12 +44,22 @@ export enum LoopMode {
   Queue = "QUEUE",
 }
 
+export type QueueAutoplayType =
+  | "QUEUE_RELATED"
+  | "QUEUE_LAST_PLAYED_RELATED"
+  | "USER_RECENTLY_LIKED"
+  | "USER_RECENTLY_LIKED_RELATED"
+  | "USER_RECENTLY_PLAYED"
+  | "USER_RECENTLY_PLAYED_RELATED"
+  | "USER_RECENT_MOST_PLAYED"
+  | "USER_RECENT_MOST_PLAYED_RELATED"
+  | "USER_OLD_MOST_PLAYED"
+  | "USER_OLD_MOST_PLAYED_RELATED";
+
 export type QueueAutoplayOptions = {
   minDuration: number;
   maxDuration: number;
-  includeQueueRelated: boolean;
-  includeQueueLastPlayedRelated: boolean;
-  includeUserLibrary: boolean;
+  types: QueueAutoplayType[];
 };
 
 type RemoveTrackOptions = {
@@ -64,6 +74,19 @@ type RemoveTracksOptions = {
 };
 
 export class Queue extends AggregateRoot {
+  public static readonly ALL_AUTOPLAY_TYPES: QueueAutoplayType[] = [
+    "QUEUE_RELATED",
+    "QUEUE_LAST_PLAYED_RELATED",
+    "USER_RECENTLY_LIKED",
+    "USER_RECENTLY_LIKED_RELATED",
+    "USER_RECENTLY_PLAYED",
+    "USER_RECENTLY_PLAYED_RELATED",
+    "USER_RECENT_MOST_PLAYED",
+    "USER_RECENT_MOST_PLAYED_RELATED",
+    "USER_OLD_MOST_PLAYED",
+    "USER_OLD_MOST_PLAYED_RELATED",
+  ];
+
   private isCreated: boolean = false;
   private isDestroyed: boolean = false;
 
@@ -78,9 +101,7 @@ export class Queue extends AggregateRoot {
   public autoplayOptions: QueueAutoplayOptions = {
     minDuration: 0,
     maxDuration: 0,
-    includeUserLibrary: true,
-    includeQueueLastPlayedRelated: true,
-    includeQueueRelated: true,
+    types: [...Queue.ALL_AUTOPLAY_TYPES],
   };
   public historyIds: Array<string> = [];
   public previousHistoryIds: Array<string> = [];
@@ -118,7 +139,17 @@ export class Queue extends AggregateRoot {
   public addTracks(
     sources: MediaSource[],
     allowDuplicates: boolean,
-    member: Member | null = null,
+    member?: Member | null,
+  ): Track[];
+  public addTracks(
+    sources: MediaSource[],
+    allowDuplicates: boolean,
+    autoplayData?: TrackAutoplayData | null,
+  ): Track[];
+  public addTracks(
+    sources: MediaSource[],
+    allowDuplicates: boolean,
+    memberOrAutoplayData: Member | TrackAutoplayData | null = null,
   ): Track[] {
     const limit = MAX_QUEUE_TRACKS - this.tracks.length;
     if (limit <= 0) throw new BadRequestException("Queue is full");
@@ -127,18 +158,23 @@ export class Queue extends AggregateRoot {
       sources = sources.filter((s) => !this.tracks.some((t) => t.mediaSource.id === s.id));
     }
 
+    let member = memberOrAutoplayData && "id" in memberOrAutoplayData ? memberOrAutoplayData : null;
+    let autoplayData =
+      memberOrAutoplayData && "member" in memberOrAutoplayData ? memberOrAutoplayData : null;
+
     const tracks = sources.slice(0, limit).map(
-      (source) =>
+      (mediaSource) =>
         new Track({
           queue: this,
-          mediaSource: source,
+          mediaSource,
           requestedBy: member,
+          autoplayData,
         }),
     );
 
     this.tracks.push(...tracks);
 
-    if (tracks.length) this.apply(new TracksAddedEvent({ queue: this, tracks, member: member }));
+    if (tracks.length) this.apply(new TracksAddedEvent({ queue: this, tracks, member }));
     if (!this.nowPlaying) this.processQueue();
 
     return tracks;

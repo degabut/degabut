@@ -1,20 +1,19 @@
 import { Command } from "@common/cqrs";
 import { Executor } from "@common/interfaces";
 import { ExecutorSchema } from "@common/schemas";
-import { QueueAutoplayOptions } from "@queue/entities";
+import { Queue, QueueAutoplayOptions, QueueAutoplayType } from "@queue/entities";
 import * as Joi from "joi";
 
 export type ChangeAutoplayOptionsResult = QueueAutoplayOptions;
 
-export class ChangeAutoplayOptionsCommand
-  extends Command<QueueAutoplayOptions>
-  implements QueueAutoplayOptions
-{
+export class ChangeAutoplayOptionsCommand extends Command<QueueAutoplayOptions> {
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
-  public readonly includeQueueLastPlayedRelated!: boolean;
-  public readonly includeQueueRelated!: boolean;
-  public readonly includeUserLibrary!: boolean;
+  public readonly includeQueueLastPlayedRelated?: boolean;
+  public readonly includeQueueRelated?: boolean;
+  public readonly includeUserLibrary?: boolean;
+  public readonly includeUserLibraryRelated?: boolean;
+  public readonly types?: QueueAutoplayType[];
   public readonly minDuration!: number;
   public readonly maxDuration!: number;
 
@@ -27,9 +26,21 @@ export class ChangeAutoplayOptionsCommand
 export const ChangeAutoplayOptionsParamSchema = Joi.object<ChangeAutoplayOptionsCommand>({
   voiceChannelId: Joi.string().required(),
   executor: ExecutorSchema,
-  includeQueueLastPlayedRelated: Joi.boolean().required(),
-  includeQueueRelated: Joi.boolean().required(),
-  includeUserLibrary: Joi.boolean().required(),
+  types: Joi.array()
+    .items(Joi.string().valid(...Queue.ALL_AUTOPLAY_TYPES))
+    .optional(),
+  includeQueueLastPlayedRelated: Joi.boolean().optional(),
+  includeQueueRelated: Joi.boolean().optional(),
+  includeUserLibrary: Joi.boolean().optional(),
+  includeUserLibraryRelated: Joi.boolean().optional(),
   minDuration: Joi.number().min(0).required(),
   maxDuration: Joi.number().min(0).required().greater(Joi.ref("minDuration")),
-}).required();
+})
+  .required()
+  .or(
+    "types",
+    "includeQueueLastPlayedRelated",
+    "includeQueueRelated",
+    "includeUserLibrary",
+    "includeUserLibraryRelated",
+  );

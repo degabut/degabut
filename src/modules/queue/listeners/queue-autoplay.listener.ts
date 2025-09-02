@@ -7,7 +7,7 @@ import {
 import { MediaSource } from "@media-source/entities";
 import { Inject } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { Queue } from "@queue/entities";
+import { Member, Queue, QueueAutoplayType } from "@queue/entities";
 import { QueueAutoplayToggledEvent, QueueProcessedEvent } from "@queue/events";
 import { UserLikeMediaSourceRepository } from "@user/repositories";
 import { IYoutubeiProvider } from "@youtube/providers";
@@ -15,27 +15,15 @@ import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
 import * as dayjs from "dayjs";
 import { Logger } from "nestjs-pino";
 
-type AutoplayType =
-  | "QUEUE_RELATED"
-  | "QUEUE_LAST_PLAYED_RELATED"
-  | "USER_RECENTLY_LIKED"
-  | "USER_RECENTLY_PLAYED"
-  | "USER_RECENT_MOST_PLAYED"
-  | "USER_OLD_MOST_PLAYED";
+type AutoplayResult = {
+  mediaSources: MediaSource[];
+  member: Member | null;
+};
 
 @EventsHandler(QueueAutoplayToggledEvent, QueueProcessedEvent)
 export class QueueAutoplayListener
   implements IEventHandler<QueueAutoplayToggledEvent | QueueProcessedEvent>
 {
-  private allAutoplayTypes: AutoplayType[] = [
-    "QUEUE_RELATED",
-    "QUEUE_LAST_PLAYED_RELATED",
-    "USER_RECENTLY_LIKED",
-    "USER_RECENTLY_PLAYED",
-    "USER_RECENT_MOST_PLAYED",
-    "USER_OLD_MOST_PLAYED",
-  ];
-
   constructor(
     private readonly logger: Logger,
     @Inject(YOUTUBEI_PROVIDER)
@@ -48,48 +36,21 @@ export class QueueAutoplayListener
   public async handle({ queue }: QueueProcessedEvent): Promise<void> {
     if (!queue.autoplay || queue.nowPlaying) return;
 
-    const excludedAutoplayTypes: Set<AutoplayType> = new Set(this.allAutoplayTypes);
-    const autoplayTypes: Set<AutoplayType> = new Set();
+    const excludedAutoplayTypes: Set<QueueAutoplayType> = new Set(Queue.ALL_AUTOPLAY_TYPES);
 
-    const {
-      includeQueueLastPlayedRelated,
-      includeQueueRelated,
-      includeUserLibrary,
-      minDuration,
-      maxDuration,
-    } = queue.autoplayOptions;
+    const { minDuration, maxDuration, types } = queue.autoplayOptions;
+    let autoplayTypes: Set<QueueAutoplayType> = new Set(types);
 
-    if (includeQueueLastPlayedRelated) {
-      excludedAutoplayTypes.delete("QUEUE_LAST_PLAYED_RELATED");
-      autoplayTypes.add("QUEUE_LAST_PLAYED_RELATED");
-    }
-
-    if (includeQueueRelated) {
-      excludedAutoplayTypes.delete("QUEUE_RELATED");
-      autoplayTypes.add("QUEUE_RELATED");
-    }
-
-    if (includeUserLibrary) {
-      const userTypes: AutoplayType[] = [
-        "USER_RECENTLY_LIKED",
-        "USER_RECENTLY_PLAYED",
-        "USER_RECENT_MOST_PLAYED",
-        "USER_OLD_MOST_PLAYED",
-      ];
-      userTypes.forEach((t) => {
-        excludedAutoplayTypes.delete(t);
-        autoplayTypes.add(t);
-      });
+    for (const t of types) {
+      excludedAutoplayTypes.delete(t);
     }
 
     if (!autoplayTypes.size) {
-      this.allAutoplayTypes.forEach((t) => {
-        autoplayTypes.add(t);
-      });
+      autoplayTypes = new Set(Queue.ALL_AUTOPLAY_TYPES);
     }
 
-    let randomType: AutoplayType | null = null;
-    let mediaSources: MediaSource[] = [];
+    let randomType: QueueAutoplayType | null = null;
+    let result: AutoplayResult | null = null;
 
     do {
       if (!autoplayTypes.size && excludedAutoplayTypes.size) {
@@ -104,77 +65,114 @@ export class QueueAutoplayListener
 
       switch (randomType) {
         case "QUEUE_RELATED":
-          mediaSources = await this.getMixedTracks(queue, true);
+          result = await this.getQueueAutoplayMediaSources(queue, true);
           break;
         case "QUEUE_LAST_PLAYED_RELATED":
-          mediaSources = await this.getMixedTracks(queue, false);
+          result = await this.getQueueAutoplayMediaSources(queue, false);
           break;
         case "USER_RECENTLY_LIKED":
-          mediaSources = await this.getUserRecentlyLikedTracks(queue);
+          result = await this.getUserRecentlyLikedMediaSources(queue, false);
+          break;
+        case "USER_RECENTLY_LIKED_RELATED":
+          result = await this.getUserRecentlyLikedMediaSources(queue, true);
           break;
         case "USER_RECENTLY_PLAYED":
-          mediaSources = await this.getUserRecentlyPlayedTracks(queue);
+          result = await this.getUserRecentlyPlayedMediaSources(queue, false);
+          break;
+        case "USER_RECENTLY_PLAYED_RELATED":
+          result = await this.getUserRecentlyPlayedMediaSources(queue, true);
           break;
         case "USER_RECENT_MOST_PLAYED":
-          mediaSources = await this.getUserRecentMostPlayedTracks(queue);
+          result = await this.getUserRecentMostPlayedMediaSources(queue, false);
+          break;
+        case "USER_RECENT_MOST_PLAYED_RELATED":
+          result = await this.getUserRecentMostPlayedMediaSources(queue, true);
           break;
         case "USER_OLD_MOST_PLAYED":
-          mediaSources = await this.getUserOldMostPlayedTracks(queue);
+          result = await this.getUserOldMostPlayedMediaSources(queue, false);
+          break;
+        case "USER_OLD_MOST_PLAYED_RELATED":
+          result = await this.getUserOldMostPlayedMediaSources(queue, true);
           break;
         default:
           break;
       }
 
-      mediaSources = mediaSources.filter((m) => {
-        if (queue.history.find((h) => h.mediaSource.id === m.id)) return false;
-        if (minDuration || maxDuration) {
-          return m.duration >= minDuration && m.duration <= maxDuration;
-        }
-        return true;
-      });
-    } while (randomType && !mediaSources.length);
+      if (result) {
+        result.mediaSources = result.mediaSources.filter((m) => {
+          if (queue.history.find((h) => h.mediaSource.id === m.id)) return false;
+          if (minDuration || maxDuration) {
+            return m.duration >= minDuration && m.duration <= maxDuration;
+          }
+          return true;
+        });
+      }
+    } while (randomType && !result?.mediaSources.length);
 
-    if (!mediaSources.length) return;
+    if (!randomType || !result?.mediaSources.length) return;
 
-    const randomMediaSource = ArrayUtil.pickRankedRandom(mediaSources);
+    const randomMediaSource = ArrayUtil.pickRankedRandom(result.mediaSources);
 
     if (randomMediaSource) {
-      queue.addTracks([randomMediaSource], false);
+      queue.addTracks([randomMediaSource], false, { type: randomType, member: result.member });
     }
   }
 
-  private async getMixedTracks(queue: Queue, randomTrack: boolean): Promise<MediaSource[]> {
-    if (!queue.history.length) return [];
+  private async getQueueAutoplayMediaSources(
+    queue: Queue,
+    randomTrack: boolean,
+  ): Promise<AutoplayResult | null> {
+    if (!queue.history.length) return null;
 
     const track = randomTrack ? ArrayUtil.pickRandom(queue.history) : queue.history.at(0);
-    if (!track?.mediaSource.playedYoutubeVideoId) return [];
+    if (!track?.mediaSource.playedYoutubeVideoId) return null;
 
     try {
-      const videos = await this.youtubeiProvider.getPlaylistVideos(
-        "RDAMVM" + track.mediaSource.playedYoutubeVideoId,
-      );
-      return videos.map((v) => MediaSource.fromYoutube(v));
+      return {
+        member: track.requestedBy,
+        mediaSources: await this.getMixedTracks(track.mediaSource.playedYoutubeVideoId),
+      };
     } catch (err) {
       this.logger.error("Failed to autoplay from related tracks", err);
-      return [];
+      return null;
     }
   }
 
-  private async getUserRecentlyLikedTracks(queue: Queue): Promise<MediaSource[]> {
+  private async getUserRecentlyLikedMediaSources(
+    queue: Queue,
+    isRelated: boolean,
+  ): Promise<AutoplayResult | null> {
     const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
-    if (!randomUser) return [];
+    if (!randomUser) return null;
 
     const likedTracks = await this.userLikeRepository.getByUserId(randomUser.id, {
       limit: 10,
       page: 1,
     });
 
-    return likedTracks.filter((l) => l.mediaSource).map((l) => l.mediaSource!);
+    const mediaSources = likedTracks.filter((l) => l.mediaSource).map((l) => l.mediaSource!);
+
+    if (isRelated) {
+      return {
+        member: randomUser,
+        mediaSources: await this.getMixedTracks(
+          ArrayUtil.pickRandom(mediaSources)?.playedYoutubeVideoId,
+        ),
+      };
+    }
+
+    return {
+      member: randomUser,
+      mediaSources,
+    };
   }
 
-  private async getUserRecentlyPlayedTracks(queue: Queue): Promise<MediaSource[]> {
+  private async getUserRecentlyPlayedMediaSources(
+    queue: Queue,
+    isRelated: boolean,
+  ): Promise<AutoplayResult | null> {
     const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
-    if (!randomUser) return [];
+    if (!randomUser) return null;
 
     const playedTracks = await this.userPlayRepository.getLastPlayedByUserId(randomUser.id, {
       limit: 10,
@@ -183,12 +181,29 @@ export class QueueAutoplayListener
       excludeIds: queue.history.map((h) => h.mediaSource.id),
     });
 
-    return playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
+    const mediaSources = playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
+
+    if (isRelated) {
+      return {
+        member: randomUser,
+        mediaSources: await this.getMixedTracks(
+          ArrayUtil.pickRandom(mediaSources)?.playedYoutubeVideoId,
+        ),
+      };
+    }
+
+    return {
+      member: randomUser,
+      mediaSources,
+    };
   }
 
-  private async getUserRecentMostPlayedTracks(queue: Queue): Promise<MediaSource[]> {
+  private async getUserRecentMostPlayedMediaSources(
+    queue: Queue,
+    isRelated: boolean,
+  ): Promise<AutoplayResult | null> {
     const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
-    if (!randomUser) return [];
+    if (!randomUser) return null;
 
     const to = new Date();
     const from = dayjs(to).subtract(14, "days").toDate();
@@ -201,12 +216,29 @@ export class QueueAutoplayListener
       excludeIds: queue.history.map((h) => h.mediaSource.id),
     });
 
-    return playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
+    const mediaSources = playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
+
+    if (isRelated) {
+      return {
+        member: randomUser,
+        mediaSources: await this.getMixedTracks(
+          ArrayUtil.pickRandom(mediaSources)?.playedYoutubeVideoId,
+        ),
+      };
+    }
+
+    return {
+      member: randomUser,
+      mediaSources,
+    };
   }
 
-  private async getUserOldMostPlayedTracks(queue: Queue): Promise<MediaSource[]> {
+  private async getUserOldMostPlayedMediaSources(
+    queue: Queue,
+    isRelated: boolean,
+  ): Promise<AutoplayResult | null> {
     const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
-    if (!randomUser) return [];
+    if (!randomUser) return null;
 
     const now = new Date();
     const to = dayjs(now).subtract(6, "months").toDate();
@@ -217,12 +249,12 @@ export class QueueAutoplayListener
       from,
       to,
     );
-    if (!monthlyPlayActivity.length) return [];
+    if (!monthlyPlayActivity.length) return null;
 
     const randomMonth = ArrayUtil.pickRandom(
       monthlyPlayActivity.filter((a) => a.uniquePlayCount > 5),
     );
-    if (!randomMonth) return [];
+    if (!randomMonth) return null;
 
     const playedTracks = await this.userPlayRepository.getMostPlayedByUserId(randomUser.id, {
       limit: 20,
@@ -232,6 +264,26 @@ export class QueueAutoplayListener
       excludeIds: queue.history.map((h) => h.mediaSource.id),
     });
 
-    return playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
+    const mediaSources = playedTracks.filter((p) => p.mediaSource).map((p) => p.mediaSource!);
+
+    if (isRelated) {
+      return {
+        member: randomUser,
+        mediaSources: await this.getMixedTracks(
+          ArrayUtil.pickRandom(mediaSources)?.playedYoutubeVideoId,
+        ),
+      };
+    }
+
+    return {
+      member: randomUser,
+      mediaSources,
+    };
+  }
+
+  private async getMixedTracks(id?: string | null): Promise<MediaSource[]> {
+    if (!id) return [];
+    const videos = await this.youtubeiProvider.getPlaylistVideos("RDAMVM" + id);
+    return videos.map((v) => MediaSource.fromYoutube(v));
   }
 }

@@ -53,7 +53,12 @@ export class AppModule implements OnModuleInit {
 
     app.useLogger(app.get(GlobalLogger));
 
-    if (config.ws) app.useWebSocketAdapter(new WebSocketAdapter(app, +config.ws.port));
+    if (config.ws) {
+      const port = config.ws.port === config.http?.port ? 0 : config.ws.port;
+      if (port !== undefined) {
+        app.useWebSocketAdapter(new WebSocketAdapter(app, port, config.ws.path));
+      }
+    }
 
     if (config.http) await app.listen(+config.http.port, "0.0.0.0");
     else await app.init();

@@ -13,10 +13,14 @@ export class ConfigUtil {
         prefix: Joi.string().required(),
         http: Joi.object({
           port: Joi.number().required(),
+          path: Joi.string().optional(),
         }).optional(),
         ws: Joi.object({
-          port: Joi.number().required(),
-        }).optional(),
+          port: Joi.number().optional(),
+          path: Joi.string().optional(),
+        })
+          .optional()
+          .or("port", "path"),
       }).optional(),
       youtubeApi: Joi.object({
         port: Joi.number().required(),
@@ -125,8 +129,23 @@ export class ConfigUtil {
         prefix,
       };
 
-      if (process.env.API_PORT) botConfig.http = { port: +process.env.API_PORT };
-      if (process.env.WS_PORT) botConfig.ws = { port: +process.env.WS_PORT };
+      process.env.HTTP_PORT = process.env.API_PORT || process.env.HTTP_PORT;
+      if (process.env.HTTP_PORT) {
+        botConfig.http = {
+          port: +process.env.HTTP_PORT,
+          path: process.env.API_PATH || process.env.HTTP_PATH,
+        };
+      }
+      if (process.env.WS_PORT || process.env.WS_PATH) {
+        let wsPort = process.env.WS_PORT;
+        if (process.env.WS_PATH && !wsPort && process.env.HTTP_PORT) wsPort = process.env.HTTP_PORT;
+        botConfig.ws = wsPort
+          ? {
+              port: +wsPort,
+              path: process.env.WS_PATH,
+            }
+          : undefined;
+      }
 
       config.apps.bot = botConfig;
     }
@@ -225,7 +244,7 @@ export class ConfigUtil {
       config.youtube.oauth = {
         ...config.youtube.oauth,
         refreshToken: youtubeRefreshToken,
-      }
+      };
     }
 
     const proxyProtocol = process.env.YOUTUBE_PROXY_PROTOCOL;
@@ -236,11 +255,11 @@ export class ConfigUtil {
     if (proxyHost && proxyPort && proxyUser && proxyPassword) {
       config.youtube.proxy = {
         ...config.youtube.proxy,
-        protocol: proxyProtocol as "http" | "https" || "http",
+        protocol: (proxyProtocol as "http" | "https") || "http",
         host: proxyHost,
         port: +proxyPort,
         username: proxyUser,
-        password: proxyPassword
+        password: proxyPassword,
       };
     }
 

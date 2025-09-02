@@ -5,6 +5,7 @@ export class WebSocketAdapter extends WsAdapter {
   constructor(
     app: INestApplicationContext,
     private port: number,
+    private path?: string,
   ) {
     super(app);
   }
@@ -20,7 +21,7 @@ export class WebSocketAdapter extends WsAdapter {
       | undefined,
   ) {
     port = this.port;
-    const server = super.create(port, options);
+    const server = super.create(port, { path: this.path, ...options });
     return server;
   }
 }

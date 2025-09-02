@@ -4,8 +4,10 @@ apps:
     prefix: "!"
     # http: # optional, if you want to enable the http server
     #   port: 8080
+    #   path: "/" # optional, if you want to configure the HTTP API Base Path
     # ws: # optional, if you want to enable the ws server
-    #   port: 8081
+    #   port: 8080
+    #   path: "/ws" # optional, if you want to configure the WebSocket Path
   # youtubeApi: # if you want to start http server for youtube api, used by official web client
   #   port: 8082
 lavalink: # optional, if you want to use lavalink instead of built in player

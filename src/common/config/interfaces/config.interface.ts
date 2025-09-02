@@ -18,8 +18,8 @@ export interface IGlobalConfig {
 export interface IBotConfig {
   token: string;
   prefix: string;
-  http?: { port: number };
-  ws?: { port: number };
+  http?: { port: number; path?: string };
+  ws?: { port?: number; path?: string };
 }
 
 export interface IYoutubeApiConfig {
@@ -82,7 +82,7 @@ export interface IYoutubeConfig {
   proxy?: {
     protocol: "http" | "https";
     host: string;
-    port: number
+    port: number;
     username: string;
     password: string;
   };

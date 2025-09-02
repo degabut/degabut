@@ -12,7 +12,7 @@ import { v4 } from "uuid";
 
 import { IdentifiedWebSocket } from "./interfaces";
 
-@WebSocketGateway(8080)
+@WebSocketGateway()
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly unidentifiedClients = new Map<string, IdentifiedWebSocket>();
   private readonly identifiedClients = new Map<string, IdentifiedWebSocket[]>();

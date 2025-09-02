@@ -7,7 +7,7 @@ import { HistoryModule } from "@history/history.module";
 import { LoggerModule } from "@logger/logger.module";
 import { Logger } from "@logger/logger.service";
 import { DynamicModule, Module, Provider } from "@nestjs/common";
-import { DiscoveryModule, DiscoveryService } from "@nestjs/core";
+import { DiscoveryModule, DiscoveryService, RouterModule } from "@nestjs/core";
 import { CqrsModule } from "@nestjs/cqrs";
 import { PlaylistModule } from "@playlist/playlist.module";
 import { QueuePlayerModule } from "@queue-player/queue-player.module";
@@ -76,7 +76,13 @@ export class DiscordBotModule {
           jwt: config.auth.jwt,
         }),
       );
-      if (config.http) imports.push(ApiModule);
+
+      if (config.http) {
+        imports.push(ApiModule);
+        if (config.http.path) {
+          imports.push(RouterModule.register([{ path: config.http.path, module: ApiModule }]));
+        }
+      }
       if (config.ws) imports.push(EventsModule);
     }
 

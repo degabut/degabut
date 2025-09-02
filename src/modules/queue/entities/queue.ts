@@ -57,8 +57,8 @@ export type QueueAutoplayType =
   | "USER_OLD_MOST_PLAYED_RELATED";
 
 export type QueueAutoplayOptions = {
-  minDuration: number;
-  maxDuration: number;
+  minDuration: number | null;
+  maxDuration: number | null;
   types: QueueAutoplayType[];
 };
 

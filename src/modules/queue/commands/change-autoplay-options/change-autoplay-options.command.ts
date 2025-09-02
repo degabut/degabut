@@ -14,8 +14,8 @@ export class ChangeAutoplayOptionsCommand extends Command<QueueAutoplayOptions> 
   public readonly includeUserLibrary?: boolean;
   public readonly includeUserLibraryRelated?: boolean;
   public readonly types?: QueueAutoplayType[];
-  public readonly minDuration!: number;
-  public readonly maxDuration!: number;
+  public readonly minDuration!: number | null;
+  public readonly maxDuration!: number | null;
 
   constructor(params: ChangeAutoplayOptionsCommand) {
     super();
@@ -33,8 +33,8 @@ export const ChangeAutoplayOptionsParamSchema = Joi.object<ChangeAutoplayOptions
   includeQueueRelated: Joi.boolean().optional(),
   includeUserLibrary: Joi.boolean().optional(),
   includeUserLibraryRelated: Joi.boolean().optional(),
-  minDuration: Joi.number().min(0).required(),
-  maxDuration: Joi.number().min(0).required().greater(Joi.ref("minDuration")),
+  minDuration: Joi.number().min(0).required().allow(null),
+  maxDuration: Joi.number().min(0).required().greater(Joi.ref("minDuration")).allow(null),
 })
   .required()
   .or(

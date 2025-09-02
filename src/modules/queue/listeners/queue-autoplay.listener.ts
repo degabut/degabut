@@ -102,7 +102,7 @@ export class QueueAutoplayListener
         result.mediaSources = result.mediaSources.filter((m) => {
           if (queue.history.find((h) => h.mediaSource.id === m.id)) return false;
           if (minDuration || maxDuration) {
-            return m.duration >= minDuration && m.duration <= maxDuration;
+            return m.duration >= (minDuration || 0) && m.duration <= (maxDuration || Infinity);
           }
           return true;
         });

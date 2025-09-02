@@ -5,10 +5,5 @@
   },
   "files.eol": "\n",
   "typescript.tsdk": "node_modules\\typescript\\lib",
-  "testing.openTesting": "neverOpen",
-  "jest.outputConfig": {
-    "revealOn": "run",
-    "revealWithFocus": "none",
-    "clearOnRun": "none"
-  }
+  "testing.automaticallyOpenTestResults": "neverOpen"
 }

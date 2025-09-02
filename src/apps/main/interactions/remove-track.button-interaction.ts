@@ -1,19 +1,19 @@
-import { ButtonInteraction } from "@discord-bot/decorators";
-import { ButtonInteractionResult, IButtonInteraction } from "@discord-bot/interfaces";
+import { ButtonInteraction } from "@main/decorators";
+import { ButtonInteractionResult, IButtonInteraction } from "@main/interfaces";
 import { CommandBus } from "@nestjs/cqrs";
-import { AddTracksCommand } from "@queue/commands";
+import { RemoveTrackCommand } from "@queue/commands";
 import { GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
-  name: "add-track",
-  key: "add-track/:source/:id",
+  name: "remove-track",
+  key: "remove-track/:id",
 })
-export class AddTrackButtonInteraction implements IButtonInteraction {
+export class RemoveTrackButtonInteraction implements IButtonInteraction {
   constructor(private readonly commandBus: CommandBus) {}
 
   public async handler(
     interaction: Interaction,
-    args: { id: string; source: string },
+    args: { id: string },
   ): Promise<ButtonInteractionResult> {
     if (!interaction.isButton()) return;
 
@@ -26,13 +26,14 @@ export class AddTrackButtonInteraction implements IButtonInteraction {
       return;
     }
 
-    const command = new AddTracksCommand({
-      mediaSourceId: `${args.source}/${args.id}`,
+    const command = new RemoveTrackCommand({
+      trackId: args.id,
       voiceChannelId: interaction.member.voice.channelId,
       executor: { id: interaction.member.id },
     });
 
-    await this.commandBus.execute(command);
-    await interaction.deferUpdate();
+    const result = await this.commandBus.execute(command);
+
+    if (result) await interaction.deferUpdate();
   }
 }

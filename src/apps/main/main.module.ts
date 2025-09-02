@@ -1,19 +1,20 @@
 import { ApiModule } from "@api/api.module";
 import { AuthModule } from "@auth/auth.module";
-import { IBotConfig, IGlobalConfig } from "@common/config";
+import { IConfig } from "@common/config";
 import { DatabaseModule } from "@database/database.module";
 import { EventsModule } from "@events/events.module";
 import { HistoryModule } from "@history/history.module";
 import { LoggerModule } from "@logger/logger.module";
 import { Logger } from "@logger/logger.service";
 import { DynamicModule, Module, Provider } from "@nestjs/common";
-import { DiscoveryModule, DiscoveryService, RouterModule } from "@nestjs/core";
+import { DiscoveryModule, DiscoveryService, RouterModule, Routes } from "@nestjs/core";
 import { CqrsModule } from "@nestjs/cqrs";
 import { PlaylistModule } from "@playlist/playlist.module";
 import { QueuePlayerModule } from "@queue-player/queue-player.module";
 import { QueueModule } from "@queue/queue.module";
 import { SpotifyModule } from "@spotify/spotify.module";
 import { UserModule } from "@user/user.module";
+import { YoutubeApiModule } from "@youtube-api/youtube-api.module";
 import { YoutubeModule } from "@youtube/youtube.module";
 import { Client, GatewayIntentBits } from "discord.js";
 import { NecordModule } from "necord";
@@ -33,8 +34,11 @@ import { ButtonInteractions, Interactions } from "./interactions";
     ...ButtonInteractions,
   ],
 })
-export class DiscordBotModule {
-  static forRoot(config: IBotConfig & IGlobalConfig): DynamicModule {
+export class MainModule {
+  static forRoot(config: IConfig): DynamicModule {
+    const bot = config.apps.bot;
+    if (!bot) throw new Error("Bot configuration is missing");
+
     const imports = [
       LoggerModule.forRoot({ appId: "bot", ...config.logging }),
       DatabaseModule.forRoot(config.postgres),
@@ -42,8 +46,8 @@ export class DiscordBotModule {
       SpotifyModule.forRoot(config.spotify),
       YoutubeModule.forRoot(config.youtubeApi || config.youtube),
       NecordModule.forRoot({
-        token: config.token,
-        prefix: config.prefix,
+        token: bot.token,
+        prefix: bot.prefix,
         intents: [
           GatewayIntentBits.Guilds,
           GatewayIntentBits.GuildMembers,
@@ -64,7 +68,7 @@ export class DiscordBotModule {
         provide: TextCommandExplorer,
         inject: [DiscoveryService, Logger, Client],
         useFactory: (discoveryService: DiscoveryService, logger: Logger, client: Client) => {
-          return new TextCommandExplorer(config.prefix, discoveryService, client, logger);
+          return new TextCommandExplorer(bot.prefix, discoveryService, client, logger);
         },
       },
     ];
@@ -77,17 +81,25 @@ export class DiscordBotModule {
         }),
       );
 
-      if (config.http) {
+      const routes: Routes = [];
+
+      if (bot.http) {
         imports.push(ApiModule);
-        if (config.http.path) {
-          imports.push(RouterModule.register([{ path: config.http.path, module: ApiModule }]));
-        }
+        if (bot.http.path) routes.push({ path: bot.http.path, module: ApiModule });
       }
-      if (config.ws) imports.push(EventsModule);
+      if (bot.ws) imports.push(EventsModule);
+
+      const youtubeApi = config.apps.youtubeApi;
+      if (youtubeApi) {
+        imports.push(YoutubeApiModule.forRoot(config));
+        if (youtubeApi.path) routes.push({ path: youtubeApi.path, module: YoutubeApiModule });
+      }
+
+      if (routes.length) imports.push(RouterModule.register(routes));
     }
 
     return {
-      module: DiscordBotModule,
+      module: MainModule,
       providers,
       imports,
     };

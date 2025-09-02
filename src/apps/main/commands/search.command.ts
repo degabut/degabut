@@ -1,7 +1,7 @@
 import { DiscordUtil } from "@common/utils";
-import { CommandExceptionFilter } from "@discord-bot/filters";
-import { MEDIA_SOURCE_SELECT_INTERACTION } from "@discord-bot/interactions/media-source.select-interaction";
-import { CommandResult } from "@discord-bot/interfaces";
+import { CommandExceptionFilter } from "@main/filters";
+import { MEDIA_SOURCE_SELECT_INTERACTION } from "@main/interactions/media-source.select-interaction";
+import { CommandResult } from "@main/interfaces";
 import { MediaSource } from "@media-source/entities";
 import { Inject, Injectable, UseFilters } from "@nestjs/common";
 import { IYoutubeiProvider } from "@youtube/providers";

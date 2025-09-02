@@ -1,5 +1,5 @@
-import { ButtonInteraction } from "@discord-bot/decorators";
-import { ButtonInteractionResult, IButtonInteraction } from "@discord-bot/interfaces";
+import { ButtonInteraction } from "@main/decorators";
+import { ButtonInteractionResult, IButtonInteraction } from "@main/interfaces";
 import { CommandBus } from "@nestjs/cqrs";
 import { SkipCommand } from "@queue-player/commands";
 import { GuildMember, Interaction } from "discord.js";

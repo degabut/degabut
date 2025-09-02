@@ -1,6 +1,6 @@
 import { DiscordUtil } from "@common/utils";
-import { CommandExceptionFilter } from "@discord-bot/filters";
-import { MEDIA_SOURCE_SELECT_INTERACTION } from "@discord-bot/interactions/media-source.select-interaction";
+import { CommandExceptionFilter } from "@main/filters";
+import { MEDIA_SOURCE_SELECT_INTERACTION } from "@main/interactions/media-source.select-interaction";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetLastPlayedQuery, GetMostPlayedQuery } from "@user/queries";

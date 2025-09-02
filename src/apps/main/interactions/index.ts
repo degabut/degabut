@@ -1,4 +1,4 @@
-import { IButtonInteraction } from "@discord-bot/interfaces";
+import { IButtonInteraction } from "@main/interfaces";
 import { Provider } from "@nestjs/common";
 import { Constructor } from "@nestjs/cqrs";
 

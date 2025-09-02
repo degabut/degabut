@@ -1,4 +1,4 @@
-import { CommandExceptionFilter } from "@discord-bot/filters";
+import { CommandExceptionFilter } from "@main/filters";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { AddTracksCommand } from "@queue/commands";

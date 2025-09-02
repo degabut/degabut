@@ -1,4 +1,4 @@
-import { VoiceMemberLeftEvent } from "@discord-bot/events";
+import { VoiceMemberLeftEvent } from "@main/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueueRepository } from "@queue/repositories";
 

@@ -1,5 +1,5 @@
 import { DiscordUtil } from "@common/utils";
-import { MEDIA_SOURCE_SELECT_INTERACTION } from "@discord-bot/interactions/media-source.select-interaction";
+import { MEDIA_SOURCE_SELECT_INTERACTION } from "@main/interactions/media-source.select-interaction";
 import { MediaSource } from "@media-source/entities";
 import { Inject, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";

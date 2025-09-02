@@ -23,7 +23,8 @@ export interface IBotConfig {
 }
 
 export interface IYoutubeApiConfig {
-  port: number;
+  port?: number;
+  path?: string;
 }
 
 export interface ILavalinkConfig {

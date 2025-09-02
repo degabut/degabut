@@ -1,5 +1,5 @@
-import { VoiceMemberLeftEvent } from "@discord-bot/events";
 import { EventsGateway } from "@events/events.gateway";
+import { VoiceMemberLeftEvent } from "@main/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 
 @EventsHandler(VoiceMemberLeftEvent)

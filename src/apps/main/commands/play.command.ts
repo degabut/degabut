@@ -1,6 +1,6 @@
 import { AsyncUtil, DiscordUtil, YoutubeUtil } from "@common/utils";
 import { SpotifyUtil } from "@common/utils/spotify.util";
-import { CommandExceptionFilter } from "@discord-bot/filters";
+import { CommandExceptionFilter } from "@main/filters";
 import { Injectable, NotFoundException, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { JoinCommand } from "@queue-player/commands";

@@ -1,6 +1,6 @@
 import { DiscordUtil } from "@common/utils";
-import { CommandExceptionFilter } from "@discord-bot/filters";
-import { CommandResult } from "@discord-bot/interfaces";
+import { CommandExceptionFilter } from "@main/filters";
+import { CommandResult } from "@main/interfaces";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { RedirectCommand } from "@queue-player/commands";

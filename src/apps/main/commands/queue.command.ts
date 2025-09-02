@@ -1,5 +1,5 @@
 import { DiscordUtil } from "@common/utils";
-import { CommandExceptionFilter } from "@discord-bot/filters";
+import { CommandExceptionFilter } from "@main/filters";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetQueueQuery } from "@queue/queries";

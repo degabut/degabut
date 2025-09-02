@@ -1,4 +1,4 @@
-import { DecoratedPrefixCommand } from "@discord-bot/explorers";
+import { DecoratedPrefixCommand } from "@main/explorers";
 
 declare module "discord.js" {
   interface Client {

@@ -1,4 +1,4 @@
-import { CommandExceptionFilter } from "@discord-bot/filters";
+import { CommandExceptionFilter } from "@main/filters";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ChangeLoopModeCommand } from "@queue/commands";
@@ -9,34 +9,30 @@ import { Context, SlashCommand, SlashCommandContext } from "necord";
 import { TextCommand } from "../decorators";
 
 @Injectable()
-export class LoopQueueDiscordCommand {
-  private static readonly commandName = "loopqueue";
-  private static readonly description = "Toggle loop queue";
+export class LoopDiscordCommand {
+  private static readonly commandName = "loop";
+  private static readonly description = "Toggle loop current track";
 
   constructor(private readonly commandBus: CommandBus) {}
 
   @TextCommand({
-    name: LoopQueueDiscordCommand.commandName,
-    description: LoopQueueDiscordCommand.description,
+    name: LoopDiscordCommand.commandName,
+    description: LoopDiscordCommand.description,
   })
   public async prefixHandler(message: Message) {
     if (!message.member?.voice.channelId) return;
-    const result = await this.handler(message.member);
-    if (result) await message.react("🔂");
+    return this.handler(message.member);
   }
 
   @UseFilters(new CommandExceptionFilter())
   @SlashCommand({
-    name: LoopQueueDiscordCommand.commandName,
-    description: LoopQueueDiscordCommand.description,
+    name: LoopDiscordCommand.commandName,
+    description: LoopDiscordCommand.description,
   })
   public async slashHandler(@Context() context: SlashCommandContext) {
     const [interaction] = context;
-    if (!(interaction.member instanceof GuildMember) || !interaction.member?.voice.channelId) {
-      return;
-    }
-    const result = await this.handler(interaction.member);
-    if (result) await interaction.reply(result);
+    if (!(interaction.member instanceof GuildMember)) return;
+    return this.handler(interaction.member);
   }
 
   private async handler(member: GuildMember): Promise<string | undefined> {
@@ -44,11 +40,11 @@ export class LoopQueueDiscordCommand {
 
     const command = new ChangeLoopModeCommand({
       voiceChannelId: member.voice.channelId,
-      loopMode: LoopMode.Queue,
+      loopMode: LoopMode.Track,
       executor: { id: member.user.id },
     });
 
     const loopMode = await this.commandBus.execute(command);
-    return loopMode === LoopMode.Queue ? "🔂 **Looping queue**" : "▶ **Loop Disabled**";
+    return loopMode === LoopMode.Track ? "🔂 **Looping current track**" : "▶ **Loop Disabled**";
   }
 }

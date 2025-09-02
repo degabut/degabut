@@ -1,4 +1,4 @@
-import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent } from "@discord-bot/events";
+import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent } from "@main/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueuePlayer } from "@queue-player/entities";
 import { PlayerVoiceChannelChangedEvent } from "@queue-player/events";

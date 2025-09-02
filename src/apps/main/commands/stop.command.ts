@@ -1,8 +1,8 @@
 import { DiscordUtil } from "@common/utils";
-import { CommandExceptionFilter } from "@discord-bot/filters";
+import { CommandExceptionFilter } from "@main/filters";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { SkipCommand } from "@queue-player/commands";
+import { StopCommand } from "@queue-player/commands";
 import { Message } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
 
@@ -14,15 +14,16 @@ type HandlerOptions = {
 };
 
 @Injectable()
-export class SkipDiscordCommand {
-  private static readonly commandName = "skip";
-  private static readonly description = "Skip current song";
+export class StopDiscordCommand {
+  private static readonly commandName = "stop";
+  private static readonly description = "Disconnect bot from the voice channel";
 
   constructor(private readonly commandBus: CommandBus) {}
 
   @TextCommand({
-    name: SkipDiscordCommand.commandName,
-    description: SkipDiscordCommand.description,
+    name: StopDiscordCommand.commandName,
+    aliases: ["leave", "quit", "disconnect", "dc"],
+    description: StopDiscordCommand.description,
   })
   public async prefixHandler(message: Message): Promise<void> {
     const voiceData = DiscordUtil.getVoiceFromMessage(message);
@@ -32,12 +33,14 @@ export class SkipDiscordCommand {
       userId: voiceData.member.id,
       voiceChannelId: voiceData.voiceChannel.id,
     });
+
+    await message.react("👋🏻");
   }
 
   @UseFilters(new CommandExceptionFilter())
   @SlashCommand({
-    name: SkipDiscordCommand.commandName,
-    description: SkipDiscordCommand.description,
+    name: StopDiscordCommand.commandName,
+    description: StopDiscordCommand.description,
   })
   public async slashHandler(@Context() context: SlashCommandContext) {
     const [interaction] = context;
@@ -48,13 +51,11 @@ export class SkipDiscordCommand {
       userId: voiceData.member.id,
       voiceChannelId: voiceData.voiceChannel.id,
     });
-
-    await interaction.deferReply();
-    await interaction.deleteReply();
+    await interaction.reply(`Left <#${voiceData.voiceChannel.id}>`);
   }
 
   private async handler(options: HandlerOptions) {
-    const command = new SkipCommand({
+    const command = new StopCommand({
       voiceChannelId: options.voiceChannelId,
       executor: { id: options.userId },
     });

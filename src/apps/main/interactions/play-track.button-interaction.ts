@@ -1,5 +1,5 @@
-import { ButtonInteraction } from "@discord-bot/decorators";
-import { ButtonInteractionResult, IButtonInteraction } from "@discord-bot/interfaces";
+import { ButtonInteraction } from "@main/decorators";
+import { ButtonInteractionResult, IButtonInteraction } from "@main/interfaces";
 import { MediaSourceType } from "@media-source/entities";
 import { NotFoundException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";

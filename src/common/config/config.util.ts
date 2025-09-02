@@ -23,8 +23,11 @@ export class ConfigUtil {
           .or("port", "path"),
       }).optional(),
       youtubeApi: Joi.object({
-        port: Joi.number().required(),
-      }).optional(),
+        port: Joi.number().optional(),
+        path: Joi.string().optional(),
+      })
+        .optional()
+        .or("port", "path"),
     }).required(),
     logging: Joi.object({
       level: Joi.string()
@@ -155,6 +158,7 @@ export class ConfigUtil {
     if (youtubeApiPort) {
       config.apps.youtubeApi = {
         port: +youtubeApiPort,
+        path: process.env.YOUTUBE_API_PATH,
       };
     }
 

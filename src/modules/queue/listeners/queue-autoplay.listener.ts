@@ -127,15 +127,10 @@ export class QueueAutoplayListener
     const track = randomTrack ? ArrayUtil.pickRandom(queue.history) : queue.history.at(0);
     if (!track?.mediaSource.playedYoutubeVideoId) return null;
 
-    try {
-      return {
-        member: track.requestedBy,
-        mediaSources: await this.getMixedTracks(track.mediaSource.playedYoutubeVideoId),
-      };
-    } catch (err) {
-      this.logger.error("Failed to autoplay from related tracks", err);
-      return null;
-    }
+    return {
+      member: track.requestedBy,
+      mediaSources: await this.getMixedTracks(track.mediaSource.playedYoutubeVideoId),
+    };
   }
 
   private async getUserRecentlyLikedMediaSources(
@@ -283,7 +278,13 @@ export class QueueAutoplayListener
 
   private async getMixedTracks(id?: string | null): Promise<MediaSource[]> {
     if (!id) return [];
-    const videos = await this.youtubeiProvider.getPlaylistVideos("RDAMVM" + id);
-    return videos.map((v) => MediaSource.fromYoutube(v));
+
+    try {
+      const videos = await this.youtubeiProvider.getPlaylistVideos("RDAMVM" + id);
+      return videos.map((v) => MediaSource.fromYoutube(v));
+    } catch (err) {
+      this.logger.error(`Failed to fetch mixed track for ${id}`, err);
+      return [];
+    }
   }
 }

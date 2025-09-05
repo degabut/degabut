@@ -7,7 +7,7 @@ import {
 import { MediaSource } from "@media-source/entities";
 import { Inject } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { Member, Queue, QueueAutoplayType } from "@queue/entities";
+import { Member, Queue, QueueAutoplayType, Track } from "@queue/entities";
 import { QueueAutoplayToggledEvent, QueueProcessedEvent } from "@queue/events";
 import { UserLikeMediaSourceRepository } from "@user/repositories";
 import { IYoutubeiProvider } from "@youtube/providers";
@@ -124,11 +124,22 @@ export class QueueAutoplayListener
   ): Promise<AutoplayResult | null> {
     if (!queue.history.length) return null;
 
-    const track = randomTrack ? ArrayUtil.pickRandom(queue.history) : queue.history.at(0);
+    let track: Track | undefined;
+
+    if (randomTrack) {
+      const randomTracks = queue.history.filter(
+        (t) =>
+          queue.voiceChannel.activeMembers.some((m) => t.associatedUserId === m.id) &&
+          !queue.autoplayOptions.excludedMemberIds.includes(t.associatedUserId || ""),
+      );
+      track = ArrayUtil.pickRandom(randomTracks);
+    } else {
+      track = queue.history.at(0);
+    }
     if (!track?.mediaSource.playedYoutubeVideoId) return null;
 
     return {
-      member: track.requestedBy,
+      member: track.requestedBy || track.autoplayData?.member || null,
       mediaSources: await this.getMixedTracks(track.mediaSource.playedYoutubeVideoId),
     };
   }
@@ -137,7 +148,10 @@ export class QueueAutoplayListener
     queue: Queue,
     isRelated: boolean,
   ): Promise<AutoplayResult | null> {
-    const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
+    const randomUsers = queue.voiceChannel.activeMembers.filter(
+      (m) => !queue.autoplayOptions.excludedMemberIds.includes(m.id),
+    );
+    const randomUser = ArrayUtil.pickRandom(randomUsers);
     if (!randomUser) return null;
 
     const likedTracks = await this.userLikeRepository.getByUserId(randomUser.id, {
@@ -166,7 +180,10 @@ export class QueueAutoplayListener
     queue: Queue,
     isRelated: boolean,
   ): Promise<AutoplayResult | null> {
-    const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
+    const randomUsers = queue.voiceChannel.activeMembers.filter(
+      (m) => !queue.autoplayOptions.excludedMemberIds.includes(m.id),
+    );
+    const randomUser = ArrayUtil.pickRandom(randomUsers);
     if (!randomUser) return null;
 
     const playedTracks = await this.userPlayRepository.getLastPlayedByUserId(randomUser.id, {
@@ -197,7 +214,10 @@ export class QueueAutoplayListener
     queue: Queue,
     isRelated: boolean,
   ): Promise<AutoplayResult | null> {
-    const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
+    const randomUsers = queue.voiceChannel.activeMembers.filter(
+      (m) => !queue.autoplayOptions.excludedMemberIds.includes(m.id),
+    );
+    const randomUser = ArrayUtil.pickRandom(randomUsers);
     if (!randomUser) return null;
 
     const to = new Date();
@@ -232,7 +252,10 @@ export class QueueAutoplayListener
     queue: Queue,
     isRelated: boolean,
   ): Promise<AutoplayResult | null> {
-    const randomUser = ArrayUtil.pickRandom(queue.voiceChannel.activeMembers);
+    const randomUsers = queue.voiceChannel.activeMembers.filter(
+      (m) => !queue.autoplayOptions.excludedMemberIds.includes(m.id),
+    );
+    const randomUser = ArrayUtil.pickRandom(randomUsers);
     if (!randomUser) return null;
 
     const now = new Date();

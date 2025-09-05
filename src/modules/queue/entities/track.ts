@@ -32,4 +32,8 @@ export class Track {
     this.queue = props.queue;
     this.playedAt = null;
   }
+
+  get associatedUserId(): string | null {
+    return this.requestedBy?.id || this.autoplayData?.member?.id || null;
+  }
 }

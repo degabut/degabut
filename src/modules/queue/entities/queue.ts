@@ -59,6 +59,7 @@ export type QueueAutoplayType =
 export type QueueAutoplayOptions = {
   minDuration: number | null;
   maxDuration: number | null;
+  excludedMemberIds: string[];
   types: QueueAutoplayType[];
 };
 
@@ -101,6 +102,7 @@ export class Queue extends AggregateRoot {
   public autoplayOptions: QueueAutoplayOptions = {
     minDuration: 0,
     maxDuration: 0,
+    excludedMemberIds: [],
     types: [...Queue.ALL_AUTOPLAY_TYPES],
   };
   public historyIds: Array<string> = [];

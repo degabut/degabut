@@ -27,6 +27,9 @@ export class ChangeAutoplayOptionsHandler
       includeUserLibraryRelated,
       minDuration,
       maxDuration,
+      excludedMemberIds,
+      addExcludedMemberId,
+      removeExcludedMemberId,
     } = params;
 
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannelId);
@@ -34,26 +37,55 @@ export class ChangeAutoplayOptionsHandler
     const member = queue.getMember(executor.id);
     if (!member) throw new ForbiddenException("Missing permissions");
 
-    const combinedType = new Set<QueueAutoplayType>(types || []);
-    if (includeQueueLastPlayedRelated) combinedType.add("QUEUE_LAST_PLAYED_RELATED");
-    if (includeQueueRelated) combinedType.add("QUEUE_RELATED");
-    if (includeUserLibrary) {
-      combinedType.add("USER_OLD_MOST_PLAYED");
-      combinedType.add("USER_RECENTLY_LIKED");
-      combinedType.add("USER_RECENTLY_PLAYED");
-      combinedType.add("USER_RECENT_MOST_PLAYED");
+    const patchOptions: Partial<QueueAutoplayOptions> = {};
+
+    if (maxDuration !== undefined) patchOptions.maxDuration = maxDuration;
+    if (minDuration !== undefined) patchOptions.minDuration = minDuration;
+    if (excludedMemberIds || addExcludedMemberId || removeExcludedMemberId) {
+      let excludedMemberIdsSet = new Set<string>(
+        excludedMemberIds || queue.autoplayOptions.excludedMemberIds,
+      );
+      if (addExcludedMemberId) excludedMemberIdsSet.add(addExcludedMemberId);
+      if (removeExcludedMemberId) excludedMemberIdsSet.delete(removeExcludedMemberId);
+      patchOptions.excludedMemberIds = Array.from(excludedMemberIdsSet);
     }
-    if (includeUserLibraryRelated) {
-      combinedType.add("USER_OLD_MOST_PLAYED_RELATED");
-      combinedType.add("USER_RECENTLY_LIKED_RELATED");
-      combinedType.add("USER_RECENTLY_PLAYED_RELATED");
-      combinedType.add("USER_RECENT_MOST_PLAYED_RELATED");
+    if (
+      types ||
+      includeQueueLastPlayedRelated ||
+      includeQueueRelated ||
+      includeUserLibrary ||
+      includeUserLibraryRelated
+    ) {
+      const combinedType = new Set<QueueAutoplayType>(types || []);
+      if (includeQueueLastPlayedRelated) combinedType.add("QUEUE_LAST_PLAYED_RELATED");
+      if (includeQueueRelated) combinedType.add("QUEUE_RELATED");
+      if (includeUserLibrary) {
+        combinedType.add("USER_OLD_MOST_PLAYED");
+        combinedType.add("USER_RECENTLY_LIKED");
+        combinedType.add("USER_RECENTLY_PLAYED");
+        combinedType.add("USER_RECENT_MOST_PLAYED");
+      }
+      if (includeUserLibraryRelated) {
+        combinedType.add("USER_OLD_MOST_PLAYED_RELATED");
+        combinedType.add("USER_RECENTLY_LIKED_RELATED");
+        combinedType.add("USER_RECENTLY_PLAYED_RELATED");
+        combinedType.add("USER_RECENT_MOST_PLAYED_RELATED");
+      }
+      patchOptions.types = Array.from(combinedType);
+    }
+
+    if (
+      patchOptions.excludedMemberIds &&
+      patchOptions.excludedMemberIds.some(
+        (id) => !queue.voiceChannel.members.some((m) => m.id === id),
+      )
+    ) {
+      throw new ForbiddenException("Excluded members must be in the voice channel");
     }
 
     queue.setAutoplayOptions(member, {
-      maxDuration,
-      minDuration,
-      types: Array.from(combinedType),
+      ...queue.autoplayOptions,
+      ...patchOptions,
     });
 
     return queue.autoplayOptions;

@@ -41,12 +41,4 @@ export const ChangeAutoplayOptionsParamSchema = Joi.object<ChangeAutoplayOptions
   excludedMemberIds: Joi.array().items(Joi.string()).optional(),
   addExcludedMemberId: Joi.string().optional(),
   removeExcludedMemberId: Joi.string().optional(),
-})
-  .required()
-  .or(
-    "types",
-    "includeQueueLastPlayedRelated",
-    "includeQueueRelated",
-    "includeUserLibrary",
-    "includeUserLibraryRelated",
-  );
+}).required();

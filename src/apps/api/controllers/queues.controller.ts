@@ -1,6 +1,6 @@
 import { AuthUser, User } from "@auth/decorators";
 import { AuthGuard } from "@auth/guards";
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   AddNextTrackCommand,
@@ -143,7 +143,7 @@ export class QueuesController {
     );
   }
 
-  @Put("/:voiceChannelId/autoplay/options")
+  @Patch("/:voiceChannelId/autoplay/options")
   @UseGuards(AuthGuard)
   async changeAutoplayOptions(
     @Param() params: VoiceChannelIdParams,

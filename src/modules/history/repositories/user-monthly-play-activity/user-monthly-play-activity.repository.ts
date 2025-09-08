@@ -20,7 +20,8 @@ export class UserMonthlyPlayActivityRepository {
       .query()
       .where("user_id", userId)
       .andWhere("date", ">=", from)
-      .andWhere("date", "<=", to);
+      .andWhere("date", "<=", to)
+      .orderBy("date", "desc");
 
     return results.map((r) => UserMonthlyPlayActivityRepositoryMapper.toDomainEntity(r));
   }

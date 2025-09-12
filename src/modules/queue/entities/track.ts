@@ -23,6 +23,7 @@ export class Track {
   public requestedBy: Member | null;
   public autoplayData: TrackAutoplayData | null;
   public playedAt: Date | null;
+  public error: string | null;
 
   constructor(props: ConstructorProps) {
     this.id = v4();
@@ -31,9 +32,14 @@ export class Track {
     this.autoplayData = props.autoplayData || null;
     this.queue = props.queue;
     this.playedAt = null;
+    this.error = null;
   }
 
   get associatedUserId(): string | null {
     return this.requestedBy?.id || this.autoplayData?.member?.id || null;
+  }
+
+  public setError(message: string | null): void {
+    this.error = message;
   }
 }

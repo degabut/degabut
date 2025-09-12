@@ -459,6 +459,7 @@ export class Queue extends AggregateRoot {
     if (nextIndex === null) nextIndex = 0;
 
     this.nowPlaying = this.tracks.at(nextIndex) || this.tracks.at(0) || null;
+    this.nowPlaying?.setError(null);
 
     this.apply(new QueueProcessedEvent({ queue: this }));
   }

@@ -24,6 +24,9 @@ export class TrackDto {
   @Transform(({ value }) => value?.toISOString() || null)
   public playedAt!: string | null;
 
+  @Expose()
+  public error!: string | null;
+
   public static create(entity: Track): TrackDto {
     return plainToInstance(TrackDto, entity);
   }

@@ -13,6 +13,7 @@ import { QueueShuffleToggledListener } from "./queue-shuffle-toggled.listener";
 import { QueueTextChannelChangedListener } from "./queue-text-channel-changed.listener";
 import { QueueVoiceChannelChangedListener } from "./queue-voice-channel-changed.listener";
 import { QueueListener } from "./queue.listener";
+import { TrackLoadFailedListener } from "./track-load-failed.listener";
 import { TrackMemberListener } from "./track-member.listener";
 import { TrackOrderChangedListener } from "./track-order-changed.listener";
 import { TrackSeekedListener } from "./track-seeked.listener";
@@ -35,6 +36,7 @@ export const Listeners: Constructor<IEventHandler>[] = [
   QueueShuffleToggledListener,
   QueueTextChannelChangedListener,
   QueueVoiceChannelChangedListener,
+  TrackLoadFailedListener,
   TrackMemberListener,
   TrackOrderChangedListener,
   TrackListener,

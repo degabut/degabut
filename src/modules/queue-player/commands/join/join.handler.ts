@@ -99,6 +99,6 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
 
     this.playerRepository.save(player);
 
-    this.playerService.initPlayerConnection(player);
+    await this.playerService.initPlayerConnection(player);
   }
 }

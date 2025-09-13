@@ -65,7 +65,7 @@ export class QueuePlayerService {
     this.eventBus.publish(new PlayerDestroyedEvent({ player }));
   }
 
-  public initPlayerConnection(player: QueuePlayer): void {
+  public async initPlayerConnection(player: QueuePlayer): Promise<void> {
     player.audioPlayer.on("ready", () => {
       this.logger.info({
         event: "playerReady",
@@ -146,7 +146,19 @@ export class QueuePlayerService {
       this.logger.error({ error: "audioPlayerError", ...e });
     });
 
-    player.audioPlayer.connect(player.voiceChannel.id);
+    return new Promise((resolve, reject) => {
+      player.audioPlayer.once("ready", () => {
+        resolve();
+      });
+      player.audioPlayer.once("error", (e) => {
+        reject(e);
+      });
+      setTimeout(() => {
+        reject(new Error("Audio player connection timeout"));
+      }, 10000);
+
+      player.audioPlayer.connect(player.voiceChannel.id);
+    });
   }
 
   public async notify(

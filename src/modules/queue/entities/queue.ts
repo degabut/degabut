@@ -23,7 +23,7 @@ import {
   TracksAddedEvent,
   TracksRemovedEvent,
 } from "@queue/events";
-import { MAX_QUEUE_TRACKS } from "@queue/queue.constants";
+import { MAX_QUEUE_HISTORY_TRACKS, MAX_QUEUE_TRACKS } from "@queue/queue.constants";
 
 import { Guild } from "./guild";
 import { Jam, JamCollection } from "./jam";
@@ -458,10 +458,16 @@ export class Queue extends AggregateRoot {
 
     if (nextIndex === null) nextIndex = 0;
 
-    this.nowPlaying = this.tracks.at(nextIndex) || this.tracks.at(0) || null;
-    this.nowPlaying?.setError(null);
+    const track = this.tracks.at(nextIndex) || this.tracks.at(0) || null;
+    track?.setError(null);
+    this.nowPlaying = track;
 
-    this.apply(new QueueProcessedEvent({ queue: this }));
+    if (track) {
+      this.history.unshift(track);
+      this.history.splice(MAX_QUEUE_HISTORY_TRACKS);
+    }
+
+    this.apply(new QueueProcessedEvent({ queue: this, track }));
   }
 
   private getShuffledTrackIndex(): number {

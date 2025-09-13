@@ -16,7 +16,7 @@ export class TrackListener implements IEventHandler<Events> {
       .replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`)
       .replace(/^-(.*)-event$/, "$1");
 
-    const track = event instanceof QueueProcessedEvent ? event.queue.nowPlaying : event.track;
+    const track = event.track;
     const queue = event instanceof QueueProcessedEvent ? event.queue : event.track.queue;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 

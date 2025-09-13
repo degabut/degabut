@@ -45,12 +45,25 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
         currentMediaSource.playedYoutubeVideoId = youtubeVideo.id;
       } else if (spotifyTrack) {
         if (!currentMediaSource.playedYoutubeVideoId) {
-          const mediaSource = await this.mediaSourceService.getSource({
-            mediaSourceId: currentMediaSource.id,
-          });
-          if (mediaSource?.playedYoutubeVideoId) {
-            currentMediaSource.playedYoutubeVideoId = mediaSource.playedYoutubeVideoId;
-            currentMediaSource.updatedAt = mediaSource.updatedAt;
+          try {
+            const mediaSource = await this.mediaSourceService.getSource({
+              mediaSourceId: currentMediaSource.id,
+            });
+            if (mediaSource?.playedYoutubeVideoId) {
+              currentMediaSource.playedYoutubeVideoId = mediaSource.playedYoutubeVideoId;
+              currentMediaSource.updatedAt = mediaSource.updatedAt;
+            }
+          } catch (e) {
+            const error = {
+              error: "Track load failed",
+              message: `Can't get source ${currentMediaSource.id}`,
+            };
+            this.logger.error(error);
+            const event = new TrackLoadFailedEvent({
+              track: queue.nowPlaying,
+              error: error.message,
+            });
+            return this.eventBus.publish(event);
           }
         }
 
@@ -59,11 +72,24 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
           TimeUtil.getSecondDifference(currentMediaSource.updatedAt, new Date()) >
             MAX_PLAYED_YOUTUBE_VIDEO_ID_AGE
         ) {
-          const videoId = await this.findYouTubeVideoId(spotifyTrack);
+          try {
+            const videoId = await this.findYouTubeVideoId(spotifyTrack);
 
-          if (videoId) {
-            currentMediaSource.playedYoutubeVideoId = videoId;
-            currentMediaSource.updatedAt = new Date();
+            if (videoId) {
+              currentMediaSource.playedYoutubeVideoId = videoId;
+              currentMediaSource.updatedAt = new Date();
+            }
+          } catch (e) {
+            const error = {
+              error: "Track load failed",
+              message: `Can't find youtube video for spotify track ${spotifyTrack.id}`,
+            };
+            this.logger.error(error);
+            const event = new TrackLoadFailedEvent({
+              track: queue.nowPlaying,
+              error: error.message,
+            });
+            return this.eventBus.publish(event);
           }
         }
       }

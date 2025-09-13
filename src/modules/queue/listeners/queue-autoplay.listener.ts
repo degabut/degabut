@@ -8,7 +8,7 @@ import { MediaSource } from "@media-source/entities";
 import { Inject } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { Member, Queue, QueueAutoplayType, Track } from "@queue/entities";
-import { QueueAutoplayToggledEvent, QueueProcessedEvent } from "@queue/events";
+import { MemberJoinedEvent, QueueAutoplayToggledEvent, QueueProcessedEvent } from "@queue/events";
 import { UserLikeMediaSourceRepository } from "@user/repositories";
 import { IYoutubeiProvider } from "@youtube/providers";
 import { YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
@@ -20,7 +20,7 @@ type AutoplayResult = {
   member: Member | null;
 };
 
-@EventsHandler(QueueAutoplayToggledEvent, QueueProcessedEvent)
+@EventsHandler(QueueAutoplayToggledEvent, QueueProcessedEvent, MemberJoinedEvent)
 export class QueueAutoplayListener
   implements IEventHandler<QueueAutoplayToggledEvent | QueueProcessedEvent>
 {
@@ -34,7 +34,7 @@ export class QueueAutoplayListener
   ) {}
 
   public async handle({ queue }: QueueProcessedEvent): Promise<void> {
-    if (!queue.autoplay || queue.nowPlaying) return;
+    if (!queue.autoplay || queue.nowPlaying || !queue.voiceChannel.activeMembers.length) return;
 
     const excludedAutoplayTypes: Set<QueueAutoplayType> = new Set(Queue.ALL_AUTOPLAY_TYPES);
 

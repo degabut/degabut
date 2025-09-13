@@ -21,6 +21,7 @@ import { NecordModule } from "necord";
 
 import { DiscordCommands } from "./commands";
 import { DiscordBotGateway } from "./discord-bot.gateway";
+import { DiscordBotService } from "./discord-bot.service";
 import { Explorers, TextCommandExplorer } from "./explorers";
 import { ButtonInteractions, Interactions } from "./interactions";
 
@@ -28,6 +29,7 @@ import { ButtonInteractions, Interactions } from "./interactions";
   imports: [CqrsModule, DiscoveryModule],
   providers: [
     DiscordBotGateway,
+    DiscordBotService,
     ...Explorers,
     ...DiscordCommands,
     ...Interactions,

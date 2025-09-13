@@ -20,7 +20,7 @@ export class JoinCommand extends Command {
 export const JoinParamSchema = Joi.alternatives(
   Joi.object<JoinCommand>({
     voiceChannel: Joi.object().instance(BaseGuildVoiceChannel).required(),
-    textChannel: Joi.object().instance(BaseGuildTextChannel).required(),
+    textChannel: Joi.object().instance(BaseGuildTextChannel).optional(),
     executor: ExecutorSchema,
   }),
   Joi.object({

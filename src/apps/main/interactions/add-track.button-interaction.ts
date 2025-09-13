@@ -1,15 +1,14 @@
 import { ButtonInteraction } from "@main/decorators";
+import { DiscordBotService } from "@main/discord-bot.service";
 import { ButtonInteractionResult, IButtonInteraction } from "@main/interfaces";
-import { CommandBus } from "@nestjs/cqrs";
-import { AddTracksCommand } from "@queue/commands";
-import { GuildMember, Interaction } from "discord.js";
+import { BaseGuildTextChannel, GuildMember, Interaction } from "discord.js";
 
 @ButtonInteraction({
   name: "add-track",
   key: "add-track/:source/:id",
 })
 export class AddTrackButtonInteraction implements IButtonInteraction {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly service: DiscordBotService) {}
 
   public async handler(
     interaction: Interaction,
@@ -20,19 +19,22 @@ export class AddTrackButtonInteraction implements IButtonInteraction {
     if (
       !(interaction.member instanceof GuildMember) ||
       !interaction.guild ||
-      !interaction.member.voice.channelId
+      !interaction.member.voice.channel
     ) {
       await interaction.deferUpdate();
       return;
     }
 
-    const command = new AddTracksCommand({
+    await this.service.joinAndAddTrack({
+      userId: interaction.member.id,
+      voiceChannel: interaction.member.voice.channel,
+      textChannel:
+        interaction.channel instanceof BaseGuildTextChannel
+          ? (interaction.channel as BaseGuildTextChannel)
+          : undefined,
       mediaSourceId: `${args.source}/${args.id}`,
-      voiceChannelId: interaction.member.voice.channelId,
-      executor: { id: interaction.member.id },
     });
 
-    await this.commandBus.execute(command);
     await interaction.deferUpdate();
   }
 }

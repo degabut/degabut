@@ -49,6 +49,12 @@ export interface ILoggerConfig {
   level?: string;
   pretty?: boolean;
   printConfig?: boolean;
+  file?: {
+    path: string;
+    minLength?: number;
+    sync?: boolean;
+    append?: boolean;
+  };
 }
 
 export interface ISpotifyConfig {

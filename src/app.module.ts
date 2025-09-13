@@ -21,7 +21,7 @@ export class AppModule implements OnModuleInit {
       module: AppModule,
       imports: [
         ConfigModule.forRoot({ load: [() => ({ main: config })] }),
-        LoggerModule.forRoot({ appId: "main", ...config.logging }),
+        LoggerModule.forRoot({ appId: "bootstrap", ...config.logging }),
       ],
     };
   }

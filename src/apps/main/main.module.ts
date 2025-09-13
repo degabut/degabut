@@ -35,12 +35,36 @@ import { ButtonInteractions, Interactions } from "./interactions";
   ],
 })
 export class MainModule {
+  // private destroy$ = new Subject<void>();
+
+  // constructor(
+  //   private readonly logger: Logger,
+  //   private readonly eventBus: EventBus,
+  //   private readonly commandBus: CommandBus,
+  //   private readonly queryBus: QueryBus,
+  // ) {
+  //   this.eventBus.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+  //     this.logger.info({ event });
+  //   });
+  //   this.commandBus.pipe(takeUntil(this.destroy$)).subscribe((command) => {
+  //     this.logger.info({ command });
+  //   });
+  //   this.queryBus.pipe(takeUntil(this.destroy$)).subscribe((query) => {
+  //     this.logger.info({ query });
+  //   });
+  // }
+
+  // onModuleDestroy() {
+  //   this.destroy$.next();
+  //   this.destroy$.complete();
+  // }
+
   static forRoot(config: IConfig): DynamicModule {
     const bot = config.apps.bot;
     if (!bot) throw new Error("Bot configuration is missing");
 
     const imports = [
-      LoggerModule.forRoot({ appId: "bot", ...config.logging }),
+      LoggerModule.forRoot({ appId: "main", ...config.logging }),
       DatabaseModule.forRoot(config.postgres),
       QueuePlayerModule.forRoot(config.lavalink),
       SpotifyModule.forRoot(config.spotify),

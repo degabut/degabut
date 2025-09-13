@@ -42,3 +42,9 @@ postgres:
 logging:
   level: "log"
   # printConfig: true # optional, for debugging purpose, print out config when application is started
+  # pretty: true # optional, prettier config output, but slightly slower, defaults to false
+  file: # optional, for writing log to a file
+    path: "./logs/degabut.log" # required, file path
+    # minLength: 4096 # optional, buffer size before writing
+    # sync: false # optional, whether to do async or sync logging, defaults to false
+    # append: true # optional, whether to append log to existing file or not, defaults to true

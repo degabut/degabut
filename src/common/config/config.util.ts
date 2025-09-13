@@ -36,6 +36,12 @@ export class ConfigUtil {
         .default("info"),
       printConfig: Joi.boolean().optional().default(false),
       pretty: Joi.boolean().optional().default(false),
+      file: Joi.object({
+        path: Joi.string().required(),
+        minLength: Joi.number().optional(),
+        sync: Joi.boolean().optional().default(false),
+        append: Joi.boolean().optional().default(true),
+      }).optional(),
     }).optional(),
     postgres: Joi.object({
       host: Joi.string().required(),
@@ -117,8 +123,28 @@ export class ConfigUtil {
     const config: NestedPartial<IConfig> = {};
 
     // logging
+    config.logging = {};
     if (process.env.LOG_LEVEL) {
-      config.logging = { level: process.env.LOG_LEVEL };
+      config.logging.level = process.env.LOG_LEVEL;
+    }
+
+    config.logging.printConfig = process.env.LOG_PRINT_CONFIG === "true";
+    config.logging.pretty = process.env.LOG_PRETTY === "true";
+
+    if (process.env.LOG_FILE_PATH) {
+      config.logging.file = {
+        path: process.env.LOG_FILE_PATH,
+      };
+
+      if (process.env.LOG_FILE_MIN_LENGTH) {
+        config.logging.file.minLength = +process.env.LOG_FILE_MIN_LENGTH;
+      }
+      if (process.env.LOG_FILE_SYNC) {
+        config.logging.file.sync = process.env.LOG_FILE_SYNC === "true";
+      }
+      if (process.env.LOG_FILE_APPEND) {
+        config.logging.file.append = process.env.LOG_FILE_APPEND === "true";
+      }
     }
 
     config.apps = {};

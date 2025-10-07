@@ -9,7 +9,7 @@ export type SetFiltersResult = PlayerFilters;
 export class SetFiltersCommand extends Command<SetFiltersResult> implements IWithExecutor {
   public readonly voiceChannelId!: string;
   public readonly executor!: Executor;
-  public readonly filters!: any;
+  public readonly filters!: PlayerFilters;
 
   constructor(params: SetFiltersCommand) {
     super();
@@ -46,6 +46,7 @@ export const SetFiltersParamSchema = Joi.object<SetFiltersCommand>({
       rotation: Joi.object({
         rotationHz: Joi.number().optional().greater(0).max(10),
       }).optional(),
+      pluginFilters: Joi.object().pattern(Joi.string(), Joi.any()).optional(),
     })
     .required(),
 }).required();

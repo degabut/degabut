@@ -25,18 +25,7 @@ export class YoutubeMusicController {
   @UseGuards(AuthGuard)
   async search(@Query() query: SearchQuery) {
     const result = await this.youtubeiMusic.searchAll(query.keyword);
-    return {
-      top: result.top
-        ? {
-            item: result.top.item ? YoutubeApiDtoUtils.toDto(result.top.item) : null,
-            more: result.top.more?.map((item) => YoutubeApiDtoUtils.toDto(item)) || null,
-          }
-        : null,
-      shelves: result.shelves.map(({ title, items }) => ({
-        title,
-        items: items.map((item) => YoutubeApiDtoUtils.toDto(item)),
-      })),
-    };
+    return result.map((item) => YoutubeApiDtoUtils.toDto(item));
   }
 
   @Get("/songs")

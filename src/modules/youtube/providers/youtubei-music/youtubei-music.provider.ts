@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { MusicClient } from "youtubei";
-
 import { HttpProxyAgent } from "http-proxy-agent";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { MusicClient } from "youtubei";
+
 import {
   IYoutubeiMusicProvider,
   SearchAllResult,
@@ -31,16 +31,17 @@ export class YoutubeiMusicProvider implements IYoutubeiMusicProvider {
     this.musicClient = new MusicClient({
       oauth: refreshToken
         ? {
-          enabled: true,
-          refreshToken,
-        }
+            enabled: true,
+            refreshToken,
+          }
         : undefined,
-      fetchOptions: { agent }
+      fetchOptions: { agent },
     });
   }
 
   public async searchAll(keyword: string): Promise<SearchAllResult> {
-    return await this.musicClient.searchAll(keyword);
+    const result = await this.musicClient.searchAll(keyword);
+    return result.items;
   }
 
   public async searchSong(keyword: string): Promise<YoutubeMusicSong[]> {

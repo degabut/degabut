@@ -163,14 +163,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     if (artists) keyword += ` ${artists.map((a) => a.name).join(" ")}`;
     const songs = await this.youtubeMusicProvider.searchAll(keyword);
 
-    if (songs.top?.item && "duration" in songs.top.item) return songs.top.item.id;
-
-    return songs.shelves
-      .find((s) => {
-        const item = s.items.at(0);
-        if (!item) return false;
-        return "duration" in item;
-      })
-      ?.items.at(0)?.id;
+    if (songs[0] && "duration" in songs[0]) return songs[0].id;
+    return songs.find((s) => "duration" in s)?.id;
   }
 }

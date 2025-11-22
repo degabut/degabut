@@ -54,7 +54,7 @@
     "rxjs": "^7.8.1",
     "uuid": "^9.0.1",
     "yaml": "^2.4.1",
-    "youtubei": "^1.7.0"
+    "youtubei": "^1.8.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",

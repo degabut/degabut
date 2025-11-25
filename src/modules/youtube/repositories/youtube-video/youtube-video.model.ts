@@ -8,6 +8,13 @@ type ThumbnailProps = {
   height: number;
 };
 
+type MusicMetadataProps = {
+  imageUrl: string;
+  title: string;
+  artist: string;
+  album?: string;
+};
+
 export type YoutubeVideoModelProps = {
   id: string;
   title: string;
@@ -15,6 +22,7 @@ export type YoutubeVideoModelProps = {
   viewCount: number | null;
   thumbnails: ThumbnailProps[];
   channelId: string | null;
+  musicMetadata: MusicMetadataProps | null;
   updatedAt: Date;
 };
 
@@ -25,6 +33,7 @@ export class YoutubeVideoModel extends Model implements YoutubeVideoModelProps {
   viewCount!: number | null;
   channelId!: string | null;
   thumbnails!: ThumbnailProps[];
+  musicMetadata!: MusicMetadataProps | null;
   updatedAt!: Date;
 
   channel?: YoutubeChannelModel;

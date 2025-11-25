@@ -34,8 +34,10 @@
     "@nestjs/websockets": "^10.3.7",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "@willsoto/nestjs-objection": "^8.1.2",
+    "axios": "^1.13.2",
     "class-transformer": "^0.5.1",
     "dayjs": "^1.11.13",
+    "diff": "^8.0.2",
     "discord.js": "^14.14.1",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.5",
@@ -54,7 +56,7 @@
     "rxjs": "^7.8.1",
     "uuid": "^9.0.1",
     "yaml": "^2.4.1",
-    "youtubei": "^1.8.0"
+    "youtubei": "^1.8.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",

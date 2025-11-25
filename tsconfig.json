@@ -40,6 +40,8 @@
       "@history/*": ["./src/modules/history/*"],
       "@logger": ["./src/modules/logger"],
       "@logger/*": ["./src/modules/logger/*"],
+      "@lyrics": ["./src/modules/lyrics"],
+      "@lyrics/*": ["./src/modules/lyrics/*"],
       "@playlist": ["./src/modules/playlist"],
       "@playlist/*": ["./src/modules/playlist/*"],
       "@queue": ["./src/modules/queue"],

@@ -12,13 +12,21 @@ export type YoutubeMusicPlaylist = MusicPlaylistCompact;
 export type YoutubeMusicVideo = MusicVideoCompact;
 export type YoutubeMusicArtist = MusicArtistCompact;
 
-export type SearchAllResult = (
+type AllResultType =
   | YoutubeMusicSong
   | YoutubeMusicAlbum
   | YoutubeMusicPlaylist
   | YoutubeMusicVideo
-  | YoutubeMusicArtist
-)[];
+  | YoutubeMusicArtist;
+
+export type SearchAllResult = {
+  top: {
+    item: AllResultType;
+    more: AllResultType[];
+  } | null;
+
+  items: AllResultType[];
+};
 
 export interface IYoutubeiMusicProvider {
   searchAll(keyword: string): Promise<SearchAllResult>;

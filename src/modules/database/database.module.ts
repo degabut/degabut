@@ -4,6 +4,7 @@ import {
   UserMonthlyPlayActivityModel,
   UserPlayHistoryModel,
 } from "@history/repositories";
+import { LyricsModel } from "@lyrics/repositories";
 import { MediaSourceModel } from "@media-source/repositories";
 import { DynamicModule, Inject, Module } from "@nestjs/common";
 import { PlaylistMediaSourceModel, PlaylistModel } from "@playlist/repositories";
@@ -34,6 +35,7 @@ import * as path from "path";
       SpotifyTrackArtistModel,
       PlaylistModel,
       PlaylistMediaSourceModel,
+      LyricsModel,
     ]),
   ],
   exports: [ObjectionModule],

@@ -10,12 +10,20 @@ import {
   MusicClient as YoutubeiMusicClient,
 } from "youtubei";
 
-type SearchResult = (
+type AllResultType =
   | MusicVideoCompact
   | MusicAlbumCompact
   | MusicPlaylistCompact
-  | MusicArtistCompact
-)[];
+  | MusicArtistCompact;
+
+type SearchResult = {
+  top: {
+    item: AllResultType;
+    more: AllResultType[];
+  } | null;
+
+  items: AllResultType[];
+};
 
 @Injectable()
 export class YoutubeiMusicProvider {
@@ -23,7 +31,7 @@ export class YoutubeiMusicProvider {
 
   public async searchAll(keyword: string): Promise<SearchResult> {
     const result = await this.musicClient.searchAll(keyword);
-    return result.items;
+    return result;
   }
 
   public async searchSong(keyword: string) {

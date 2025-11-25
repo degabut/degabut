@@ -41,7 +41,10 @@ export class YoutubeiMusicProvider implements IYoutubeiMusicProvider {
 
   public async searchAll(keyword: string): Promise<SearchAllResult> {
     const result = await this.musicClient.searchAll(keyword);
-    return result.items;
+    return {
+      top: result.top,
+      items: result.items,
+    };
   }
 
   public async searchSong(keyword: string): Promise<YoutubeMusicSong[]> {

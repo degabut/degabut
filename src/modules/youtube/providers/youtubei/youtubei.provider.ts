@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { YoutubeChannel, YoutubeVideo, YoutubeVideoCompact } from "@youtube/entities";
 import { MAX_PLAYLIST_VIDEOS_PAGE } from "@youtube/youtube.constants";
+import { HttpProxyAgent } from "http-proxy-agent";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import {
   LiveVideo,
   MixPlaylist,
@@ -9,8 +11,6 @@ import {
   VideoCompact as YoutubeiVideoCompact,
 } from "youtubei";
 
-import { HttpProxyAgent } from "http-proxy-agent";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { IYoutubeiProvider } from "./youtubei.interface";
 
 type YoutubeiProviderOptions = {
@@ -35,11 +35,11 @@ export class YoutubeiProvider implements IYoutubeiProvider {
     this.youtubeClient = new YoutubeiClient({
       oauth: refreshToken
         ? {
-          enabled: true,
-          refreshToken,
-        }
+            enabled: true,
+            refreshToken,
+          }
         : undefined,
-      fetchOptions: { agent }
+      fetchOptions: { agent },
     });
   }
 
@@ -72,10 +72,10 @@ export class YoutubeiProvider implements IYoutubeiProvider {
   private videoToEntity(video: YoutubeiVideo | LiveVideo) {
     const channel = video.channel
       ? new YoutubeChannel({
-        id: video.channel.id,
-        name: video.channel.name,
-        thumbnails: video.channel.thumbnails || [],
-      })
+          id: video.channel.id,
+          name: video.channel.name,
+          thumbnails: video.channel.thumbnails || [],
+        })
       : null;
 
     const entity = new YoutubeVideo({
@@ -88,11 +88,12 @@ export class YoutubeiProvider implements IYoutubeiProvider {
       related: video.related.items
         .filter((r): r is YoutubeiVideoCompact => r instanceof YoutubeiVideoCompact)
         .map(this.videoCompactToEntity),
+      musicMetadata: "music" in video ? video.music : null,
     });
     return entity;
   }
 
-  private videoCompactToEntity(video: YoutubeiVideoCompact): YoutubeVideoCompact {
+  private videoCompactToEntity(video: YoutubeiVideoCompact | YoutubeVideo): YoutubeVideoCompact {
     return new YoutubeVideoCompact({
       id: video.id,
       title: video.title,
@@ -101,11 +102,12 @@ export class YoutubeiProvider implements IYoutubeiProvider {
       viewCount: video.viewCount || null,
       channel: video.channel
         ? new YoutubeChannel({
-          id: video.channel.id,
-          name: video.channel.name,
-          thumbnails: video.channel.thumbnails || [],
-        })
+            id: video.channel.id,
+            name: video.channel.name,
+            thumbnails: video.channel.thumbnails || [],
+          })
         : null,
+      musicMetadata: "musicMetadata" in video ? video.musicMetadata || null : null,
     });
   }
 }

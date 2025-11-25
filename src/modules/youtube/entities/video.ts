@@ -11,6 +11,14 @@ interface Props {
   channel: YoutubeChannel | null;
   viewCount: number | null;
   related: YoutubeVideoCompact[];
+  musicMetadata?: MusicMetadata | null;
+}
+
+interface MusicMetadata {
+  imageUrl: string;
+  title: string;
+  artist: string;
+  album?: string;
 }
 
 export class YoutubeVideo implements Props {
@@ -21,6 +29,7 @@ export class YoutubeVideo implements Props {
   public readonly channel: YoutubeChannel | null;
   public readonly viewCount: number | null;
   public readonly related: YoutubeVideoCompact[];
+  public readonly musicMetadata: MusicMetadata | null = null;
 
   constructor(props: Props) {
     this.id = props.id;
@@ -30,5 +39,6 @@ export class YoutubeVideo implements Props {
     this.channel = props.channel;
     this.viewCount = props.viewCount;
     this.related = props.related;
+    this.musicMetadata = props.musicMetadata || null;
   }
 }

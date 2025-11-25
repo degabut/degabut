@@ -83,6 +83,7 @@ export class DegabutYoutubeiProvider implements IYoutubeiProvider {
       viewCount: video.viewCount || null,
       channel,
       related: video.related.map(this.videoCompactToEntity),
+      musicMetadata: "music" in video ? video.music : null,
     });
     return entity;
   }

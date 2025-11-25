@@ -77,6 +77,7 @@ export class YoutubeCachedService {
         : null,
       thumbnails: video.thumbnails,
       viewCount: video.viewCount || 0,
+      musicMetadata: video.musicMetadata || null,
     });
   }
 }

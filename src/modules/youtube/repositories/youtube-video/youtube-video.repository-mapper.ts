@@ -14,6 +14,7 @@ export class YoutubeVideoRepositoryMapper {
       thumbnails: entity.thumbnails,
       channelId: entity.channel?.id || null,
       updatedAt: entity.updatedAt,
+      musicMetadata: entity.musicMetadata,
     };
 
     return props;

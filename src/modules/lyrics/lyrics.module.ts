@@ -8,7 +8,7 @@ import { LyricsRepository } from "./repositories";
 import { LyricsService } from "./services/lyrics.service";
 
 @Module({
-  imports: [DatabaseModule, HttpModule.register({ validateStatus: (status) => status < 400 })],
+  imports: [DatabaseModule, HttpModule.register({ validateStatus: () => true })],
   providers: [MusixmatchLyricsProvider, LrclibLyricsProvider, LyricsRepository, LyricsService],
   exports: [LyricsService],
 })

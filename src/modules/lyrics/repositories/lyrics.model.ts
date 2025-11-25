@@ -6,6 +6,7 @@ export type LyricsModelProps = {
   richSynced: string | null;
   synced: string | null;
   unsynced: string | null;
+  duration: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -16,6 +17,7 @@ export class LyricsModel extends Model implements LyricsModelProps {
   richSynced!: string | null;
   synced!: string | null;
   unsynced!: string | null;
+  duration!: number;
   createdAt!: Date;
   updatedAt!: Date;
 

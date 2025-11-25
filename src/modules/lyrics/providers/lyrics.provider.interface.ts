@@ -2,6 +2,7 @@ export interface ILyricsResponse {
   richSynced: string | null;
   synced: string | null;
   unsynced: string | null;
+  duration: number;
   debugInfo: any;
 }
 

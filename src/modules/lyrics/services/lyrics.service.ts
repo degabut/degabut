@@ -31,6 +31,7 @@ export class LyricsService {
         richSynced: cachedLyrics.richSynced,
         synced: cachedLyrics.synced,
         unsynced: cachedLyrics.unsynced,
+        duration: cachedLyrics.duration,
         debugInfo: { cached: true, source },
       };
     }
@@ -57,6 +58,7 @@ export class LyricsService {
         richSynced: lyrics.richSynced,
         synced: lyrics.synced,
         unsynced: lyrics.unsynced,
+        duration: lyrics.duration,
         createdAt: new Date(),
         updatedAt: new Date(),
       });

@@ -225,10 +225,11 @@ export class MusixmatchLyricsProvider implements ILyricProvider {
 
   private async getLrcWordByWord(
     trackId: string | number,
-    lrcLyrics: Promise<ILyricsResponse | null> | null,
-  ): Promise<ILyricsResponse | null> {
-    let musixmatchBasicLyrics: Promise<ILyricsResponse | null> = this.getLrcById(trackId);
-    let basicLrcPromise: Promise<ILyricsResponse | null>;
+    lrcLyrics: Promise<Omit<ILyricsResponse, "duration"> | null> | null,
+  ): Promise<Omit<ILyricsResponse, "duration"> | null> {
+    let musixmatchBasicLyrics: Promise<Omit<ILyricsResponse, "duration"> | null> =
+      this.getLrcById(trackId);
+    let basicLrcPromise: Promise<Omit<ILyricsResponse, "duration"> | null>;
     if (lrcLyrics !== null) {
       basicLrcPromise = lrcLyrics;
     } else {
@@ -382,7 +383,9 @@ export class MusixmatchLyricsProvider implements ILyricProvider {
     };
   }
 
-  private async getLrcById(trackId: string | number): Promise<ILyricsResponse | null> {
+  private async getLrcById(
+    trackId: string | number,
+  ): Promise<Omit<ILyricsResponse, "duration"> | null> {
     // Get the main subtitles
     const response = await this.get("track.subtitle.get", {
       track_id: `${trackId}`,
@@ -436,7 +439,12 @@ export class MusixmatchLyricsProvider implements ILyricProvider {
       result = await this.getLrcById(trackId);
     }
 
-    return result;
+    if (!result) return null;
+
+    return {
+      ...result,
+      duration: data.message.body.track.track_length,
+    };
   }
 
   private meanAndVariance(arr: number[]) {

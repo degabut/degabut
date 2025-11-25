@@ -41,6 +41,7 @@ export class LrclibLyricsProvider implements ILyricProvider {
       richSynced: null,
       synced: response.data.syncedLyrics,
       unsynced: response.data.plainLyrics,
+      duration: response.data.duration,
       debugInfo: null,
     };
   }

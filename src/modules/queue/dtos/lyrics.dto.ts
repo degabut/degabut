@@ -15,6 +15,9 @@ export class LyricsDto {
   @Expose()
   public unsynced!: string | null;
 
+  @Expose()
+  public duration!: number;
+
   public static create(entity: LyricsDto): LyricsDto {
     return plainToInstance(LyricsDto, entity);
   }

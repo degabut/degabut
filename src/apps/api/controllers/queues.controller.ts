@@ -17,7 +17,7 @@ import {
 } from "@queue/commands";
 import { RemoveNextTrackCommand } from "@queue/commands/remove-next-track";
 import { LoopMode, QueueAutoplayOptions } from "@queue/entities";
-import { GetQueueQuery } from "@queue/queries";
+import { GetNowPlayingLyricsQuery, GetQueueQuery } from "@queue/queries";
 
 type VoiceChannelIdParams = {
   voiceChannelId: string;
@@ -242,6 +242,17 @@ export class QueuesController {
       new JamCommand({
         ...params,
         ...body,
+        executor,
+      }),
+    );
+  }
+
+  @Get("/:voiceChannelId/lyrics")
+  @UseGuards(AuthGuard)
+  async getNowPlayingLyrics(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    return await this.queryBus.execute(
+      new GetNowPlayingLyricsQuery({
+        ...params,
         executor,
       }),
     );

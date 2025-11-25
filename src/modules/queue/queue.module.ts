@@ -1,4 +1,5 @@
 import { HistoryModule } from "@history/history.module";
+import { LyricsModule } from "@lyrics/lyrics.module";
 import { MediaSourceModule } from "@media-source/media-source.module";
 import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -20,6 +21,7 @@ import { QueueRepository } from "./repositories";
     HistoryModule,
     UserModule,
     YoutubeModule,
+    LyricsModule,
   ],
   providers: [QueueRepository, ...Commands, ...Queries, ...Listeners],
   exports: [QueueRepository],

@@ -25,3 +25,11 @@ pnpm i
 ```
 pnpm start:dev
 ```
+
+---
+
+Creating new migration:
+
+```
+pnpm knex migrate:make [migration-name] --migrations-directory ./src/modules/database/migrations -x ts
+```

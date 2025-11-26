@@ -174,7 +174,7 @@ class AudioPlayer
 
   disconnect(): void {
     this.player.voice.disconnect();
-    this.player.node.removeListener("message", this.onTickListener);
+    this.player.node.ws.removeListener("message", this.onTickListener);
     this.player.node.players.destroy(this.guildId, true);
   }
 

@@ -443,7 +443,7 @@ export class MusixmatchLyricsProvider implements ILyricProvider {
 
     return {
       ...result,
-      duration: data.message.body.track.track_length,
+      duration: Math.round(data.message.body.track.track_length),
     };
   }
 

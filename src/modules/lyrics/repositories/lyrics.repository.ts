@@ -31,6 +31,7 @@ export class LyricsRepository {
       .insert(model)
       .onConflict(["media_source_id", "source"])
       .merge({
+        duration: model.duration,
         richSynced: model.richSynced,
         synced: model.synced,
         unsynced: model.unsynced,

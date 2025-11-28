@@ -27,6 +27,9 @@ export class LrclibLyricsProvider implements ILyricProvider {
     duration: number | null,
   ): Promise<ILyricsResponse | null> {
     const response = await this.httpService.axiosRef.get<LrcLibResponse>(this.LRCLIB_API, {
+      headers: {
+        "User-Agent": "Degabut (https://github.com/degabut)",
+      },
       params: {
         artist_name: artist,
         track_name: title,

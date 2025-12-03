@@ -1,3 +1,4 @@
+import { Logger } from "@logger/logger.service";
 import { LyricsSources } from "@lyrics/lyrics.constants";
 import { ILyricsResponse, LrclibLyricsProvider, MusixmatchLyricsProvider } from "@lyrics/providers";
 import { LyricsRepository } from "@lyrics/repositories";
@@ -7,9 +8,10 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class LyricsService {
   constructor(
-    private musixmatchProvider: MusixmatchLyricsProvider,
-    private lrclibProvider: LrclibLyricsProvider,
-    private lyricsRepository: LyricsRepository,
+    private readonly musixmatchProvider: MusixmatchLyricsProvider,
+    private readonly lrclibProvider: LrclibLyricsProvider,
+    private readonly lyricsRepository: LyricsRepository,
+    private readonly logger: Logger,
   ) {}
 
   async getLyrics(
@@ -39,31 +41,36 @@ export class LyricsService {
     // Fetch from provider
     let lyrics: ILyricsResponse | null = null;
 
-    switch (source) {
-      case LyricsSources.Musixmatch:
-        lyrics = await this.musixmatchProvider.getLyrics(creator, title, null);
-        break;
-      case LyricsSources.Lrclib:
-        lyrics = await this.lrclibProvider.getLyrics(creator, title, null, duration);
-        break;
-      default:
-        lyrics = null;
-    }
+    try {
+      switch (source) {
+        case LyricsSources.Musixmatch:
+          lyrics = await this.musixmatchProvider.getLyrics(creator, title, null);
+          break;
+        case LyricsSources.Lrclib:
+          lyrics = await this.lrclibProvider.getLyrics(creator, title, null, duration);
+          break;
+        default:
+          lyrics = null;
+      }
 
-    // Cache the result if lyrics were found
-    if (lyrics && (lyrics.richSynced || lyrics.synced || lyrics.unsynced)) {
-      await this.lyricsRepository.upsert({
-        mediaSourceId: mediaSource.id,
-        source: source,
-        richSynced: lyrics.richSynced,
-        synced: lyrics.synced,
-        unsynced: lyrics.unsynced,
-        duration: lyrics.duration,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    }
+      // Cache the result if lyrics were found
+      if (lyrics && (lyrics.richSynced || lyrics.synced || lyrics.unsynced)) {
+        await this.lyricsRepository.upsert({
+          mediaSourceId: mediaSource.id,
+          source: source,
+          richSynced: lyrics.richSynced,
+          synced: lyrics.synced,
+          unsynced: lyrics.unsynced,
+          duration: lyrics.duration,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
 
-    return lyrics;
+      return lyrics;
+    } catch (error) {
+      this.logger.error(`Error fetching lyrics from ${source} for ${mediaSource.id}:`, error);
+      return null;
+    }
   }
 }

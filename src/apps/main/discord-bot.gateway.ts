@@ -17,14 +17,14 @@ export class DiscordBotGateway {
     this.logger.setContext(DiscordBotGateway.name);
   }
 
-  @Once("ready")
-  onceReady([client]: ContextOf<"ready">) {
+  @Once("clientReady")
+  onceReady([client]: ContextOf<"clientReady">) {
     this.logger.info("Discord bot ready");
     this.botId = client.user.id;
   }
 
-  @On("ready")
-  onReady([client]: ContextOf<"ready">) {
+  @On("clientReady")
+  async onReady([client]: ContextOf<"clientReady">) {
     client.user.setActivity({ name: `${client.prefix}help`, type: ActivityType.Listening });
   }
 

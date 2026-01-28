@@ -17,7 +17,7 @@ export class QueuePlayerGateway {
     private readonly client: Client,
   ) {}
 
-  @Once("ready")
+  @Once("clientReady")
   onReady() {
     this.playerManager.init(this.client);
 

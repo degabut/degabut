@@ -3,7 +3,7 @@ import { AuthGuard } from "@auth/guards";
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
-  JoinCommand,
+  CreateCommand,
   SeekCommand,
   SetPauseCommand,
   SkipCommand,
@@ -35,7 +35,7 @@ export class PlayersController {
   @UseGuards(AuthGuard)
   async createPlayer(@Body() body: JoinParams, @User() executor: AuthUser) {
     return await this.commandBus.execute(
-      new JoinCommand({
+      new CreateCommand({
         ...body,
         executor,
       }),

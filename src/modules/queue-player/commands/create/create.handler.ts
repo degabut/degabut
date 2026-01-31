@@ -8,10 +8,10 @@ import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueuePlayerService } from "@queue-player/services";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, Client, ClientUser } from "discord.js";
 
-import { JoinCommand, JoinParamSchema } from "./join.command";
+import { CreateCommand, CreateParamSchema } from "./create.command";
 
-@CommandHandler(JoinCommand)
-export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
+@CommandHandler(CreateCommand)
+export class CreateHandler implements IInferredCommandHandler<CreateCommand> {
   constructor(
     private readonly client: Client,
     @Inject(AUDIO_PLAYER_MANAGER_PROVIDER)
@@ -20,8 +20,8 @@ export class JoinHandler implements IInferredCommandHandler<JoinCommand> {
     private readonly playerService: QueuePlayerService,
   ) {}
 
-  @ValidateParams(JoinParamSchema)
-  public async execute(params: JoinCommand): Promise<void> {
+  @ValidateParams(CreateParamSchema)
+  public async execute(params: CreateCommand): Promise<void> {
     // resolve voice and text channel
     let voiceChannel: BaseGuildVoiceChannel | null = null;
     let textChannel: BaseGuildTextChannel | null = null;

@@ -2,7 +2,7 @@ import { DiscordUtil } from "@common/utils";
 import { CommandExceptionFilter } from "@main/filters";
 import { Injectable, UseFilters } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { JoinCommand } from "@queue-player/commands";
+import { CreateCommand } from "@queue-player/commands";
 import { BaseGuildTextChannel, Message, VoiceBasedChannel } from "discord.js";
 import { Context, SlashCommand, SlashCommandContext } from "necord";
 
@@ -54,7 +54,7 @@ export class JoinDiscordCommand {
     textChannel: BaseGuildTextChannel,
     userId: string,
   ) {
-    const command = new JoinCommand({
+    const command = new CreateCommand({
       voiceChannel,
       textChannel,
       executor: { id: userId },

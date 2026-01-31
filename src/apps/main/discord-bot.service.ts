@@ -1,7 +1,7 @@
 import { AsyncUtil, SpotifyUtil, YoutubeUtil } from "@common/utils";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { JoinCommand } from "@queue-player/commands";
+import { CreateCommand } from "@queue-player/commands";
 import { AddTracksCommand } from "@queue/commands";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel } from "discord.js";
 
@@ -77,7 +77,7 @@ export class DiscordBotService {
   }
 
   private async join(options: JoinOptions) {
-    const command = new JoinCommand({
+    const command = new CreateCommand({
       voiceChannel: options.voiceChannel,
       textChannel: options.textChannel,
       executor: { id: options.userId },

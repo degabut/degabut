@@ -10,6 +10,6 @@ export class QueueLoopModeChangedListener implements IEventHandler<QueueLoopMode
     const { queue } = event;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "queue-loop-mode-changed", { loopMode: queue.loopMode });
+    this.gateway.send(memberIds, "queue-loop-mode-changed", { loopMode: queue.loopMode }, queue.voiceChannelId);
   }
 }

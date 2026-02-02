@@ -11,9 +11,14 @@ export class TrackLoadFailedListener implements IEventHandler<TrackLoadFailedEve
     const queue = event.track.queue;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "track-load-failed", {
-      track: TrackDto.create(event.track),
-      error: event.error,
-    });
+    this.gateway.send(
+      memberIds,
+      "track-load-failed",
+      {
+        track: TrackDto.create(event.track),
+        error: event.error,
+      },
+      queue.voiceChannelId,
+    );
   }
 }

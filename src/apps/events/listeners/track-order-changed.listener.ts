@@ -12,6 +12,6 @@ export class TrackOrderChangedListener implements IEventHandler<TrackOrderChange
     const trackIds = queue.tracks.map((t) => t.id);
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "track-order-changed", trackIds);
+    this.gateway.send(memberIds, "track-order-changed", trackIds, queue.voiceChannelId);
   }
 }

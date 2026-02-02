@@ -1,9 +1,9 @@
 import { QueuePlayer } from "@queue-player/entities";
-import { GuildMember } from "discord.js";
+import { Member } from "@queue/entities";
 
 export class PlayerPauseStateChangedEvent {
   public readonly player!: QueuePlayer;
-  public readonly member!: GuildMember;
+  public readonly member!: Member;
 
   constructor(params: PlayerPauseStateChangedEvent) {
     Object.assign(this, params);

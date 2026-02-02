@@ -18,6 +18,6 @@ export class MemberListener implements IEventHandler<Events> {
     const { queue, member } = event;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, eventName, MemberDto.create(member));
+    this.gateway.send(memberIds, eventName, MemberDto.create(member), queue.voiceChannelId);
   }
 }

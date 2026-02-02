@@ -1,9 +1,8 @@
-import { Track } from "@queue/entities";
-import { GuildMember } from "discord.js";
+import { Member, Track } from "@queue/entities";
 
 export class TrackSkippedEvent {
   public readonly track!: Track;
-  public readonly member!: GuildMember;
+  public readonly member!: Member;
 
   constructor(params: TrackSkippedEvent) {
     Object.assign(this, params);

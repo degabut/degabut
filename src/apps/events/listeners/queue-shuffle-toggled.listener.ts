@@ -10,6 +10,6 @@ export class QueueShuffleToggledListener implements IEventHandler<QueueShuffleTo
     const { queue } = event;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "queue-shuffle-toggled", { shuffle: queue.shuffle });
+    this.gateway.send(memberIds, "queue-shuffle-toggled", { shuffle: queue.shuffle }, queue.voiceChannelId);
   }
 }

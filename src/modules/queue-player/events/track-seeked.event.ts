@@ -1,9 +1,9 @@
 import { QueuePlayer } from "@queue-player/entities";
-import { GuildMember } from "discord.js";
+import { Member } from "@queue/entities";
 
 export class TrackSeekedEvent {
   public readonly position!: number;
-  public readonly member!: GuildMember;
+  public readonly member!: Member;
   public readonly player!: QueuePlayer;
 
   constructor(params: TrackSeekedEvent) {

@@ -7,10 +7,15 @@ export class PlayerFiltersChangedListener implements IEventHandler<PlayerFilters
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle({ player }: PlayerFiltersChangedEvent): Promise<void> {
-    const memberIds = player.voiceChannel.members.map((m) => m.id);
+    const memberIds = player.queue.voiceChannel.members.map((m) => m.id);
 
-    this.gateway.send(memberIds, "player-filters-changed", {
-      filters: player.audioPlayer.filters,
-    });
+    this.gateway.send(
+      memberIds,
+      "player-filters-changed",
+      {
+        filters: player.audioPlayer.filters,
+      },
+      player.queue.voiceChannelId,
+    );
   }
 }

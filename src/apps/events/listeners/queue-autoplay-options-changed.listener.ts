@@ -14,6 +14,6 @@ export class QueueAutoplayOptionsChangedListener
 
     this.gateway.send(memberIds, "queue-autoplay-options-changed", {
       autoplayOptions: queue.autoplayOptions,
-    });
+    }, queue.voiceChannelId);
   }
 }

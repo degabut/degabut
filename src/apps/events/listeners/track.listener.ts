@@ -20,6 +20,6 @@ export class TrackListener implements IEventHandler<Events> {
     const queue = event instanceof QueueProcessedEvent ? event.queue : event.track.queue;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, eventName, track ? TrackDto.create(track) : null);
+    this.gateway.send(memberIds, eventName, track ? TrackDto.create(track) : null, queue.voiceChannelId);
   }
 }

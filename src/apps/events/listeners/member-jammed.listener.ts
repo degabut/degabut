@@ -10,6 +10,11 @@ export class MemberJammedListener implements IEventHandler<MemberJammedEvent> {
   public async handle({ jam, queue }: MemberJammedEvent): Promise<void> {
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "member-jammed", JamCollectionDto.create(jam));
+    this.gateway.send(
+      memberIds,
+      "member-jammed",
+      JamCollectionDto.create(jam),
+      queue.voiceChannelId,
+    );
   }
 }

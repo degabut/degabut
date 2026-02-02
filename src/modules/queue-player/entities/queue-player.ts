@@ -1,12 +1,6 @@
-import { IAudioPlayer } from "@queue-player/providers/player/audio-player-manager.interface";
-import { Track } from "@queue/entities";
-import {
-  BaseGuild,
-  BaseGuildTextChannel,
-  BaseGuildVoiceChannel,
-  GuildMember,
-  Message,
-} from "discord.js";
+import { IAudioPlayer } from "@queue-player/providers/player";
+import { Member, Queue, Track } from "@queue/entities";
+import { BaseGuild, BaseGuildTextChannel, BaseGuildVoiceChannel, Message } from "discord.js";
 
 export type NotifyKey = "NOW_PLAYING";
 
@@ -19,6 +13,7 @@ interface ConstructorProps {
 export class QueuePlayer {
   public readonly guild: BaseGuild;
   public readonly audioPlayer: IAudioPlayer;
+  public queue!: Queue;
   public isDestroyed = false;
   public textChannel: BaseGuildTextChannel | null;
   public voiceChannel: BaseGuildVoiceChannel;
@@ -36,8 +31,8 @@ export class QueuePlayer {
     this.keyedMessage = {};
   }
 
-  public getMember(userId: string): GuildMember | undefined {
-    return this.voiceChannel.members.find((m) => m.id === userId);
+  public getMember(userId: string): Member | undefined {
+    return this.queue.voiceChannel.activeMembers.find((m) => m.id === userId);
   }
 
   public destroy() {

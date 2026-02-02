@@ -6,6 +6,7 @@ import { IAudioPlayerManager } from "@queue-player/providers/player/audio-player
 import { AUDIO_PLAYER_MANAGER_PROVIDER } from "@queue-player/queue-player.contants";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { QueuePlayerService } from "@queue-player/services";
+import { QueueRepository } from "@queue/repositories";
 import { BaseGuildTextChannel, BaseGuildVoiceChannel, Client, ClientUser } from "discord.js";
 
 import { CreateCommand, CreateParamSchema } from "./create.command";
@@ -18,6 +19,7 @@ export class CreateHandler implements IInferredCommandHandler<CreateCommand> {
     private readonly playerManager: IAudioPlayerManager,
     private readonly playerRepository: QueuePlayerRepository,
     private readonly playerService: QueuePlayerService,
+    private readonly queueRepository: QueueRepository,
   ) {}
 
   @ValidateParams(CreateParamSchema)
@@ -100,5 +102,8 @@ export class CreateHandler implements IInferredCommandHandler<CreateCommand> {
     this.playerRepository.save(player);
 
     await this.playerService.initPlayerConnection(player);
+
+    const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
+    if (queue) player.queue = queue;
   }
 }

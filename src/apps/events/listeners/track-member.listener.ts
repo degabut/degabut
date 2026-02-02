@@ -1,11 +1,8 @@
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { GuildMemberDto } from "@queue-player/dtos";
 import { TrackSkippedEvent } from "@queue-player/events";
 import { MemberDto, TrackDto } from "@queue/dtos";
-import { Member } from "@queue/entities";
 import { NextTrackAddedEvent, NextTrackRemovedEvent } from "@queue/events";
-import { GuildMember } from "discord.js";
 
 const events = [TrackSkippedEvent, NextTrackAddedEvent, NextTrackRemovedEvent];
 type Events = InstanceType<(typeof events)[number]>;
@@ -22,14 +19,16 @@ export class TrackMemberListener implements IEventHandler<Events> {
     const { track, member } = event;
     const queue = track.queue;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
+    const memberDto = member ? MemberDto.create(member) : null;
 
-    let memberDto: MemberDto | GuildMemberDto | null = null;
-    if (member instanceof Member) memberDto = MemberDto.create(member);
-    else if (member instanceof GuildMember) memberDto = GuildMemberDto.create(member);
-
-    this.gateway.send(memberIds, eventName, {
-      track: TrackDto.create(track),
-      member: memberDto,
-    });
+    this.gateway.send(
+      memberIds,
+      eventName,
+      {
+        track: TrackDto.create(track),
+        member: memberDto,
+      },
+      queue.voiceChannelId,
+    );
   }
 }

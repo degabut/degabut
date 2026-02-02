@@ -7,6 +7,11 @@ export class VoiceMemberJoinedListener implements IEventHandler<VoiceMemberJoine
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle({ voiceChannel, member }: VoiceMemberJoinedEvent): Promise<void> {
-    this.gateway.send([member.id], "queue-joined", { voiceChannelId: voiceChannel.id });
+    this.gateway.send(
+      [member.id],
+      "queue-joined",
+      { voiceChannelId: voiceChannel.id },
+      voiceChannel.id,
+    );
   }
 }

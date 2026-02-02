@@ -12,6 +12,6 @@ export class QueueTextChannelChangedListener
     const { queue } = event;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "queue-text-channel-changed", { textChannel: queue.textChannel });
+    this.gateway.send(memberIds, "queue-text-channel-changed", { textChannel: queue.textChannel }, queue.voiceChannelId);
   }
 }

@@ -12,7 +12,7 @@ export class QueueVoiceChannelChangedListener
     const fromMemberIds = from.members.map((m) => m.id);
     const toMemberIds = to.members.map((m) => m.id);
 
-    this.gateway.send(fromMemberIds, "queue-left", { voiceChannelId: from.id });
-    this.gateway.send(toMemberIds, "queue-joined", { voiceChannelId: to.id });
+    this.gateway.send(fromMemberIds, "queue-left", { voiceChannelId: from.id }, from.id);
+    this.gateway.send(toMemberIds, "queue-joined", { voiceChannelId: to.id }, to.id);
   }
 }

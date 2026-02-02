@@ -11,6 +11,6 @@ export class QueueListener implements IEventHandler<QueueCreatedEvent> {
     const { queue } = event;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "queue-created", QueueDto.create(queue));
+    this.gateway.send(memberIds, "queue-created", QueueDto.create(queue), queue.voiceChannelId);
   }
 }

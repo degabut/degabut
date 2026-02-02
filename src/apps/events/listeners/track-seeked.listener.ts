@@ -1,7 +1,7 @@
 import { EventsGateway } from "@events/events.gateway";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { GuildMemberDto } from "@queue-player/dtos";
 import { TrackSeekedEvent } from "@queue-player/events";
+import { MemberDto } from "@queue/dtos";
 
 @EventsHandler(TrackSeekedEvent)
 export class TrackSeekedListener implements IEventHandler<TrackSeekedEvent> {
@@ -9,11 +9,16 @@ export class TrackSeekedListener implements IEventHandler<TrackSeekedEvent> {
 
   public async handle(event: TrackSeekedEvent): Promise<void> {
     const { player, position, member } = event;
-    const memberIds = player.voiceChannel.members.map((m) => m.id);
+    const memberIds = player.queue.voiceChannel.members.map((m) => m.id);
 
-    this.gateway.send(memberIds, "track-seeked", {
-      position,
-      member: GuildMemberDto.create(member),
-    });
+    this.gateway.send(
+      memberIds,
+      "track-seeked",
+      {
+        position,
+        member: MemberDto.create(member),
+      },
+      player.queue.voiceChannelId,
+    );
   }
 }

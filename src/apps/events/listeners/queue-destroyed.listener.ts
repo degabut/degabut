@@ -10,6 +10,6 @@ export class QueueDestroyedListener implements IEventHandler<QueueDestroyedEvent
     const { queue } = event;
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
-    this.gateway.send(memberIds, "queue-destroyed", {});
+    this.gateway.send(memberIds, "queue-destroyed", {}, queue.voiceChannelId);
   }
 }

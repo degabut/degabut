@@ -7,6 +7,11 @@ export class VoiceMemberLeftListener implements IEventHandler<VoiceMemberLeftEve
   constructor(private readonly gateway: EventsGateway) {}
 
   public async handle({ voiceChannel, member }: VoiceMemberLeftEvent): Promise<void> {
-    this.gateway.send([member.id], "queue-left", { voiceChannelId: voiceChannel.id });
+    this.gateway.send(
+      [member.id],
+      "queue-left",
+      { voiceChannelId: voiceChannel.id },
+      voiceChannel.id,
+    );
   }
 }

@@ -38,7 +38,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  send(userIds: string[], event: string, data: any) {
+  send(userIds: string[], event: string, data: any, context?: any) {
     if (!userIds.length) return;
 
     const targets: IdentifiedWebSocket[] = [];
@@ -51,6 +51,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const payload = JSON.stringify({
       event,
       data,
+      context,
     });
 
     targets.forEach((t) => t.send(payload));

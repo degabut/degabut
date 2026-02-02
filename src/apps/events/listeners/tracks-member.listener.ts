@@ -23,6 +23,6 @@ export class TracksMemberListener implements IEventHandler<Events> {
     this.gateway.send(memberIds, eventName, {
       tracks: tracks.map(TrackDto.create),
       member: member ? MemberDto.create(member) : null,
-    });
+    }, queue.voiceChannelId);
   }
 }

@@ -8,6 +8,7 @@ export type GetQueueResult = QueueDto;
 
 export class GetQueueQuery extends Query<GetQueueResult> implements IWithExecutor {
   readonly voiceChannelId?: string;
+  readonly guildId?: string;
   readonly executor!: Executor;
 
   constructor(params: GetQueueQuery) {
@@ -16,7 +17,13 @@ export class GetQueueQuery extends Query<GetQueueResult> implements IWithExecuto
   }
 }
 
-export const GetQueueParamSchema = Joi.object<GetQueueQuery>({
-  voiceChannelId: Joi.string().optional(),
-  executor: ExecutorSchema,
-}).required();
+export const GetQueueParamSchema = Joi.alternatives(
+  Joi.object<GetQueueQuery>({
+    voiceChannelId: Joi.string().required(),
+    executor: ExecutorSchema,
+  }),
+  Joi.object<GetQueueQuery>({
+    guildId: Joi.string().required(),
+    executor: ExecutorSchema,
+  }),
+);

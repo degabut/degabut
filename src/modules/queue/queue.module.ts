@@ -1,3 +1,4 @@
+import { DiscordModule } from "@discord/discord.module";
 import { HistoryModule } from "@history/history.module";
 import { LyricsModule } from "@lyrics/lyrics.module";
 import { MediaSourceModule } from "@media-source/media-source.module";
@@ -21,6 +22,7 @@ import { QueueRepository } from "./repositories";
     HistoryModule,
     UserModule,
     YoutubeModule,
+    DiscordModule,
     LyricsModule,
   ],
   providers: [QueueRepository, ...Commands, ...Queries, ...Listeners],

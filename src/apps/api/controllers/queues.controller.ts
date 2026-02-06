@@ -19,6 +19,10 @@ import { RemoveNextTrackCommand } from "@queue/commands/remove-next-track";
 import { LoopMode, QueueAutoplayOptions } from "@queue/entities";
 import { GetNowPlayingLyricsQuery, GetQueueQuery } from "@queue/queries";
 
+type IdParams = {
+  id: string;
+};
+
 type VoiceChannelIdParams = {
   voiceChannelId: string;
 };
@@ -60,12 +64,15 @@ export class QueuesController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @Get("/:voiceChannelId")
+  @Get("/:id")
   @UseGuards(AuthGuard)
-  getQueue(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+  getQueue(@Param() params: IdParams, @User() executor: AuthUser) {
+    const isGuildId = params.id.startsWith("guildId-");
+
     return this.queryBus.execute(
       new GetQueueQuery({
-        ...params,
+        guildId: isGuildId ? params.id.split("-")[1] : undefined,
+        voiceChannelId: !isGuildId ? params.id : undefined,
         executor,
       }),
     );

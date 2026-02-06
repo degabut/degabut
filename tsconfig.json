@@ -55,7 +55,9 @@
       "@user": ["./src/modules/user"],
       "@user/*": ["./src/modules/user/*"],
       "@youtube": ["./src/modules/youtube"],
-      "@youtube/*": ["./src/modules/youtube/*"]
+      "@youtube/*": ["./src/modules/youtube/*"],
+      "@discord": ["./src/modules/discord"],
+      "@discord/*": ["./src/modules/discord/*"]
     }
   }
 }

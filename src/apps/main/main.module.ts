@@ -2,6 +2,7 @@ import { ApiModule } from "@api/api.module";
 import { AuthModule } from "@auth/auth.module";
 import { IConfig } from "@common/config";
 import { DatabaseModule } from "@database/database.module";
+import { DiscordModule } from "@discord/discord.module";
 import { EventsModule } from "@events/events.module";
 import { HistoryModule } from "@history/history.module";
 import { LoggerModule } from "@logger/logger.module";
@@ -83,6 +84,7 @@ export class MainModule {
           GatewayIntentBits.MessageContent,
         ],
       }),
+      DiscordModule,
       HistoryModule,
       PlaylistModule,
       QueueModule,

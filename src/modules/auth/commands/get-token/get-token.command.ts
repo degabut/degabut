@@ -1,7 +1,8 @@
+import { DiscordOAuth2Response } from "@auth/providers";
 import { Command } from "@common/cqrs";
 import * as Joi from "joi";
 
-export type GetTokenResult = { token: string; discordAccessToken: string };
+export type GetTokenResult = { token: string; discord: DiscordOAuth2Response };
 
 export class GetTokenCommand extends Command<GetTokenResult> {
   code!: string;

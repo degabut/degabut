@@ -15,14 +15,14 @@ export class GetTokenHandler implements IInferredCommandHandler<GetTokenCommand>
   @ValidateParams(GetTokenParamSchema)
   public async execute(params: GetTokenCommand): Promise<GetTokenResult> {
     try {
-      const discordAccessToken = await this.discordOAuthProvider.getAccessToken(
+      const response = await this.discordOAuthProvider.getAccessToken(
         params.code,
         params.redirectUri,
       );
-      const user = await this.discordOAuthProvider.getCurrentUser(discordAccessToken);
+      const user = await this.discordOAuthProvider.getCurrentUser(response.accessToken);
 
       const token = this.jwtAuthProvider.sign(user.id);
-      return { token, discordAccessToken };
+      return { token, discord: response };
     } catch {
       throw new UnauthorizedException();
     }

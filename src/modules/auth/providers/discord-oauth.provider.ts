@@ -3,6 +3,14 @@ import { HttpService } from "@nestjs/axios";
 import { Injectable, NotImplementedException } from "@nestjs/common";
 import { APIUser, RESTPostOAuth2AccessTokenResult } from "discord-api-types/v9";
 
+export type DiscordOAuth2Response = {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  refreshToken: string;
+  scope: string;
+};
+
 @Injectable()
 export class DiscordOAuthProvider {
   private readonly clientId?: string;
@@ -16,7 +24,7 @@ export class DiscordOAuthProvider {
     this.clientSecret = config?.discordOAuth?.clientSecret;
   }
 
-  async getAccessToken(code: string, redirectUri?: string): Promise<string> {
+  async getAccessToken(code: string, redirectUri?: string): Promise<DiscordOAuth2Response> {
     if (!this.clientId || !this.clientSecret) {
       throw new NotImplementedException("Discord OAuth is not configured");
     }
@@ -35,7 +43,13 @@ export class DiscordOAuthProvider {
       params,
     );
 
-    return response.data.access_token;
+    return {
+      accessToken: response.data.access_token,
+      tokenType: response.data.token_type,
+      expiresIn: response.data.expires_in,
+      refreshToken: response.data.refresh_token,
+      scope: response.data.scope,
+    };
   }
 
   async getCurrentUser(accessToken: string): Promise<APIUser> {

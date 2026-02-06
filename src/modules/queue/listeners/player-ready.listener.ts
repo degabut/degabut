@@ -58,5 +58,6 @@ export class PlayerReadyListener implements IEventHandler<PlayerReadyEvent> {
     this.queueRepository.save(queue);
 
     queue.create();
+    player.queue = queue;
   }
 }

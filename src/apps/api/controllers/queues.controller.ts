@@ -67,11 +67,11 @@ export class QueuesController {
   @Get("/:id")
   @UseGuards(AuthGuard)
   getQueue(@Param() params: IdParams, @User() executor: AuthUser) {
-    const isGuildId = params.id.startsWith("guildId-");
+    const isGuildId = params.id.startsWith("guildId:");
 
     return this.queryBus.execute(
       new GetQueueQuery({
-        guildId: isGuildId ? params.id.split("-")[1] : undefined,
+        guildId: isGuildId ? params.id.split(":")[1] : undefined,
         voiceChannelId: !isGuildId ? params.id : undefined,
         executor,
       }),

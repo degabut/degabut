@@ -26,4 +26,7 @@ export const GetQueueParamSchema = Joi.alternatives(
     guildId: Joi.string().required(),
     executor: ExecutorSchema,
   }),
+  Joi.object<GetQueueQuery>({
+    executor: ExecutorSchema,
+  }),
 );

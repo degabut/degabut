@@ -9,7 +9,7 @@ export class PlayerTickListener implements IEventHandler<PlayerTickEvent> {
   public async handle({ player }: PlayerTickEvent): Promise<void> {
     if (player.audioPlayer.isPaused) return;
 
-    const memberIds = player.queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = player.queue.voiceChannel.activeMembers.map((m) => m.id);
     this.gateway.send(
       memberIds,
       "player-tick",

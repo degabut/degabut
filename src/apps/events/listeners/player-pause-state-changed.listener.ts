@@ -10,7 +10,7 @@ export class PlayerPauseStateChangedListener
 
   public async handle(event: PlayerPauseStateChangedEvent): Promise<void> {
     const { player } = event;
-    const memberIds = player.queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = player.queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(
       memberIds,

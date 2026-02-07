@@ -9,7 +9,7 @@ export class TrackSeekedListener implements IEventHandler<TrackSeekedEvent> {
 
   public async handle(event: TrackSeekedEvent): Promise<void> {
     const { player, position, member } = event;
-    const memberIds = player.queue.voiceChannel.members.map((m) => m.id);
+    const memberIds = player.queue.voiceChannel.activeMembers.map((m) => m.id);
 
     this.gateway.send(
       memberIds,

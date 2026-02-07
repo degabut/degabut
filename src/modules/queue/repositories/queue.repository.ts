@@ -15,6 +15,10 @@ export class QueueRepository {
     return [...this.queues.values()].find((q) => !!q.getMember(userId));
   }
 
+  public getManyByUserId(userId: string): Queue[] {
+    return [...this.queues.values()].filter((q) => !!q.getMember(userId));
+  }
+
   public deleteByVoiceChannelId(voiceChannelId: string): void {
     this.queues.delete(voiceChannelId);
   }

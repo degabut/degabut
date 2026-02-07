@@ -4,7 +4,7 @@ import { AuthGuard } from "@auth/guards";
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { GetPlaylistsQuery } from "@playlist/queries";
-import { GetQueueQuery } from "@queue/queries";
+import { GetQueueQuery, GetQueuesQuery } from "@queue/queries";
 import {
   LikeMediaSourceCommand,
   RemovePlayHistoryCommand,
@@ -121,6 +121,12 @@ export class MeController {
   @UseGuards(AuthGuard)
   getSelfQueue(@User() executor: AuthUser) {
     return this.queryBus.execute(new GetQueueQuery({ executor }));
+  }
+
+  @Get("/queues")
+  @UseGuards(AuthGuard)
+  getSelfQueues(@User() executor: AuthUser) {
+    return this.queryBus.execute(new GetQueuesQuery({ executor }));
   }
 
   @Delete("/play-history/:mediaSourceId")

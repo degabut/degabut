@@ -19,8 +19,6 @@ import { TrackOrderChangedListener } from "./track-order-changed.listener";
 import { TrackSeekedListener } from "./track-seeked.listener";
 import { TrackListener } from "./track.listener";
 import { TracksMemberListener } from "./tracks-member.listener";
-import { VoiceMemberJoinedListener } from "./voice-member-joined.listener";
-import { VoiceMemberLeftListener } from "./voice-member-left.listener";
 
 export const Listeners: Constructor<IEventHandler>[] = [
   PlayerTickListener,
@@ -42,6 +40,4 @@ export const Listeners: Constructor<IEventHandler>[] = [
   TrackListener,
   TrackSeekedListener,
   TracksMemberListener,
-  VoiceMemberJoinedListener,
-  VoiceMemberLeftListener,
 ];

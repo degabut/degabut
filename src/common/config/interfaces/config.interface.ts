@@ -18,6 +18,9 @@ export interface IGlobalConfig {
 export interface IBotConfig {
   token: string;
   prefix: string;
+  messaging?: {
+    googleApplicationCredentials: string;
+  };
   http?: { port: number; path?: string };
   ws?: { port?: number; path?: string };
 }

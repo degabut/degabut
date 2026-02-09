@@ -21,6 +21,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { NecordModule } from "necord";
 import { Subject, takeUntil } from "rxjs";
 
+import { MessagingModule } from "../messaging/messaging.module";
 import { DiscordCommands } from "./commands";
 import { DiscordBotGateway } from "./discord-bot.gateway";
 import { DiscordBotService } from "./discord-bot.service";
@@ -110,6 +111,7 @@ export class MainModule {
       if (bot.http) {
         imports.push(ApiModule);
         if (bot.http.path) routes.push({ path: bot.http.path, module: ApiModule });
+        if (bot.messaging) imports.push(MessagingModule.forRoot(bot.messaging));
       }
       if (bot.ws) imports.push(EventsModule);
 

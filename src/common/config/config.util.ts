@@ -11,6 +11,9 @@ export class ConfigUtil {
       bot: Joi.object({
         token: Joi.string().required(),
         prefix: Joi.string().required(),
+        messaging: Joi.object({
+          googleApplicationCredentials: Joi.string().required(),
+        }).optional(),
         http: Joi.object({
           port: Joi.number().required(),
           path: Joi.string().optional(),
@@ -164,6 +167,12 @@ export class ConfigUtil {
           port: +process.env.HTTP_PORT,
           path: process.env.API_PATH || process.env.HTTP_PATH,
         };
+
+        if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+          botConfig.messaging = {
+            googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+          };
+        }
       }
       if (process.env.WS_PORT || process.env.WS_PATH) {
         let wsPort = process.env.WS_PORT;

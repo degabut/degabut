@@ -4,7 +4,6 @@ import { Module } from "@nestjs/common";
 import { CqrsModule, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { Subject, takeUntil } from "rxjs";
 
-import { MessagingModule } from "../messaging/messaging.module";
 import {
   AuthController,
   HealthController,
@@ -16,7 +15,7 @@ import {
 } from "./controllers";
 
 @Module({
-  imports: [CqrsModule, AuthModule, MessagingModule],
+  imports: [CqrsModule, AuthModule],
   controllers: [
     AuthController,
     PlaylistsController,

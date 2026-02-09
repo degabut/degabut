@@ -1,6 +1,7 @@
 import { AuthModule } from "@auth/auth.module";
+import { IBotConfig } from "@common/config";
 import { Logger } from "@logger/logger.service";
-import { Module } from "@nestjs/common";
+import { DynamicModule, Module } from "@nestjs/common";
 import { CqrsModule, UnhandledExceptionBus } from "@nestjs/cqrs";
 import { QueueModule } from "@queue/queue.module";
 import { Subject, takeUntil } from "rxjs";
@@ -33,5 +34,14 @@ export class MessagingModule {
   onModuleDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  static forRoot(config: IBotConfig["messaging"]): DynamicModule {
+    if (!config?.googleApplicationCredentials)
+      throw new Error("Google Application Credentials are required for Messaging Module");
+
+    return {
+      module: MessagingModule,
+    };
   }
 }

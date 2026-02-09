@@ -11,7 +11,8 @@ export class VoiceMemberUpdatedListener implements IEventHandler<VoiceMemberUpda
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue || member.user.bot) return;
 
-    const memberToUpdate = Member.fromDiscordGuildMember(member, true);
+    const memberToUpdate = Member.fromDiscordGuildMember(member, true, false);
+
     queue.updateMember(memberToUpdate);
   }
 }

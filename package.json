@@ -39,6 +39,7 @@
     "dayjs": "^1.11.13",
     "diff": "^8.0.2",
     "discord.js": "^14.25.1",
+    "firebase-admin": "^13.6.0",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.5",
     "joi": "^17.12.3",

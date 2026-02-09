@@ -334,17 +334,19 @@ export class Queue extends AggregateRoot {
   //#region member
   public getMember(userId: string, isActive = true): Member | undefined {
     return this.voiceChannel.members.find(
-      (m) => m.id === userId && m.isInVoiceChannel === isActive,
+      (m) => m.id === userId && (m.isInVoiceChannel || m.isLink) === isActive,
     );
   }
 
   public addMember(member: Member) {
     const existingMember = this.voiceChannel.members.find((m) => m.id === member.id);
 
-    if (existingMember) existingMember.isInVoiceChannel = true;
-    else this.voiceChannel.members.push(member);
+    if (existingMember) {
+      if (member.isInVoiceChannel) existingMember.isInVoiceChannel = true;
+      if (member.isLink) existingMember.isLink = true;
+    } else this.voiceChannel.members.push(member);
 
-    this.apply(new MemberJoinedEvent({ member, queue: this }));
+    this.apply(new MemberJoinedEvent({ member: existingMember ?? member, queue: this }));
   }
 
   public removeMember(memberId: string) {
@@ -352,6 +354,7 @@ export class Queue extends AggregateRoot {
     if (!leftMember) return;
 
     leftMember.isInVoiceChannel = false;
+    leftMember.isLink = false;
 
     this.apply(new MemberLeftEvent({ member: leftMember, queue: this }));
   }
@@ -362,6 +365,7 @@ export class Queue extends AggregateRoot {
 
     const memberToUpdate = this.voiceChannel.members[index];
     member.isInVoiceChannel = memberToUpdate.isInVoiceChannel;
+    member.isLink = memberToUpdate.isLink;
 
     this.voiceChannel.members[index] = member;
 

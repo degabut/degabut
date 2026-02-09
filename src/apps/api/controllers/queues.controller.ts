@@ -10,6 +10,8 @@ import {
   ChangeTrackOrderCommand,
   ClearQueueCommand,
   JamCommand,
+  JoinCommand,
+  LeaveCommand,
   RemoveTrackCommand,
   RemoveTracksCommand,
   ToggleAutoplayCommand,
@@ -259,6 +261,28 @@ export class QueuesController {
   async getNowPlayingLyrics(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     return await this.queryBus.execute(
       new GetNowPlayingLyricsQuery({
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/join")
+  @UseGuards(AuthGuard)
+  async joinQueue(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    return await this.commandBus.execute(
+      new JoinCommand({
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/leave")
+  @UseGuards(AuthGuard)
+  async leaveQueue(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    return await this.commandBus.execute(
+      new LeaveCommand({
         ...params,
         executor,
       }),

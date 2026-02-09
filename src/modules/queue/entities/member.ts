@@ -8,12 +8,17 @@ export class Member {
   public discriminator!: string;
   public avatar!: string | null;
   public isInVoiceChannel!: boolean;
+  public isLink!: boolean;
 
   constructor(params: Member) {
     Object.assign(this, params);
   }
 
-  static fromDiscordGuildMember(member: GuildMember, isInVoiceChannel: boolean): Member {
+  static fromDiscordGuildMember(
+    member: GuildMember,
+    isInVoiceChannel: boolean,
+    isLink: boolean,
+  ): Member {
     return new Member({
       id: member.id,
       username: member.user.username,
@@ -22,6 +27,7 @@ export class Member {
       discriminator: member.user.discriminator,
       avatar: member.displayAvatarURL(),
       isInVoiceChannel,
+      isLink,
     });
   }
 }

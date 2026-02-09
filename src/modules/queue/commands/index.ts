@@ -7,6 +7,8 @@ import { ChangeLoopModeHandler } from "./change-loop-mode";
 import { ChangeTrackOrderHandler } from "./change-track-order";
 import { ClearQueueHandler } from "./clear-queue";
 import { JamHandler } from "./jam";
+import { JoinHandler } from "./join";
+import { LeaveHandler } from "./leave";
 import { RemoveNextTrackHandler } from "./remove-next-track";
 import { RemoveTrackHandler } from "./remove-track";
 import { RemoveTracksHandler } from "./remove-tracks";
@@ -20,6 +22,8 @@ export * from "./change-loop-mode";
 export * from "./change-track-order";
 export * from "./clear-queue";
 export * from "./jam";
+export * from "./join";
+export * from "./leave";
 export * from "./remove-track";
 export * from "./remove-tracks";
 export * from "./toggle-autoplay";
@@ -33,6 +37,8 @@ export const Commands: Constructor<ICommandHandler>[] = [
   AddNextTrackHandler,
   RemoveNextTrackHandler,
   JamHandler,
+  JoinHandler,
+  LeaveHandler,
   RemoveTrackHandler,
   RemoveTracksHandler,
   ToggleAutoplayHandler,

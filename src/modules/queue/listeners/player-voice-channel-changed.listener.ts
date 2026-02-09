@@ -19,7 +19,9 @@ export class PlayerVoiceChannelChangedListener
       new VoiceChannel({
         id: player.voiceChannel.id,
         name: player.voiceChannel.name,
-        members: player.voiceChannel.members.map((m) => Member.fromDiscordGuildMember(m, true)),
+        members: player.voiceChannel.members.map((m) =>
+          Member.fromDiscordGuildMember(m, true, false),
+        ),
       }),
     );
 

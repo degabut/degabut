@@ -24,6 +24,9 @@ export class MemberDto {
   @Expose()
   public isInVoiceChannel!: boolean;
 
+  @Expose()
+  public isLink!: boolean;
+
   public static create(entity: Member): MemberDto {
     return plainToInstance(MemberDto, entity);
   }

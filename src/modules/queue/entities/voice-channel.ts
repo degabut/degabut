@@ -16,6 +16,6 @@ export class VoiceChannel implements VoiceChannelParams {
   }
 
   get activeMembers(): Member[] {
-    return this.members.filter((m) => m.isInVoiceChannel);
+    return this.members.filter((m) => m.isInVoiceChannel || m.isLink);
   }
 }

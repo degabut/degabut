@@ -52,6 +52,32 @@ export class DiscordOAuthProvider {
     };
   }
 
+  async refreshAccessToken(refreshToken: string): Promise<DiscordOAuth2Response> {
+    if (!this.clientId || !this.clientSecret) {
+      throw new NotImplementedException("Discord OAuth is not configured");
+    }
+
+    const params = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+    });
+
+    const response = await this.httpService.axiosRef.post<RESTPostOAuth2AccessTokenResult>(
+      "/oauth2/token",
+      params,
+    );
+
+    return {
+      accessToken: response.data.access_token,
+      tokenType: response.data.token_type,
+      expiresIn: response.data.expires_in,
+      refreshToken: response.data.refresh_token,
+      scope: response.data.scope,
+    };
+  }
+
   async getCurrentUser(accessToken: string): Promise<APIUser> {
     const response = await this.httpService.axiosRef.get<APIUser>("/users/@me", {
       headers: { Authorization: `Bearer ${accessToken}` },

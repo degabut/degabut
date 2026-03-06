@@ -114,8 +114,8 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1
       youtubei:
-        specifier: ^1.8.4
-        version: 1.8.4
+        specifier: ^1.8.5
+        version: 1.8.5
     devDependencies:
       '@nestjs/cli':
         specifier: ^10.3.2
@@ -3769,8 +3769,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  youtubei@1.8.4:
-    resolution: {integrity: sha512-32seNLM/xOHwcL5TF7SMf11K7jqL2P1yNk6HvtwGt1h7fyL1QtqCn3Mdb4V81TlEhRAzzDQivrACrJ5NuLB/YA==}
+  youtubei@1.8.5:
+    resolution: {integrity: sha512-wCgLsEYyyimgBHvZmkcBXqzygPJUIuspwxsJmLwarNlFoQ0LZXsldknXljjrrsg0XZS2UmTVTm1y7umFKKu61w==}
 
 snapshots:
 
@@ -7975,7 +7975,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  youtubei@1.8.4:
+  youtubei@1.8.5:
     dependencies:
       node-fetch: 2.6.7
       protobufjs: 7.2.6

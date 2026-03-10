@@ -132,7 +132,7 @@ export class MeController {
   @Delete("/play-history/:mediaSourceId")
   @UseGuards(AuthGuard)
   removePlayHistory(@Param() params: MediaSourceIdParams, @User() executor: AuthUser) {
-    return this.commandBus.execute(new RemovePlayHistoryCommand({ executor, ...params }));
+    return this.commandBus.execute(new RemovePlayHistoryCommand({ ...params, executor }));
   }
 
   @Get("/liked")
@@ -140,10 +140,10 @@ export class MeController {
   getLiked(@User() executor: AuthUser, @Query() query: GetLikedParam) {
     return this.queryBus.execute(
       new GetLikedQuery({
-        executor,
         limit: query.limit ? +query.limit : 100,
         page: query.page ? +query.page : 1,
         keyword: query.keyword,
+        executor,
       }),
     );
   }
@@ -151,25 +151,25 @@ export class MeController {
   @Post("/liked")
   @UseGuards(AuthGuard)
   like(@Body() body: MediaSourceIdParams, @User() executor: AuthUser) {
-    return this.commandBus.execute(new LikeMediaSourceCommand({ executor, ...body }));
+    return this.commandBus.execute(new LikeMediaSourceCommand({ ...body, executor }));
   }
 
   @Delete("/liked/:mediaSourceId")
   @UseGuards(AuthGuard)
   unlike(@Param() params: MediaSourceIdParams, @User() executor: AuthUser) {
-    return this.commandBus.execute(new UnlikeMediaSourceCommand({ executor, ...params }));
+    return this.commandBus.execute(new UnlikeMediaSourceCommand({ ...params, executor }));
   }
 
   @Post("/liked/is-liked")
   @UseGuards(AuthGuard)
   isLiked(@Body() body: MediaSourceIdsParams, @User() executor: AuthUser) {
-    return this.queryBus.execute(new IsLikedQuery({ executor, ...body }));
+    return this.queryBus.execute(new IsLikedQuery({ ...body, executor }));
   }
 
   @Get("/recap/:year?")
   @UseGuards(AuthGuard)
   getRecap(@Param() params: YearParams, @User() executor: AuthUser) {
     const year = params.year ? +params.year : new Date().getFullYear();
-    return this.queryBus.execute(new GetRecapQuery({ executor, year }));
+    return this.queryBus.execute(new GetRecapQuery({ year, executor }));
   }
 }

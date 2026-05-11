@@ -36,8 +36,10 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     const player = this.playerRepository.getByVoiceChannelId(queue.voiceChannelId);
     if (!player) return;
 
-    if (!queue.nowPlaying) player.audioPlayer.stop();
-    else {
+    if (!queue.nowPlaying) {
+      await this.playerService.setStatus(player, `🎵 Idling...`);
+      player.audioPlayer.stop();
+    } else {
       const currentMediaSource = queue.nowPlaying.mediaSource;
       const { youtubeVideo, spotifyTrack } = currentMediaSource;
 
@@ -152,6 +154,11 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
           ],
         },
         "NOW_PLAYING",
+      );
+
+      await this.playerService.setStatus(
+        player,
+        `🎵 ${queue.nowPlaying.mediaSource.title} - ${queue.nowPlaying.mediaSource.creator}`,
       );
     }
   }

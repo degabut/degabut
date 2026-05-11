@@ -60,6 +60,7 @@ export class QueuePlayerService {
       reason,
     });
 
+    await this.setStatus(player, null);
     player.destroy();
     this.playerRepository.deleteByVoiceChannelId(player.voiceChannel.id);
     this.eventBus.publish(new PlayerDestroyedEvent({ player }));
@@ -159,6 +160,23 @@ export class QueuePlayerService {
 
       player.audioPlayer.connect(player.voiceChannel.id);
     });
+  }
+
+  public async setStatus(
+    playerOrVoiceChanneLId: QueuePlayer | string,
+    status: string | null,
+  ): Promise<void> {
+    try {
+      const voiceChannelId =
+        typeof playerOrVoiceChanneLId === "string"
+          ? playerOrVoiceChanneLId
+          : playerOrVoiceChanneLId.voiceChannel.id;
+      await this.client.rest.put(`/channels/${voiceChannelId}/voice-status`, {
+        body: { status: status || "" },
+      });
+    } catch (err) {
+      // ignore
+    }
   }
 
   public async notify(

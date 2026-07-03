@@ -1,5 +1,0 @@
-allowBuilds:
-  '@firebase/util': false
-  '@nestjs/core': false
-  nestjs-pino: false
-  protobufjs: false

@@ -1,4 +1,4 @@
-FROM node:20.14-alpine as builder
+FROM node:20.14-alpine AS builder
 WORKDIR /usr/src/builder
 COPY . .
 RUN npm i -g pnpm@9.4.0

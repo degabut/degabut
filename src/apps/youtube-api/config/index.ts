@@ -12,4 +12,8 @@ export class YoutubeApiConfigService {
   get refreshToken() {
     return this.configService.get<string>("oauth.refreshToken");
   }
+
+  get cacheAll() {
+    return this.configService.get<boolean>("cacheAll") ?? true;
+  }
 }

@@ -26,7 +26,9 @@ export class YoutubeiUtil {
     return entity;
   }
 
-  static videoCompactToEntity(video: YoutubeiVideoCompact | YoutubeVideo): YoutubeVideoCompact {
+  static videoCompactToEntity(
+    video: YoutubeiVideoCompact | YoutubeVideo | LiveVideo,
+  ): YoutubeVideoCompact {
     return new YoutubeVideoCompact({
       id: video.id,
       title: video.title,

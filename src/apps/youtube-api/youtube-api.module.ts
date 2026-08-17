@@ -1,9 +1,11 @@
 import { AuthModule } from "@auth/auth.module";
 import { IConfig } from "@common/config";
+import { DatabaseModule } from "@database/database.module";
 import { LoggerModule } from "@logger/logger.module";
 import { DynamicModule, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { RouterModule } from "@nestjs/core";
+import { YoutubeModule } from "@youtube/youtube.module";
 
 import { YoutubeApiConfigService } from "./config";
 import { HealthController, YoutubeController, YoutubeMusicController } from "./controllers";
@@ -22,6 +24,8 @@ export class YoutubeApiModule {
       ConfigModule.forRoot({ load: [() => config.youtube || {}] }),
       LoggerModule.forRoot({ appId: "youtubeApi", ...config.logging }),
       AuthModule.forRoot({ jwt: config.auth?.jwt }),
+      DatabaseModule.forRoot(config.postgres),
+      YoutubeModule.forRoot(config.youtube),
     ];
 
     if (config.apps.youtubeApi.path) {

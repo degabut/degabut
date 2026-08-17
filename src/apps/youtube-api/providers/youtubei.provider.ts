@@ -1,5 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { YoutubeApiConfigService } from "@youtube-api/config";
+import { YoutubeiUtil } from "@youtube/providers";
+import { YoutubeCachedService } from "@youtube/services";
 import {
   LiveVideo,
   MixPlaylist,
@@ -14,8 +16,13 @@ import {
 @Injectable()
 export class YoutubeiProvider {
   private readonly youtubeClient: YoutubeiClient;
+  private readonly cacheAll: boolean;
 
-  constructor(@Inject(YoutubeApiConfigService) config: YoutubeApiConfigService) {
+  constructor(
+    @Inject(YoutubeApiConfigService) config: YoutubeApiConfigService,
+    private readonly youtubeService: YoutubeCachedService,
+  ) {
+    this.cacheAll = config.cacheAll;
     this.youtubeClient = new YoutubeiClient({
       oauth: config.refreshToken
         ? {
@@ -28,10 +35,12 @@ export class YoutubeiProvider {
 
   public async search(keyword: string): Promise<(VideoCompact | PlaylistCompact)[]> {
     const result = await this.youtubeClient.search(keyword);
-    return result.items.filter(
+    const items = result.items.filter(
       (r): r is VideoCompact | PlaylistCompact =>
         r instanceof VideoCompact || r instanceof PlaylistCompact,
     );
+    await this.cacheVideos(items.filter((r): r is VideoCompact => r instanceof VideoCompact));
+    return items;
   }
 
   public async searchPlaylist(keyword: string): Promise<PlaylistCompact[]> {
@@ -41,7 +50,9 @@ export class YoutubeiProvider {
 
   public async searchVideo(keyword: string): Promise<VideoCompact[]> {
     const videos = await this.youtubeClient.search(keyword, { type: "video" });
-    return videos.items.filter((v) => v instanceof VideoCompact);
+    const items = videos.items.filter((v) => v instanceof VideoCompact);
+    await this.cacheVideos(items);
+    return items;
   }
 
   public async getVideo(id: string): Promise<Video | LiveVideo | undefined> {
@@ -49,6 +60,7 @@ export class YoutubeiProvider {
     if (!video) return;
 
     video.related.items = video.related.items.filter((r) => r instanceof VideoCompact);
+    await this.cacheVideos([video]);
     return video;
   }
 
@@ -65,6 +77,23 @@ export class YoutubeiProvider {
     playlistVideos.continuation = token;
     await playlistVideos.next();
 
+    await this.cacheVideos(playlistVideos.items);
     return playlistVideos;
+  }
+
+  private async cacheVideos(videos: (Video | VideoCompact | LiveVideo)[]): Promise<void> {
+    if (!this.cacheAll || !this.youtubeService || !videos.length) return;
+
+    const parsedVideos = videos
+      .map((v) => {
+        if (v instanceof VideoCompact) return YoutubeiUtil.videoCompactToEntity(v);
+        else {
+          const entity = YoutubeiUtil.videoToEntity(v);
+          return [YoutubeiUtil.videoCompactToEntity(entity), ...entity.related];
+        }
+      })
+      .flat();
+
+    await this.youtubeService.cacheVideo(parsedVideos, { ignoreEmbedFetch: true, newOnly: true });
   }
 }

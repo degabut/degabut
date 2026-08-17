@@ -63,6 +63,7 @@ export class AddTracksHandler implements IInferredCommandHandler<AddTracksComman
       if (mediaSource) sources.push(mediaSource);
     } else if (mediaSourceIds) {
       sources = await this.mediaSourceService.getStoredSources(mediaSourceIds);
+      sources = sources.sort((a, b) => mediaSourceIds.indexOf(a.id) - mediaSourceIds.indexOf(b.id));
     } else if (playlistId) {
       const playlist = await this.playlistRepository.getById(playlistId);
       if (!playlist) throw new NotFoundException("Playlist not found");

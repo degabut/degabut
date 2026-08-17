@@ -15,8 +15,11 @@ export class YoutubeChannelRepository {
     const channels = Array.isArray(channel) ? channel : [channel];
 
     const props = channels.map(YoutubeChannelRepositoryMapper.toRepository);
+    const model = new YoutubeChannelModel();
+    const dbProps = props.map((p) => model.$formatDatabaseJson(p));
 
-    if (newOnly) await this.channelModel.query().insert(props).onConflict("id").ignore();
-    else await this.channelModel.query().insert(props).onConflict("id").merge();
+    // use knexQuery instead of objection because objection randomly throws error when parsing JSON for some reason
+    if (newOnly) await this.channelModel.knexQuery().insert(dbProps).onConflict("id").ignore();
+    else await this.channelModel.knexQuery().insert(dbProps).onConflict("id").merge();
   }
 }

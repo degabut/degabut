@@ -21,8 +21,12 @@ export class YoutubeVideoRepository {
     const videos = Array.isArray(video) ? video : [video];
     const models = videos.map(YoutubeVideoRepositoryMapper.toRepository);
 
-    if (newOnly) await this.videoModel.query().insert(models).onConflict("id").ignore();
-    else await this.videoModel.query().insert(models).onConflict("id").merge();
+    const model = new YoutubeVideoModel();
+    const dbProps = models.map((p) => model.$formatDatabaseJson(p));
+
+    // use knexQuery instead of objection because objection randomly throws error when parsing JSON for some reason
+    if (newOnly) await this.videoModel.knexQuery().insert(dbProps).onConflict("id").ignore();
+    else await this.videoModel.knexQuery().insert(dbProps).onConflict("id").merge();
   }
 
   public async getById(id: string): Promise<YoutubeVideoCompact | undefined> {

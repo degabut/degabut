@@ -1,8 +1,8 @@
 import { TimeUtil } from "@common/utils";
 import { Logger } from "@logger/logger.service";
-import { Inject, Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { YoutubeChannel, YoutubeVideo, YoutubeVideoCompact } from "@youtube/entities";
-import { YoutubeEmbedProvider } from "@youtube/providers";
+import { YoutubeEmbedProvider } from "@youtube/providers/youtube-embed.provider";
 import { IYoutubeiProvider } from "@youtube/providers/youtubei/youtubei.interface";
 import { YoutubeChannelRepository, YoutubeVideoRepository } from "@youtube/repositories";
 import { MAX_VIDEO_AGE, YOUTUBEI_PROVIDER } from "@youtube/youtube.constants";
@@ -12,7 +12,7 @@ export class YoutubeCachedService {
   constructor(
     private readonly videoRepository: YoutubeVideoRepository,
     private readonly channelRepository: YoutubeChannelRepository,
-    @Inject(YOUTUBEI_PROVIDER)
+    @Inject(forwardRef(() => YOUTUBEI_PROVIDER))
     private readonly youtubeProvider: IYoutubeiProvider,
     private readonly youtubeEmbedProvider: YoutubeEmbedProvider,
     private readonly logger: Logger,
@@ -47,19 +47,35 @@ export class YoutubeCachedService {
     return video;
   }
 
-  async cacheVideo(video: YoutubeVideoCompact) {
-    try {
-      // YouTube with its infinite wisdom decided to auto translate video titles
-      // this fetches the original title from the embed API to store in the database
-      const embedVideo = await this.youtubeEmbedProvider.getVideo(video.id);
-      if (embedVideo) video.title = embedVideo.title;
-    } catch (e) {
-      this.logger.error({ error: "Fetch embed error", e });
+  async cacheVideo(
+    video: YoutubeVideoCompact | YoutubeVideoCompact[],
+    options?: { ignoreEmbedFetch: boolean; newOnly?: boolean },
+  ): Promise<void> {
+    const ignoreEmbedFetch = options?.ignoreEmbedFetch ?? false;
+    const videos = Array.isArray(video) ? video : [video];
+
+    // fetch embed only if passing single video
+    if (!ignoreEmbedFetch && videos.length === 1) {
+      try {
+        // YouTube with its infinite wisdom decided to auto translate video titles
+        // this fetches the original title from the embed API to store in the database
+        const embedVideo = await this.youtubeEmbedProvider.getVideo(videos[0].id);
+        if (embedVideo) videos[0].title = embedVideo.title;
+      } catch (e) {
+        this.logger.error({ error: "Fetch embed error", e });
+      }
     }
 
+    const channels = videos.map((v) => v.channel).filter((c): c is YoutubeChannel => !!c);
+    const uniqueChannelsMap = new Map<string, YoutubeChannel>();
+    for (const channel of channels) {
+      uniqueChannelsMap.set(channel.id, channel);
+    }
+    const uniqueChannels = [...uniqueChannelsMap.values()];
+
     await Promise.all([
-      this.videoRepository.upsert(video),
-      video.channel && this.channelRepository.upsert(video.channel),
+      this.videoRepository.upsert(videos, options?.newOnly),
+      uniqueChannels.length && this.channelRepository.upsert(uniqueChannels, options?.newOnly),
     ]);
   }
 

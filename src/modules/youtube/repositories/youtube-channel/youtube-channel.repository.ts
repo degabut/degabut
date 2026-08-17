@@ -11,10 +11,12 @@ export class YoutubeChannelRepository {
     private readonly channelModel: typeof YoutubeChannelModel,
   ) {}
 
-  public async upsert(channel: YoutubeChannel | YoutubeChannel[]): Promise<void> {
+  public async upsert(channel: YoutubeChannel | YoutubeChannel[], newOnly = false): Promise<void> {
     const channels = Array.isArray(channel) ? channel : [channel];
 
     const props = channels.map(YoutubeChannelRepositoryMapper.toRepository);
-    await this.channelModel.query().insert(props).onConflict("id").merge();
+
+    if (newOnly) await this.channelModel.query().insert(props).onConflict("id").ignore();
+    else await this.channelModel.query().insert(props).onConflict("id").merge();
   }
 }

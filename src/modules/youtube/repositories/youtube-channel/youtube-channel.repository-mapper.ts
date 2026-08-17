@@ -8,7 +8,11 @@ export class YoutubeChannelRepositoryMapper {
     const props: YoutubeChannelModelProps = {
       id: entity.id,
       name: entity.name,
-      thumbnails: entity.thumbnails,
+      thumbnails: entity.thumbnails.map((t) => ({
+        height: t.height,
+        width: t.width,
+        url: t.url,
+      })),
     };
 
     return props;

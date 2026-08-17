@@ -1,7 +1,7 @@
 import { IYoutubeClientConfig, IYoutubeConfig } from "@common/config";
 import { DatabaseModule } from "@database/database.module";
 import { HttpModule, HttpService } from "@nestjs/axios";
-import { DynamicModule, Module } from "@nestjs/common";
+import { DynamicModule, forwardRef, InjectionToken, Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 
 import {
@@ -29,34 +29,64 @@ import { YOUTUBEI_MUSIC_PROVIDER, YOUTUBEI_PROVIDER } from "./youtube.constants"
 })
 export class YoutubeModule {
   static forRoot(config?: IYoutubeClientConfig | IYoutubeConfig): DynamicModule {
+    const cacheAll = config && "cacheAll" in config ? config.cacheAll ?? true : true;
+
     return {
       global: true,
       module: YoutubeModule,
       providers: [
         {
           provide: YOUTUBEI_PROVIDER,
-          inject: [HttpService],
-          useFactory: (http: HttpService): IYoutubeiProvider => {
+          inject: [
+            HttpService,
+            forwardRef(() => YoutubeCachedService) as unknown as InjectionToken,
+          ],
+          useFactory: (
+            http: HttpService,
+            youtubeService: YoutubeCachedService,
+          ): IYoutubeiProvider => {
             if (config && "baseUrl" in config) {
-              return new DegabutYoutubeiProvider(http, config.baseUrl, config.authToken);
+              return new DegabutYoutubeiProvider({
+                httpService: http,
+                baseUrl: config.baseUrl,
+                authToken: config.authToken,
+                cacheAll,
+                youtubeService,
+              });
             } else {
               return new YoutubeiProvider({
                 oauthRefreshToken: config?.oauth?.refreshToken,
                 proxyUrl: this.getProxyUrl(config?.proxy),
+                cacheAll,
+                youtubeService,
               });
             }
           },
         },
         {
           provide: YOUTUBEI_MUSIC_PROVIDER,
-          inject: [HttpService],
-          useFactory: (http: HttpService): IYoutubeiMusicProvider => {
+          inject: [
+            HttpService,
+            forwardRef(() => YoutubeCachedService) as unknown as InjectionToken,
+          ],
+          useFactory: (
+            http: HttpService,
+            youtubeService: YoutubeCachedService,
+          ): IYoutubeiMusicProvider => {
             if (config && "baseUrl" in config) {
-              return new DegabutYoutubeiMusicProvider(http, config.baseUrl, config.authToken);
+              return new DegabutYoutubeiMusicProvider({
+                httpService: http,
+                baseUrl: config.baseUrl,
+                authToken: config.authToken,
+                cacheAll,
+                youtubeService,
+              });
             } else {
               return new YoutubeiMusicProvider({
                 oauthRefreshToken: config?.oauth?.refreshToken,
-                proxyUrl: this.getProxyUrl(config?.proxy)
+                proxyUrl: this.getProxyUrl(config?.proxy),
+                cacheAll,
+                youtubeService,
               });
             }
           },
@@ -67,6 +97,8 @@ export class YoutubeModule {
   }
 
   static getProxyUrl(config: IYoutubeConfig["proxy"]): string | undefined {
-    return config ? `${config.protocol}://${config.username}:${config.password}@${config.host}:${config.port}` : undefined;
+    return config
+      ? `${config.protocol}://${config.username}:${config.password}@${config.host}:${config.port}`
+      : undefined;
   }
 }

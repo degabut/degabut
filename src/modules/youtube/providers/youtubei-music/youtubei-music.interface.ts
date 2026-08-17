@@ -12,7 +12,7 @@ export type YoutubeMusicPlaylist = MusicPlaylistCompact;
 export type YoutubeMusicVideo = MusicVideoCompact;
 export type YoutubeMusicArtist = MusicArtistCompact;
 
-type AllResultType =
+export type AllResultType =
   | YoutubeMusicSong
   | YoutubeMusicAlbum
   | YoutubeMusicPlaylist

@@ -25,6 +25,7 @@ postgres:
   password: "password"
   database: "degabut"
 # youtube: # optional config for youtube module
+#   cacheAll: false # optional, cache all videos data (search results, related videos, etc.) into the database, defaults to true
 #   oauth: # if you want to use oauth for youtube, used on youtube api and youtube module
 #     refreshToken: "1//..."
 #   proxy: # if you want to proxy http request to youtube

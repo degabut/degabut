@@ -11,7 +11,11 @@ export class YoutubeVideoRepositoryMapper {
       title: entity.title,
       duration: entity.duration,
       viewCount: entity.viewCount,
-      thumbnails: entity.thumbnails,
+      thumbnails: entity.thumbnails.map((t) => ({
+        height: t.height,
+        width: t.width,
+        url: t.url,
+      })),
       channelId: entity.channel?.id || null,
       updatedAt: entity.updatedAt,
       musicMetadata: entity.musicMetadata,

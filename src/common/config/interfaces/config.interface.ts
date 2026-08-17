@@ -86,6 +86,7 @@ export interface IJwtConfig {
 }
 
 export interface IYoutubeConfig {
+  cacheAll?: boolean;
   oauth?: {
     refreshToken: string;
   };

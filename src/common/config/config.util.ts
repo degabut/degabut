@@ -77,6 +77,7 @@ export class ConfigUtil {
       authToken: Joi.string().required(),
     }).optional(),
     youtube: Joi.object({
+      cacheAll: Joi.boolean().optional().default(true),
       oauth: Joi.object({
         refreshToken: Joi.string().required(),
       }).optional(),
@@ -285,6 +286,8 @@ export class ConfigUtil {
         refreshToken: youtubeRefreshToken,
       };
     }
+
+    config.youtube.cacheAll = process.env.YOUTUBE_CACHE_ALL !== "false";
 
     const proxyProtocol = process.env.YOUTUBE_PROXY_PROTOCOL;
     const proxyHost = process.env.YOUTUBE_PROXY_HOST;

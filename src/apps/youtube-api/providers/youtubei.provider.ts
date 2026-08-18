@@ -66,6 +66,11 @@ export class YoutubeiProvider {
 
   public async getPlaylist(id: string): Promise<MixPlaylist | Playlist | undefined> {
     const playlist = await this.youtubeClient.getPlaylist(id);
+    if (playlist) {
+      await this.cacheVideos(
+        Array.isArray(playlist.videos) ? playlist.videos : [...playlist.videos.items],
+      );
+    }
     return playlist;
   }
 

@@ -33,6 +33,33 @@ export class YoutubeCachedService {
     return video;
   }
 
+  async getVideos(videoIds: string[], cacheOnly = false): Promise<YoutubeVideoCompact[]> {
+    if (!videoIds.length) return [];
+
+    const videos = await this.videoRepository.getByIds(videoIds);
+    if (cacheOnly) return videos;
+
+    const videosMap = new Map(videos.map((v) => [v.id, v]));
+    const staleIds = videoIds.filter(
+      (id) =>
+        !videosMap.has(id) ||
+        TimeUtil.getSecondDifference(videosMap.get(id)!.updatedAt, new Date()) > MAX_VIDEO_AGE,
+    );
+
+    if (staleIds.length) {
+      const freshVideos = (
+        await Promise.all(staleIds.map((id) => this.youtubeProvider.getVideo(id)))
+      ).filter((v): v is YoutubeVideo => !!v);
+
+      const freshCompacts = freshVideos.map((v) => this.videoToVideoCompact(v));
+      await this.cacheVideo(freshCompacts, { ignoreEmbedFetch: true });
+
+      for (const video of freshCompacts) videosMap.set(video.id, video);
+    }
+
+    return videoIds.map((id) => videosMap.get(id)).filter((v): v is YoutubeVideoCompact => !!v);
+  }
+
   async searchOneVideo(
     keyword: string,
     matchDuration?: number,

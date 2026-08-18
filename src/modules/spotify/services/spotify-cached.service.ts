@@ -1,6 +1,6 @@
 import { TimeUtil } from "@common/utils";
 import { Inject, Injectable } from "@nestjs/common";
-import { SpotifyTrack } from "@spotify/entities";
+import { SpotifyAlbumCompact, SpotifyArtist, SpotifyTrack } from "@spotify/entities";
 import { ISpotifyProvider } from "@spotify/providers";
 import {
   SpotifyAlbumRepository,
@@ -32,17 +32,54 @@ export class SpotifyCachedService {
     return track;
   }
 
-  async cacheTrack(track: SpotifyTrack) {
-    if (track.album) await this.albumRepository.upsert(track.album);
+  async getTracks(trackIds: string[], cacheOnly = false): Promise<SpotifyTrack[]> {
+    if (!trackIds.length) return [];
 
-    await this.trackRepository.upsert(track);
+    const tracks = await this.trackRepository.getByIds(trackIds);
+    if (cacheOnly) return tracks;
 
-    if (track.artists) {
-      await this.artistRepository.upsert(track.artists);
-      await this.trackArtistRepository.upsert(
-        track.id,
-        track.artists.map((a) => a.id),
-      );
+    const tracksMap = new Map(tracks.map((t) => [t.id, t]));
+    const staleIds = trackIds.filter(
+      (id) =>
+        !tracksMap.has(id) ||
+        TimeUtil.getSecondDifference(tracksMap.get(id)!.updatedAt, new Date()) > MAX_TRACK_AGE,
+    );
+
+    if (staleIds.length) {
+      const freshTracks = (
+        await Promise.all(staleIds.map((id) => this.spotifyProvider.getTrack(id)))
+      ).filter((t): t is SpotifyTrack => !!t);
+
+      await this.cacheTrack(freshTracks);
+      for (const track of freshTracks) tracksMap.set(track.id, track);
     }
+
+    return trackIds.map((id) => tracksMap.get(id)).filter((t): t is SpotifyTrack => !!t);
+  }
+
+  async cacheTrack(track: SpotifyTrack | SpotifyTrack[]) {
+    const tracks = Array.isArray(track) ? track : [track];
+
+    const albums = tracks.map((t) => t.album).filter((a): a is SpotifyAlbumCompact => !!a);
+    if (albums.length) await this.albumRepository.upsert(albums);
+
+    await this.trackRepository.upsert(tracks);
+
+    const artists = tracks.flatMap((t) => t.artists || []);
+    const uniqueArtistsMap = new Map<string, SpotifyArtist>();
+    for (const artist of artists) uniqueArtistsMap.set(artist.id, artist);
+
+    if (uniqueArtistsMap.size) await this.artistRepository.upsert([...uniqueArtistsMap.values()]);
+
+    await Promise.all(
+      tracks
+        .filter((t) => t.artists?.length)
+        .map((t) =>
+          this.trackArtistRepository.upsert(
+            t.id,
+            t.artists!.map((a) => a.id),
+          ),
+        ),
+    );
   }
 }

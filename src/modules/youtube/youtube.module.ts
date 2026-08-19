@@ -37,10 +37,7 @@ export class YoutubeModule {
       providers: [
         {
           provide: YOUTUBEI_PROVIDER,
-          inject: [
-            HttpService,
-            forwardRef(() => YoutubeCachedService) as unknown as InjectionToken,
-          ],
+          inject: [HttpService, YoutubeCachedService],
           useFactory: (
             http: HttpService,
             youtubeService: YoutubeCachedService,

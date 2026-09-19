@@ -37,8 +37,8 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     if (!player) return;
 
     if (!queue.nowPlaying) {
-      await this.playerService.setStatus(player, `🎵 Idling...`);
       player.audioPlayer.stop();
+      this.playerService.setStatus(player, `🎵 Idling...`);
     } else {
       const currentMediaSource = queue.nowPlaying.mediaSource;
       const { youtubeVideo, spotifyTrack } = currentMediaSource;

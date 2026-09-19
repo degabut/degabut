@@ -158,7 +158,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
 
       await this.playerService.setStatus(
         player,
-        `🎵 ${queue.nowPlaying.mediaSource.title} - ${queue.nowPlaying.mediaSource.creator}`,
+        `🎵 ${currentMediaSource.title} - ${currentMediaSource.creator}`,
       );
     }
   }

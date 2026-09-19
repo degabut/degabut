@@ -4,12 +4,13 @@ import { IConfig } from "@common/config";
 import { DatabaseModule } from "@database/database.module";
 import { DiscordModule } from "@discord/discord.module";
 import { EventsModule } from "@events/events.module";
+import { ExceptionModule } from "@exception/exception.module";
 import { HistoryModule } from "@history/history.module";
 import { LoggerModule } from "@logger/logger.module";
 import { Logger } from "@logger/logger.service";
 import { DynamicModule, ForwardReference, Module, Provider, Type } from "@nestjs/common";
 import { DiscoveryModule, DiscoveryService, RouterModule, Routes } from "@nestjs/core";
-import { CqrsModule, UnhandledExceptionBus } from "@nestjs/cqrs";
+import { CqrsModule } from "@nestjs/cqrs";
 import { PlaylistModule } from "@playlist/playlist.module";
 import { QueuePlayerModule } from "@queue-player/queue-player.module";
 import { QueueModule } from "@queue/queue.module";
@@ -19,7 +20,6 @@ import { YoutubeApiModule } from "@youtube-api/youtube-api.module";
 import { YoutubeModule } from "@youtube/youtube.module";
 import { Client, GatewayIntentBits } from "discord.js";
 import { NecordModule } from "necord";
-import { Subject, takeUntil } from "rxjs";
 
 import { MessagingModule } from "../messaging/messaging.module";
 import { DiscordCommands } from "./commands";
@@ -40,31 +40,13 @@ import { ButtonInteractions, Interactions } from "./interactions";
   ],
 })
 export class MainModule {
-  private destroy$ = new Subject<void>();
-
-  constructor(
-    private unhandledExceptionsBus: UnhandledExceptionBus,
-    private logger: Logger,
-  ) {
-    this.unhandledExceptionsBus.pipe(takeUntil(this.destroy$)).subscribe((exceptionInfo) => {
-      this.logger.error({
-        message: "Unhandled exception",
-        ...exceptionInfo,
-      });
-    });
-  }
-
-  onModuleDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   static forRoot(config: IConfig): DynamicModule {
     const bot = config.apps.bot;
     if (!bot) throw new Error("Bot configuration is missing");
 
     const imports: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference> = [
       LoggerModule.forRoot({ appId: "main", ...config.logging }),
+      ExceptionModule,
       DatabaseModule.forRoot(config.postgres),
       QueuePlayerModule.forRoot(config.lavalink),
       SpotifyModule.forRoot(config.spotify),

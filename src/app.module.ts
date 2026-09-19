@@ -1,5 +1,6 @@
 import { WebSocketAdapter } from "@common/adapters";
 import { IConfig } from "@common/config";
+import { ExceptionModule } from "@exception/exception.module";
 import { GlobalLogger } from "@logger/global-logger.service";
 import { LoggerModule } from "@logger/logger.module";
 import { Logger } from "@logger/logger.service";
@@ -7,7 +8,7 @@ import { DynamicModule, Module, OnModuleInit } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 
-@Module({})
+@Module({ imports: [ExceptionModule] })
 export class AppModule implements OnModuleInit {
   constructor(
     private readonly configService: ConfigService,

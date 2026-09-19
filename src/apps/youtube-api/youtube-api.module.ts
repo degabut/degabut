@@ -1,6 +1,7 @@
 import { AuthModule } from "@auth/auth.module";
 import { IConfig } from "@common/config";
 import { DatabaseModule } from "@database/database.module";
+import { ExceptionModule } from "@exception/exception.module";
 import { LoggerModule } from "@logger/logger.module";
 import { DynamicModule, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -23,6 +24,7 @@ export class YoutubeApiModule {
     const imports = [
       ConfigModule.forRoot({ load: [() => config.youtube || {}] }),
       LoggerModule.forRoot({ appId: "youtubeApi", ...config.logging }),
+      ExceptionModule,
       AuthModule.forRoot({ jwt: config.auth?.jwt }),
       DatabaseModule.forRoot(config.postgres),
       YoutubeModule.forRoot(config.youtube),

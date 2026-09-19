@@ -26,6 +26,8 @@
       "@main/*": ["./src/apps/main/*"],
       "@events": ["./src/apps/events"],
       "@events/*": ["./src/apps/events/*"],
+      "@exception": ["./src/modules/exception"],
+      "@exception/*": ["./src/modules/exception/*"],
       "@common": ["./src/common"],
       "@common/*": ["./src/common/*"],
       "@auth": ["./src/modules/auth"],

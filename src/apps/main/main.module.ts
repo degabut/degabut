@@ -48,7 +48,7 @@ export class MainModule {
       LoggerModule.forRoot({ appId: "main", ...config.logging }),
       ExceptionModule,
       DatabaseModule.forRoot(config.postgres),
-      QueuePlayerModule.forRoot(config.lavalink),
+      QueuePlayerModule.forRoot({ lavalink: config.lavalink, nodelink: config.nodelink }),
       SpotifyModule.forRoot(config.spotify),
       YoutubeModule.forRoot(config.youtubeApi || config.youtube),
       NecordModule.forRoot({

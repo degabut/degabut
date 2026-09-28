@@ -11,7 +11,11 @@ apps:
   # youtubeApi: # if you want to start http server for youtube api, used by official web client
   #   port: 8082
   #   path: "/api/youtube" # optional, if you want to configure the HTTP API Base Path
-lavalink: # optional, if you want to use lavalink instead of built in player
+lavalink:
+  host: "0.0.0.0"
+  port: 2333
+  password: "youshallnotpass"
+nodelink: # optional, will be ignored if lavalink is passed
   host: "0.0.0.0"
   port: 2333
   password: "youshallnotpass"

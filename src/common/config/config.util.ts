@@ -57,7 +57,12 @@ export class ConfigUtil {
       host: Joi.string().required(),
       port: Joi.number().optional().default(2333),
       password: Joi.string().required(),
-    }).required(),
+    }).optional(),
+    nodelink: Joi.object({
+      host: Joi.string().required(),
+      port: Joi.number().optional().default(2333),
+      password: Joi.string().required(),
+    }).optional(),
     spotify: Joi.object({
       clientId: Joi.string().required(),
       clientSecret: Joi.string().required(),
@@ -89,7 +94,7 @@ export class ConfigUtil {
         password: Joi.string().required(),
       }).optional(),
     }).optional(),
-  });
+  }).or("lavalink", "nodelink");
 
   static async getConfig() {
     const config = this.mergeConfig(await this.getYmlConfig(), this.getEnvConfig());
@@ -209,6 +214,20 @@ export class ConfigUtil {
         host: lavalinkHost,
         port: lavalinkPort ? +lavalinkPort : undefined,
         password: lavalinkPassword,
+      };
+    }
+
+    // nodelink
+    const nodelinkHost = process.env.NODELINK_HOST;
+    const nodelinkPort = process.env.NODELINK_PORT;
+    const nodelinkPassword = process.env.NODELINK_PASSWORD;
+
+    if (nodelinkHost && nodelinkPassword) {
+      config.nodelink = {
+        ...config.nodelink,
+        host: nodelinkHost,
+        port: nodelinkPort ? +nodelinkPort : undefined,
+        password: nodelinkPassword,
       };
     }
 

@@ -7,6 +7,7 @@ export type IConfig = {
 
 export interface IGlobalConfig {
   lavalink: ILavalinkConfig;
+  nodelink?: INodeLinkConfig;
   postgres: IPostgresConfig;
   logging?: ILoggerConfig;
   spotify?: ISpotifyConfig;
@@ -31,6 +32,12 @@ export interface IYoutubeApiConfig {
 }
 
 export interface ILavalinkConfig {
+  host: string;
+  password: string;
+  port?: number;
+}
+
+export interface INodeLinkConfig {
   host: string;
   password: string;
   port?: number;

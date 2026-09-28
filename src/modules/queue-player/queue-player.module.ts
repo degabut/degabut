@@ -1,4 +1,4 @@
-import { ILavalinkConfig } from "@common/config";
+import { ILavalinkConfig, INodeLinkConfig } from "@common/config";
 import { Logger } from "@logger/logger.service";
 import { MediaSourceModule } from "@media-source/media-source.module";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -6,6 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { QueueModule } from "@queue/queue.module";
 import { YoutubeModule } from "@youtube/youtube.module";
+import { NodeType } from "lavalink-client";
 
 import { Commands } from "./commands";
 import { QueuePlayerConfigService } from "./config";
@@ -32,7 +33,10 @@ import { QueuePlayerService } from "./services";
   exports: [QueuePlayerService],
 })
 export class QueuePlayerModule {
-  static forRoot(config: ILavalinkConfig): DynamicModule {
+  static forRoot(config: {
+    lavalink?: ILavalinkConfig;
+    nodelink?: INodeLinkConfig;
+  }): DynamicModule {
     return {
       global: true,
       module: QueuePlayerModule,
@@ -41,8 +45,11 @@ export class QueuePlayerModule {
           provide: AUDIO_PLAYER_MANAGER_PROVIDER,
           inject: [Logger],
           useFactory: (logger: Logger): IAudioPlayerManager => {
-            // if (!config) return new PlayDlPlayerProvider();
-            return new LavalinkPlayerProvider(config, logger);
+            return new LavalinkPlayerProvider(
+              (config.lavalink || config.nodelink)!,
+              config.lavalink ? NodeType.Lavalink : NodeType.NodeLink,
+              logger,
+            );
           },
         },
       ],

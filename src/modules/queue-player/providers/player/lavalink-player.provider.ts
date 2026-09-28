@@ -1,10 +1,16 @@
-import { ILavalinkConfig } from "@common/config";
-import { AsyncUtil } from "@common/utils";
+import { ILavalinkConfig, INodeLinkConfig } from "@common/config";
 import { Logger } from "@logger/logger.service";
-import { Injectable } from "@nestjs/common";
-import { Client, GatewayDispatchEvents } from "discord.js";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Client } from "discord.js";
 import { EventEmitter } from "events";
-import { Node, NodeEvents, Player } from "lavaclient";
+import {
+  LavalinkFilterData,
+  LavalinkManager,
+  NodeLinkNode,
+  NodeType,
+  Player,
+} from "lavalink-client";
+import { ReadableStream } from "stream/web";
 import TypedEventEmitter from "typed-emitter";
 
 import {
@@ -15,22 +21,24 @@ import {
   TrackEndReason,
 } from "./audio-player-manager.interface";
 
-export type LavalinkFilter = Player["filters"];
+export type LavalinkFilter = LavalinkFilterData;
 
 @Injectable()
 export class LavalinkPlayerProvider
   extends (EventEmitter as new () => TypedEventEmitter<AudioPlayerManagerEvents>)
   implements IAudioPlayerManager
 {
-  private readonly config: ILavalinkConfig;
+  private static NODE_ID = "default";
+
+  private readonly config: ILavalinkConfig | INodeLinkConfig;
 
   private isNodeConnected = false;
-  private isNodeReconnecting = false;
   private client!: Client;
-  private node!: Node;
+  private manager!: LavalinkManager;
 
   constructor(
-    config: ILavalinkConfig,
+    config: ILavalinkConfig | INodeLinkConfig,
+    private type: NodeType,
     private readonly logger: Logger,
   ) {
     super();
@@ -40,66 +48,59 @@ export class LavalinkPlayerProvider
 
   init(client: Client): IAudioPlayerManager {
     this.client = client;
-    this.node = new Node({
-      discord: {
-        sendGatewayCommand: (id, payload) => client.guilds.cache.get(id)?.shard?.send(payload),
+    this.manager = new LavalinkManager({
+      nodes: [
+        {
+          id: LavalinkPlayerProvider.NODE_ID,
+          authorization: this.config.password,
+          host: this.config.host,
+          port: this.config.port || 2333,
+          retryDelay: 5000,
+          retryAmount: Number.POSITIVE_INFINITY,
+          nodeType: this.type,
+        },
+      ],
+      sendToShard: (guildId, payload) => {
+        const guild = client.guilds.cache.get(guildId);
+        if (guild) guild.shard.send(payload);
       },
-      info: {
-        host: this.config.host,
-        auth: this.config.password,
-        port: 2333,
-      },
+      autoSkip: true,
+      autoSkipOnResolveError: true,
+      client: this.client.user ? { id: this.client.user?.id || "" } : undefined,
     });
 
-    client.ws.on(GatewayDispatchEvents.VoiceServerUpdate, (data) =>
-      this.node.players.handleVoiceUpdate(data),
-    );
-    client.ws.on(GatewayDispatchEvents.VoiceStateUpdate, (data) =>
-      this.node.players.handleVoiceUpdate(data),
-    );
+    client.on("raw", (d) => this.manager.sendRawData(d));
 
-    this.node.on("connected", () => {
+    this.manager.nodeManager.on("connect", () => {
       this.isNodeConnected = true;
       this.logger.info("Lavalink connected");
     });
 
-    this.node.on("disconnected", async (e) => {
+    this.manager.nodeManager.on("disconnect", async (_, reason) => {
       this.isNodeConnected = false;
-      this.logger.error({ error: "Lavalink disconnected", ...e });
-      this.reconnectNode();
+      this.logger.error({ error: `Lavalink disconnected`, reason });
     });
 
-    this.node.on("error", async (e) => {
+    this.manager.nodeManager.on("error", async (_, e) => {
       this.logger.error({ error: "Lavalink error", ...e });
-      if (!this.isNodeConnected) this.reconnectNode();
     });
 
-    this.node.connect({ userId: this.client.user?.id });
+    this.manager.nodeManager.on("reconnecting", async () => {
+      this.isNodeConnected = false;
+      this.logger.info(`Reconnecting to lavalink in 5s`);
+    });
+
+    this.manager.init({ id: this.client.user?.id || "" });
 
     return this;
   }
 
   createAudioPlayer(guildId: string): IAudioPlayer {
-    return new AudioPlayer(this.node.players.create(guildId), guildId);
+    return new AudioPlayer(this.manager, guildId);
   }
 
   get isReady(): boolean {
     return this.isNodeConnected;
-  }
-
-  private async reconnectNode(delay = 10000) {
-    if (this.isNodeReconnecting) return;
-
-    this.isNodeReconnecting = true;
-    this.emit("disconnected");
-
-    this.logger.info(`Reconnecting to lavalink in ${delay}ms`);
-
-    await AsyncUtil.sleep(delay);
-
-    this.node.disconnect();
-    this.node.connect({ userId: this.client.user?.id });
-    this.isNodeReconnecting = false;
   }
 }
 
@@ -108,40 +109,13 @@ class AudioPlayer
   implements IAudioPlayer
 {
   private guildId: string;
-  private readonly player: Player<Node>;
-  private onTickListener: AudioPlayer["onTick"];
+  private readonly manager: LavalinkManager;
+  private player?: Player;
 
-  constructor(player: Player<Node>, guildId: string) {
+  constructor(manager: LavalinkManager, guildId: string) {
     super();
-    this.player = player;
+    this.manager = manager;
     this.guildId = guildId;
-
-    this.player.voice.on("channelJoin", () => this.emit("ready"));
-    this.player.voice.on("channelMove", (from, to) => this.emit("moved", from, to));
-    this.player.on("disconnected", () => this.emit("disconnected"));
-    this.player.on("trackStart", () => this.emit("trackStart"));
-    this.player.on("trackEnd", (_, reason) =>
-      this.emit(
-        "trackEnd",
-        reason === "finished"
-          ? TrackEndReason.FINISHED
-          : reason === "stopped"
-            ? TrackEndReason.STOPPED
-            : TrackEndReason.ERROR,
-      ),
-    );
-    this.player.on("trackException", (e) =>
-      this.emit("trackException", new Error(JSON.stringify(e) || "unknown")),
-    );
-
-    this.onTickListener = this.onTick.bind(this);
-    this.player.node.ws.on("message", this.onTickListener);
-  }
-
-  private onTick(e: Parameters<NodeEvents["message"]>[0]) {
-    if (e.op !== "playerUpdate") return;
-    if (e.guildId !== this.guildId) return;
-    this.emit("tick", this.position || null);
   }
 
   get isSeekable() {
@@ -149,44 +123,95 @@ class AudioPlayer
   }
 
   get isConnected() {
-    return this.player.voice.connected;
+    return this.player?.connected || false;
   }
 
   get isPaused() {
-    return this.player.paused;
+    return this.player?.paused || false;
   }
 
   get isPlaying() {
-    return this.player.playing;
+    return this.player?.playing || false;
   }
 
   get position() {
-    return this.player.position;
+    return this.player?.position || 0;
   }
 
   get filters() {
-    return this.player.filters;
+    return this.player?.filterManager.filters || {};
   }
 
   connect(voiceChannelId: string): void {
-    this.player.voice.connect(voiceChannelId, { deafened: true });
+    this.player = this.manager.createPlayer({
+      guildId: this.guildId,
+      voiceChannelId,
+      selfDeaf: true,
+      instaUpdateFiltersFix: true,
+    });
+
+    this.manager.on("playerMove", (player, from, to) => {
+      if (player.guildId !== this.guildId) return;
+      this.emit("moved", from, to);
+    });
+    this.manager.on("playerDisconnect", (player) => {
+      if (player.guildId !== this.guildId) return;
+      this.emit("disconnected");
+    });
+    this.manager.on("trackStart", (player) => {
+      if (player.guildId !== this.guildId) return;
+      this.emit("trackStart");
+    });
+    this.manager.on("queueEnd", (player, _, event) => {
+      if (player.guildId !== this.guildId) return;
+      this.emit(
+        "trackEnd",
+        event.type === "TrackEndEvent" ? TrackEndReason.FINISHED : TrackEndReason.STOPPED,
+      );
+    });
+    this.manager.on("trackError", (player, _, e) => {
+      if (player.guildId !== this.guildId) return;
+      this.emit("trackException", new Error(JSON.stringify(e) || "unknown"));
+    });
+    this.manager.on("playerUpdate", (_, player) => {
+      if (player.guildId !== this.guildId || !player.connected) return;
+      this.emit("tick", player.position || null);
+    });
+
+    this.player.connect().then((player) => {
+      if (player.guildId !== this.guildId) return;
+      this.emit("ready");
+    });
   }
 
   disconnect(): void {
-    this.player.voice.disconnect();
-    this.player.node.ws.removeListener("message", this.onTickListener);
-    this.player.node.players.destroy(this.guildId, true);
+    if (!this.player) return;
+    this.player.destroy();
+    this.player.disconnect();
   }
 
   async play(videoId: string) {
-    const res = await this.player.node.api.loadTracks(videoId);
+    if (!this.player) throw new Error("Player not connected");
 
-    if (res?.loadType !== "track") {
-      if (res.loadType === "empty") throw new Error("Track Not Found");
-      if (res.loadType === "error") throw res.data;
+    const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+    const { response } = await this.player.node.rawRequest(
+      `/loadtracks?identifier=${encodeURIComponent(url)}`,
+      (opt) => (opt.method = "GET"),
+    );
+
+    const loadTrackResult = await response.json();
+
+    const { loadType, data } = loadTrackResult;
+
+    if (loadType !== "track") {
+      if (loadType === "empty") throw new Error("Track Not Found");
+      if (loadType === "error") throw data;
       else throw new Error("Unknown");
     }
 
+    await this.player.play({ track: data });
+  }
     const track = res.data;
     if (!track) throw new Error("Track Not Found");
 
@@ -194,22 +219,25 @@ class AudioPlayer
   }
 
   async seek(position: number): Promise<void> {
-    await this.player.seek(position);
+    await this.player?.seek(position);
   }
 
   async resume(): Promise<void> {
-    await this.player.resume();
+    await this.player?.resume();
   }
 
   async pause(): Promise<void> {
-    await this.player.pause();
+    await this.player?.pause();
   }
 
   async stop(): Promise<void> {
-    await this.player.stop();
+    await this.player?.stopPlaying();
   }
 
   async applyFilters(filter: LavalinkFilter): Promise<void> {
-    await this.player.setFilters(filter);
+    if (!this.player) return;
+
+    this.player.filterManager.data = filter;
+    await this.player.filterManager.applyPlayerFilters();
   }
 }

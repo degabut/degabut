@@ -34,6 +34,7 @@ export type AudioPlayerEvents = {
   ready: () => void;
   moved: (from: string, to: string) => void;
   disconnected: () => void;
+  destroyed: () => void;
   trackStart: () => void;
   trackEnd: (reason: TrackEndReason) => void;
   trackException: (e: Error) => void;

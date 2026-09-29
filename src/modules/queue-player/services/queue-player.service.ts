@@ -93,6 +93,10 @@ export class QueuePlayerService {
       this.destroyPlayer(player, PlayerDestroyReason.DISCONNECTED);
     });
 
+    player.audioPlayer.on("destroyed", async () => {
+      this.destroyPlayer(player, PlayerDestroyReason.DISCONNECTED);
+    });
+
     player.audioPlayer.on("tick", async (position) => {
       this.eventBus.publish(new PlayerTickEvent({ player, position }));
     });

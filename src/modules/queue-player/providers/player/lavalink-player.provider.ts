@@ -188,6 +188,11 @@ class AudioPlayer
     this.emit("disconnected");
   };
 
+  private readonly onPlayerDestroy = (player: Player): void => {
+    if (player.guildId !== this.guildId) return;
+    this.emit("destroyed");
+  };
+
   private readonly onTrackStart = (player: Player): void => {
     if (player.guildId !== this.guildId) return;
     this.emit("trackStart");
@@ -220,6 +225,7 @@ class AudioPlayer
 
     this.manager.on("playerMove", this.onPlayerMove);
     this.manager.on("playerDisconnect", this.onPlayerDisconnect);
+    this.manager.on("playerDestroy", this.onPlayerDestroy);
     this.manager.on("trackStart", this.onTrackStart);
     this.manager.on("queueEnd", this.onQueueEnd);
     this.manager.on("trackError", this.onTrackError);
@@ -229,6 +235,7 @@ class AudioPlayer
   private detachManagerListeners(): void {
     this.manager.off("playerMove", this.onPlayerMove);
     this.manager.off("playerDisconnect", this.onPlayerDisconnect);
+    this.manager.off("playerDestroy", this.onPlayerDestroy);
     this.manager.off("trackStart", this.onTrackStart);
     this.manager.off("queueEnd", this.onQueueEnd);
     this.manager.off("trackError", this.onTrackError);

@@ -37,6 +37,7 @@ export class QueueProcessedListener implements IEventHandler<QueueProcessedEvent
     if (!player) return;
 
     if (!queue.nowPlaying) {
+      // TODO fix race possible condition with queue-autoplay.listener
       player.audioPlayer.stop();
       this.playerService.setStatus(player, `🎵 Idling...`);
     } else {

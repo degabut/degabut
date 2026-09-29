@@ -20,7 +20,20 @@ export class QueuePlayerDto {
   @Transform(({ obj }: { obj: QueuePlayer }) => obj.audioPlayer.filters)
   public filters!: PlayerFilters;
 
-  public static create(entity: QueuePlayer): QueuePlayerDto {
-    return plainToInstance(QueuePlayerDto, entity);
+  @Expose()
+  @Transform(({ obj }: { obj: QueuePlayer }) => obj.audioPlayer.plugins)
+  public plugins!: string[];
+
+  @Expose()
+  @Transform(({ obj }: { obj: QueuePlayer }) => obj.audioPlayer.type)
+  public type!: string;
+
+  @Expose()
+  public streamToken!: string;
+
+  public static create(entity: QueuePlayer, userId: string): QueuePlayerDto {
+    const dto = plainToInstance(QueuePlayerDto, entity);
+    dto.streamToken = entity.issueStreamToken(userId);
+    return dto;
   }
 }

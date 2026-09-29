@@ -1,6 +1,18 @@
 import { AuthUser, User } from "@auth/decorators";
 import { AuthGuard } from "@auth/guards";
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   CreateCommand,
@@ -10,7 +22,9 @@ import {
   StopCommand,
 } from "@queue-player/commands";
 import { SetFiltersCommand } from "@queue-player/commands/set-filters";
-import { GetQueuePlayerQuery } from "@queue-player/queries";
+import { GetQueuePlayerQuery, GetQueuePlayerStreamQuery } from "@queue-player/queries";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { Readable } from "stream";
 
 type VoiceChannelIdParams = {
   voiceChannelId: string;
@@ -51,6 +65,34 @@ export class PlayersController {
         executor,
       }),
     );
+  }
+
+  @Get("/:voiceChannelId/stream")
+  async getPlayerStream(
+    @Param() params: VoiceChannelIdParams,
+    @Query("token") token: string,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    const stream = await this.queryBus.execute(new GetQueuePlayerStreamQuery({ ...params, token }));
+
+    reply.header("Content-Type", stream.contentType);
+    reply.header("Cache-Control", "no-store");
+
+    const payload = Readable.from(stream.stream);
+
+    let isAborted = false;
+    const abort = async () => {
+      if (isAborted) return;
+      isAborted = true;
+      payload.destroy();
+      await stream.close();
+    };
+
+    request.raw.once("close", abort);
+    payload.once("close", abort);
+
+    reply.send(payload);
   }
 
   @Delete("/:voiceChannelId")

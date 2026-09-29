@@ -1,6 +1,6 @@
 import { ILavalinkConfig, INodeLinkConfig } from "@common/config";
 import { Logger } from "@logger/logger.service";
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { Client } from "discord.js";
 import { EventEmitter } from "events";
 import {
@@ -10,7 +10,7 @@ import {
   NodeType,
   Player,
 } from "lavalink-client";
-import { ReadableStream } from "stream/web";
+import { Readable } from "stream";
 import TypedEventEmitter from "typed-emitter";
 
 import {
@@ -18,6 +18,7 @@ import {
   AudioPlayerManagerEvents,
   IAudioPlayer,
   IAudioPlayerManager,
+  PlayerStream,
   TrackEndReason,
 } from "./audio-player-manager.interface";
 
@@ -96,7 +97,7 @@ export class LavalinkPlayerProvider
   }
 
   createAudioPlayer(guildId: string): IAudioPlayer {
-    return new AudioPlayer(this.manager, guildId);
+    return new AudioPlayer(this.manager, guildId, this.config);
   }
 
   get isReady(): boolean {
@@ -110,12 +111,18 @@ class AudioPlayer
 {
   private guildId: string;
   private readonly manager: LavalinkManager;
+  private readonly config: ILavalinkConfig | INodeLinkConfig;
   private player?: Player;
 
-  constructor(manager: LavalinkManager, guildId: string) {
+  constructor(
+    manager: LavalinkManager,
+    guildId: string,
+    config: ILavalinkConfig | INodeLinkConfig,
+  ) {
     super();
     this.manager = manager;
     this.guildId = guildId;
+    this.config = config;
   }
 
   get isSeekable() {
@@ -138,8 +145,88 @@ class AudioPlayer
     return this.player?.position || 0;
   }
 
+  get type() {
+    return this.player?.node.nodeType.toLowerCase() as string;
+  }
+
   get filters() {
-    return this.player?.filterManager.filters || {};
+    if (!this.player) return {};
+
+    // filter out disabled filters
+    const enabledFilters: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(this.player.filterManager.data)) {
+      if ((this.player.filterManager.filters as unknown as Record<string, boolean>)[key]) {
+        enabledFilters[key] = value;
+      }
+    }
+    // custom handling for timescale
+    const hasTimescale = Object.values(this.player.filterManager.data.timescale || {}).some(
+      (d) => d !== 1,
+    );
+    if (hasTimescale) enabledFilters["timescale"] = this.player.filterManager.data.timescale;
+
+    return enabledFilters;
+  }
+
+  get plugins() {
+    return this.player?.node.info?.plugins.map((p) => p.name) || [];
+  }
+
+  private readonly onPlayerMove = (player: Player, from: string, to: string): void => {
+    if (player.guildId !== this.guildId) return;
+    this.emit("moved", from, to);
+  };
+
+  private readonly onPlayerDisconnect = (player: Player): void => {
+    if (player.guildId !== this.guildId) return;
+    this.emit("disconnected");
+  };
+
+  private readonly onTrackStart = (player: Player): void => {
+    if (player.guildId !== this.guildId) return;
+    this.emit("trackStart");
+  };
+
+  private readonly onQueueEnd = (
+    player: Player,
+    _track: unknown,
+    event: { type: string },
+  ): void => {
+    if (player.guildId !== this.guildId) return;
+    this.emit(
+      "trackEnd",
+      event.type === "TrackEndEvent" ? TrackEndReason.FINISHED : TrackEndReason.STOPPED,
+    );
+  };
+
+  private readonly onTrackError = (player: Player, _track: unknown, e: unknown): void => {
+    if (player.guildId !== this.guildId) return;
+    this.emit("trackException", new Error(JSON.stringify(e) || "unknown"));
+  };
+
+  private readonly onPlayerUpdate = (_oldPlayerJson: unknown, player: Player): void => {
+    if (player.guildId !== this.guildId || !player.connected) return;
+    this.emit("tick", player.position || null);
+  };
+
+  private attachManagerListeners(): void {
+    this.detachManagerListeners();
+
+    this.manager.on("playerMove", this.onPlayerMove);
+    this.manager.on("playerDisconnect", this.onPlayerDisconnect);
+    this.manager.on("trackStart", this.onTrackStart);
+    this.manager.on("queueEnd", this.onQueueEnd);
+    this.manager.on("trackError", this.onTrackError);
+    this.manager.on("playerUpdate", this.onPlayerUpdate);
+  }
+
+  private detachManagerListeners(): void {
+    this.manager.off("playerMove", this.onPlayerMove);
+    this.manager.off("playerDisconnect", this.onPlayerDisconnect);
+    this.manager.off("trackStart", this.onTrackStart);
+    this.manager.off("queueEnd", this.onQueueEnd);
+    this.manager.off("trackError", this.onTrackError);
+    this.manager.off("playerUpdate", this.onPlayerUpdate);
   }
 
   connect(voiceChannelId: string): void {
@@ -147,36 +234,9 @@ class AudioPlayer
       guildId: this.guildId,
       voiceChannelId,
       selfDeaf: true,
-      instaUpdateFiltersFix: true,
     });
 
-    this.manager.on("playerMove", (player, from, to) => {
-      if (player.guildId !== this.guildId) return;
-      this.emit("moved", from, to);
-    });
-    this.manager.on("playerDisconnect", (player) => {
-      if (player.guildId !== this.guildId) return;
-      this.emit("disconnected");
-    });
-    this.manager.on("trackStart", (player) => {
-      if (player.guildId !== this.guildId) return;
-      this.emit("trackStart");
-    });
-    this.manager.on("queueEnd", (player, _, event) => {
-      if (player.guildId !== this.guildId) return;
-      this.emit(
-        "trackEnd",
-        event.type === "TrackEndEvent" ? TrackEndReason.FINISHED : TrackEndReason.STOPPED,
-      );
-    });
-    this.manager.on("trackError", (player, _, e) => {
-      if (player.guildId !== this.guildId) return;
-      this.emit("trackException", new Error(JSON.stringify(e) || "unknown"));
-    });
-    this.manager.on("playerUpdate", (_, player) => {
-      if (player.guildId !== this.guildId || !player.connected) return;
-      this.emit("tick", player.position || null);
-    });
+    this.attachManagerListeners();
 
     this.player.connect().then((player) => {
       if (player.guildId !== this.guildId) return;
@@ -185,9 +245,9 @@ class AudioPlayer
   }
 
   disconnect(): void {
+    this.detachManagerListeners();
     if (!this.player) return;
     this.player.destroy();
-    this.player.disconnect();
   }
 
   async play(videoId: string) {
@@ -212,10 +272,44 @@ class AudioPlayer
 
     await this.player.play({ track: data });
   }
-    const track = res.data;
-    if (!track) throw new Error("Track Not Found");
 
-    await this.player.play(track);
+  async openLiveStream(onClose?: () => void): Promise<PlayerStream> {
+    if (!this.player) throw new BadRequestException("Player not connected");
+
+    if (!(this.player.node instanceof NodeLinkNode) || !this.plugins?.includes("live-stream")) {
+      throw new BadRequestException("Live streaming is available");
+    }
+
+    const port = this.config.port || 2333;
+    const url = `http://${this.config.host}:${port}/${this.player.node.sessionId}:${this.guildId}/stream?format=opus`;
+
+    const response = await fetch(url, {
+      headers: { authorization: this.config.password },
+    });
+
+    if (!response.ok || !response.body) {
+      await response.body?.cancel().catch(() => undefined);
+      throw new InternalServerErrorException(
+        `Audio node refused the live stream (status ${response.status})`,
+      );
+    }
+
+    const body = response.body as unknown as import("stream/web").ReadableStream<Uint8Array>;
+
+    const reported = response.headers.get("content-type") || "audio/ogg";
+    const contentType = reported.includes("codecs=") ? reported : `${reported}; codecs=opus`;
+
+    let isClosed = false;
+    return {
+      stream: Readable.fromWeb(body) as unknown as AsyncIterable<Uint8Array>,
+      contentType,
+      close: async () => {
+        if (isClosed) return;
+        isClosed = true;
+        await body.cancel().catch(() => undefined);
+        onClose?.();
+      },
+    };
   }
 
   async seek(position: number): Promise<void> {

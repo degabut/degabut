@@ -23,6 +23,12 @@ export enum TrackEndReason {
 // TODO standard type for filters
 export type PlayerFilters = LavalinkFilter;
 
+export type PlayerStream = {
+  stream: AsyncIterable<Uint8Array>;
+  contentType: string;
+  close(): Promise<void>;
+};
+
 export type AudioPlayerEvents = {
   tick: (position: number | null) => void;
   ready: () => void;
@@ -41,10 +47,13 @@ export interface IAudioPlayer extends TypedEmitter<AudioPlayerEvents> {
   get isPlaying(): boolean;
   get position(): number | undefined;
   get filters(): PlayerFilters;
+  get plugins(): string[];
+  get type(): string;
 
   connect(voiceChannelId: string): void;
   disconnect(): void;
   play(videoId: string): Promise<void>;
+  openLiveStream(onClose?: () => void): Promise<PlayerStream>;
   seek(position: number): Promise<void>;
   resume(): Promise<void>;
   pause(): Promise<void>;

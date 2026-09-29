@@ -20,6 +20,6 @@ export class GetQueuePlayerHandler implements IInferredQueryHandler<GetQueuePlay
     if (!player) throw new NotFoundException("Player not found");
     if (!player.getMember(params.executor.id)) throw new ForbiddenException("Missing permissions");
 
-    return QueuePlayerDto.create(player);
+    return QueuePlayerDto.create(player, params.executor.id);
   }
 }

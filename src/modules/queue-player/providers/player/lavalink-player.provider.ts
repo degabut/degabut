@@ -165,6 +165,12 @@ class AudioPlayer
     );
     if (hasTimescale) enabledFilters["timescale"] = this.player.filterManager.data.timescale;
 
+    // custom handling for eq
+    const hasEq = Object.values(this.player.filterManager.equalizerBands || {}).some(
+      (d) => d.gain !== 0,
+    );
+    if (hasEq) enabledFilters["equalizer"] = this.player.filterManager.equalizerBands;
+
     return enabledFilters;
   }
 
@@ -332,6 +338,8 @@ class AudioPlayer
     if (!this.player) return;
 
     this.player.filterManager.data = filter;
+    if (filter.equalizer) await this.player.filterManager.setEQ(filter.equalizer);
+    else await this.player.filterManager.clearEQ();
     await this.player.filterManager.applyPlayerFilters();
   }
 }

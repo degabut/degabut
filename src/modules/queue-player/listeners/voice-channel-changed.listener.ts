@@ -38,6 +38,6 @@ export class VoiceChannelChangedListener implements IEventHandler<Events> {
   }
 
   private getUserCount(player: QueuePlayer): number {
-    return player.voiceChannel.members.filter((m) => !m.user.bot).size;
+    return player.queue.voiceChannel.activeMembers.length;
   }
 }

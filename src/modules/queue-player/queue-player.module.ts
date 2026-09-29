@@ -30,7 +30,7 @@ import { QueuePlayerService } from "./services";
     ...Queries,
     ...Listeners,
   ],
-  exports: [QueuePlayerService],
+  exports: [QueuePlayerService, QueuePlayerRepository],
 })
 export class QueuePlayerModule {
   static forRoot(config: {

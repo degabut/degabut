@@ -19,12 +19,14 @@ export class MemberListener implements IEventHandler<Events> {
     const memberIds = queue.voiceChannel.activeMembers.map((m) => m.id);
 
     if (event instanceof MemberLeftEvent) {
-      this.gateway.send(
-        [member.id],
-        "queue-left",
-        { voiceChannelId: queue.voiceChannelId },
-        queue.voiceChannelId,
-      );
+      if (!member.isActive) {
+        this.gateway.send(
+          [member.id],
+          "queue-left",
+          { voiceChannelId: queue.voiceChannelId },
+          queue.voiceChannelId,
+        );
+      }
     } else if (event instanceof MemberJoinedEvent) {
       this.gateway.send(
         [member.id],

@@ -12,6 +12,7 @@ import {
   JamCommand,
   JoinCommand,
   LeaveCommand,
+  PingCommand,
   RemoveTrackCommand,
   RemoveTracksCommand,
   ToggleAutoplayCommand,
@@ -283,6 +284,17 @@ export class QueuesController {
   async leaveQueue(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
     return await this.commandBus.execute(
       new LeaveCommand({
+        ...params,
+        executor,
+      }),
+    );
+  }
+
+  @Post("/:voiceChannelId/ping")
+  @UseGuards(AuthGuard)
+  async pingQueue(@Param() params: VoiceChannelIdParams, @User() executor: AuthUser) {
+    return await this.commandBus.execute(
+      new PingCommand({
         ...params,
         executor,
       }),

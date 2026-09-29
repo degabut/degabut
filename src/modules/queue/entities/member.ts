@@ -1,5 +1,8 @@
 import { GuildMember } from "discord.js";
 
+/** Construction input; the ping timestamp defaults to now and need not be supplied. */
+type ConstructorProps = Omit<Member, "lastPingTimestamp" | "isActive">;
+
 export class Member {
   public id!: string;
   public displayName!: string;
@@ -9,9 +12,11 @@ export class Member {
   public avatar!: string | null;
   public isInVoiceChannel!: boolean;
   public isLink!: boolean;
+  public lastPingTimestamp!: number;
 
-  constructor(params: Member) {
+  constructor(params: ConstructorProps) {
     Object.assign(this, params);
+    this.lastPingTimestamp = Date.now();
   }
 
   static fromDiscordGuildMember(
@@ -29,5 +34,12 @@ export class Member {
       isInVoiceChannel,
       isLink,
     });
+  }
+
+  get isActive(): boolean {
+    // 2 minutes timeout for link members
+    return (
+      this.isInVoiceChannel || (this.isLink && Date.now() - this.lastPingTimestamp < 120 * 1000)
+    );
   }
 }

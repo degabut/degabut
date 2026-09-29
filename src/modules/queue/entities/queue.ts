@@ -344,6 +344,7 @@ export class Queue extends AggregateRoot {
     if (existingMember) {
       if (member.isInVoiceChannel) existingMember.isInVoiceChannel = true;
       if (member.isLink) existingMember.isLink = true;
+      existingMember.lastPingTimestamp = Date.now();
     } else this.voiceChannel.members.push(member);
 
     this.apply(new MemberJoinedEvent({ member: existingMember ?? member, queue: this }));
@@ -370,6 +371,14 @@ export class Queue extends AggregateRoot {
     this.voiceChannel.members[index] = member;
 
     this.apply(new MemberUpdatedEvent({ member, queue: this }));
+  }
+
+  public pingMember(memberId: string): boolean {
+    const member = this.voiceChannel.members.find((m) => m.id === memberId);
+    if (!member) return false;
+
+    member.lastPingTimestamp = Date.now();
+    return true;
   }
 
   public jam(count: number, member: Member) {

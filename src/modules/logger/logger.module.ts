@@ -48,6 +48,10 @@ export class LoggerModule {
         PinoLoggerModule.forRoot({
           pinoHttp: {
             level: config.level || "info",
+            redact: {
+              paths: ["req.headers.authorization"],
+              censor: "[REDACTED]",
+            },
             transport: {
               targets,
             },

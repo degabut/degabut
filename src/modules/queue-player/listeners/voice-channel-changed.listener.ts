@@ -31,6 +31,7 @@ export class VoiceChannelChangedListener implements IEventHandler<Events> {
       player.disconnectTimeout = null;
     } else if (!hasUser && !player.disconnectTimeout) {
       player.disconnectTimeout = setTimeout(() => {
+        player.disconnectTimeout = null;
         if (this.getUserCount(player)) return;
         this.playerService.destroyPlayer(player, PlayerDestroyReason.AUTO_DISCONNECTED);
       }, AUTO_DISCONNECT_TIMEOUT);

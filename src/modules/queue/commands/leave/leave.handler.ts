@@ -14,6 +14,6 @@ export class LeaveHandler implements IInferredCommandHandler<LeaveCommand> {
     const queue = this.queueRepository.getByVoiceChannelId(params.voiceChannelId);
     if (!queue) throw new NotFoundException("Queue not found.");
 
-    queue.removeMember(params.executor.id);
+    queue.removeMember(params.executor.id, false);
   }
 }

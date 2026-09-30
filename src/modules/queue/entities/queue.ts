@@ -350,12 +350,12 @@ export class Queue extends AggregateRoot {
     this.apply(new MemberJoinedEvent({ member: existingMember ?? member, queue: this }));
   }
 
-  public removeMember(memberId: string) {
+  public removeMember(memberId: string, isVoice = true) {
     const leftMember = this.voiceChannel.members.find((m) => m.id === memberId);
     if (!leftMember) return;
 
-    leftMember.isInVoiceChannel = false;
-    leftMember.isLink = false;
+    if (isVoice) leftMember.isInVoiceChannel = false;
+    else leftMember.isLink = false;
 
     this.apply(new MemberLeftEvent({ member: leftMember, queue: this }));
   }

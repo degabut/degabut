@@ -10,6 +10,6 @@ export class VoiceMemberLeftListener implements IEventHandler<VoiceMemberLeftEve
     const queue = this.queueRepository.getByVoiceChannelId(voiceChannel.id);
     if (!queue || member.user.bot) return;
 
-    queue.removeMember(member.id);
+    queue.removeMember(member.id, true);
   }
 }

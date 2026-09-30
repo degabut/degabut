@@ -25,6 +25,9 @@ export class MemberDto {
   public isInVoiceChannel!: boolean;
 
   @Expose()
+  public lastPingTimestamp!: number;
+
+  @Expose()
   public isLink!: boolean;
 
   public static create(entity: Member): MemberDto {

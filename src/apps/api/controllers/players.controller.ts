@@ -78,6 +78,7 @@ export class PlayersController {
 
     reply.header("Content-Type", stream.contentType);
     reply.header("Cache-Control", "no-store");
+    reply.header("X-Accel-Buffering", "no");
 
     const payload = Readable.from(stream.stream);
 

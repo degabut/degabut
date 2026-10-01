@@ -1,12 +1,12 @@
-import { VoiceMemberJoinedEvent, VoiceMemberLeftEvent } from "@main/events";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { QueuePlayer } from "@queue-player/entities";
 import { PlayerVoiceChannelChangedEvent } from "@queue-player/events";
 import { AUTO_DISCONNECT_TIMEOUT } from "@queue-player/queue-player.contants";
 import { QueuePlayerRepository } from "@queue-player/repositories";
 import { PlayerDestroyReason, QueuePlayerService } from "@queue-player/services";
+import { MemberJoinedEvent, MemberLeftEvent } from "@queue/events";
 
-const events = [VoiceMemberLeftEvent, VoiceMemberJoinedEvent, PlayerVoiceChannelChangedEvent];
+const events = [MemberLeftEvent, MemberJoinedEvent, PlayerVoiceChannelChangedEvent];
 type Events = InstanceType<(typeof events)[number]>;
 
 @EventsHandler(...events)
@@ -18,8 +18,8 @@ export class VoiceChannelChangedListener implements IEventHandler<Events> {
 
   public async handle(event: Events): Promise<void> {
     const player =
-      "voiceChannel" in event
-        ? this.playerRepository.getByVoiceChannelId(event.voiceChannel.id)
+      "queue" in event
+        ? this.playerRepository.getByVoiceChannelId(event.queue.voiceChannelId)
         : event.player;
 
     if (!player) return;
